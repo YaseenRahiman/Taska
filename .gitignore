@@ -136,6 +136,9 @@ test-*.json
 # Archive directory
 archive/
 
+# Git backups
+.git-backup/
+
 # Windows null device files
 nul
 */nul
