@@ -1,0 +1,480 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 162 80% 37%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 162 80% 37%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 162 80% 37%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 162 80% 37%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Taska Brand Gradients */
+  .gradient-primary {
+    background: linear-gradient(135deg, #16A085 0%, #2ECC71 100%);
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, #E74C3C 0%, #F39C12 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, #F1C40F 0%, #F39C12 100%);
+  }
+
+  .gradient-cream {
+    background: linear-gradient(135deg, #FDF5E6 0%, #F5F5DC 100%);
+  }
+
+  /* Taska Brand Shadows */
+  .shadow-primary {
+    box-shadow: 0 4px 14px 0 rgba(22, 160, 133, 0.25);
+  }
+
+  .shadow-secondary {
+    box-shadow: 0 4px 14px 0 rgba(231, 76, 60, 0.25);
+  }
+
+  .shadow-accent {
+    box-shadow: 0 4px 14px 0 rgba(241, 196, 15, 0.25);
+  }
+
+  /* Custom scrollbar for better UX */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-cream-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-400;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* Loading spinner animation */
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Taska specific animations */
+  .pulse-primary {
+    animation: pulse-primary 2s infinite;
+  }
+
+  @keyframes pulse-primary {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  .bounce-in {
+    animation: bounce-in 0.6s ease-out;
+  }
+
+  /* Mobile-first responsive text */
+  .text-responsive {
+    @apply text-sm md:text-base lg:text-lg;
+  }
+
+  .heading-responsive {
+    @apply text-xl md:text-2xl lg:text-3xl xl:text-4xl;
+  }
+
+  /* Mobile touch optimizations */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-friendly {
+    @apply p-3 md:p-2;
+  }
+
+  /* Mobile swipe animations */
+  .swipe-left-enter {
+    transform: translateX(100%);
+  }
+
+  .swipe-left-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-out;
+  }
+
+  .swipe-right-enter {
+    transform: translateX(-100%);
+  }
+
+  .swipe-right-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-out;
+  }
+
+  /* Mobile scroll optimizations */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Mobile form optimizations */
+  .mobile-input {
+    @apply text-base; /* Prevents zoom on iOS */
+  }
+
+  /* Mobile card stack animation */
+  .card-stack-enter {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  .card-stack-enter-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: all 300ms ease-out;
+  }
+
+  /* Mobile pull-to-refresh */
+  .pull-to-refresh {
+    transform: translateY(-100px);
+    transition: transform 200ms ease-out;
+  }
+
+  .pull-to-refresh-active {
+    transform: translateY(0);
+  }
+
+  /* Mobile safe area support */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Mobile viewport optimizations */
+  .mobile-container {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+
+  /* Haptic feedback simulation */
+  .haptic-light {
+    animation: haptic-light 100ms ease-out;
+  }
+
+  @keyframes haptic-light {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+  }
+
+  .haptic-medium {
+    animation: haptic-medium 150ms ease-out;
+  }
+
+  @keyframes haptic-medium {
+    0% { transform: scale(1); }
+    25% { transform: scale(0.96); }
+    75% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  /* Mobile bottom sheet */
+  .bottom-sheet {
+    transform: translateY(100%);
+    transition: transform 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .bottom-sheet-open {
+    transform: translateY(0);
+  }
+
+  /* Mobile sticky elements */
+  .mobile-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Image gallery mobile optimizations */
+  .image-gallery-mobile {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .image-gallery-mobile > * {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  /* South African context styles */
+  .flag-gradient {
+    background: linear-gradient(to right, #000000 0%, #ffb612 20%, #ffffff 40%, #007749 60%, #de3831 80%, #002395 100%);
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --primary: 162 100% 25%;
+      --secondary: 0 100% 40%;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+}
+
+@layer components {
+  /* Taska Button Components */
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-primary hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-secondary hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
+  }
+
+  .btn-accent {
+    @apply bg-accent-500 hover:bg-accent-600 text-accent-900 font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-accent hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  .btn-ghost {
+    @apply text-primary-500 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Taska Card Components */
+  .card {
+    @apply bg-white rounded-xl shadow-lg border border-cream-200 p-6 transition-all duration-200 hover:shadow-xl hover:scale-105;
+  }
+
+  .card-hover {
+    @apply hover:shadow-primary hover:border-primary-200;
+  }
+
+  /* Taska Input Components */
+  .input-primary {
+    @apply w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  /* Taska Navigation */
+  .nav-link {
+    @apply text-gray-700 hover:text-primary-500 font-medium transition-colors duration-200 relative;
+  }
+
+  .nav-link-active {
+    @apply text-primary-500;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 transition-all duration-200;
+  }
+
+  .nav-link:hover::after,
+  .nav-link-active::after {
+    @apply w-full;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-cream-200 rounded;
+  }
+
+  .shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .shimmer::after {
+    content: '';
+    @apply absolute top-0 right-0 bottom-0 left-0 transform -translate-x-full bg-gradient-to-r from-transparent via-white to-transparent opacity-75 animate-shimmer;
+  }
+
+  /* South African styling */
+  .sa-badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800;
+  }
+
+  /* Status indicators */
+  .status-active {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-inactive {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .status-processing {
+    @apply bg-blue-100 text-blue-800;
+  }
+}
+
+@layer utilities {
+  /* Taska specific utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Aspect ratio utilities */
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Container utilities */
+  .container-narrow {
+    @apply max-w-2xl mx-auto px-4;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  /* Spacing utilities for South African context */
+  .space-sa {
+    @apply space-y-6;
+  }
+
+  /* Typography scale */
+  .text-hero {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+  }
+
+  .text-section {
+    @apply text-2xl md:text-3xl lg:text-4xl font-semibold;
+  }
+
+  .text-subsection {
+    @apply text-xl md:text-2xl font-medium;
+  }
+}

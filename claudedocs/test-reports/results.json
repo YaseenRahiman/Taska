@@ -1,0 +1,1073 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\playwright.config.ts",
+    "rootDir": "C:/Users/Yaseen/OneDrive/Documents/Investments/Taska/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "claudedocs/test-reports/html"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "claudedocs/test-reports/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "claudedocs/test-reports/junit.xml"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/Yaseen/OneDrive/Documents/Investments/Taska/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Yaseen/OneDrive/Documents/Investments/Taska/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/Yaseen/OneDrive/Documents/Investments/Taska/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "C:/Users/Yaseen/OneDrive/Documents/Investments/Taska/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "sprint1-password-recovery.spec.ts",
+      "file": "sprint1-password-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Password Reset Flow",
+          "file": "sprint1-password-recovery.spec.ts",
+          "line": 69,
+          "column": 6,
+          "specs": [
+            {
+              "title": "PWD-001: Request password reset with valid registered email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 606,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🎯 SPRINT 1 - Password Management & Account Recovery Testing\n"
+                        },
+                        {
+                          "text": "📁 Screenshots will be saved to: C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\claudedocs\\test-screenshots\\password-recovery\n"
+                        },
+                        {
+                          "text": "\n🔍 PWD-001: Testing password reset request with valid email\n"
+                        },
+                        {
+                          "text": "🚨 CRITICAL: PWD-001 - Email input not found on forgot password page\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:53.338Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-9377c77c821d408f25f7",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 71,
+              "column": 7
+            },
+            {
+              "title": "PWD-002: Request password reset with unregistered email",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 476,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 PWD-002: Testing password reset with unregistered email (anti-enumeration)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:54.100Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-3afea6e58606bd92e5cf",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 145,
+              "column": 7
+            },
+            {
+              "title": "PWD-003: Password reset form validation - invalid email format",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 679,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 PWD-003: Testing email validation on password reset form\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:54.598Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-626a0e440c36f1c5ed69",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 181,
+              "column": 7
+            },
+            {
+              "title": "PWD-004: Password reset - new password validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 643,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 PWD-004: Testing new password validation rules\n"
+                        },
+                        {
+                          "text": "🚨 CRITICAL: PWD-004 - New password input not found on reset password page\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:55.303Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-0b2b8a2d44c67fb14f8e",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 221,
+              "column": 7
+            },
+            {
+              "title": "PWD-005: Password reset - cannot reuse old password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 166,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 PWD-005: Testing that old password cannot be reused\n"
+                        },
+                        {
+                          "text": "⚠️ PWD-005: Backend verification needed - checking AuthService implementation\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: PWD-005 - Password reset does not prevent reusing old password\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:55.962Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-1ab6205096af3046016e",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 276,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Email Verification Flow",
+          "file": "sprint1-password-recovery.spec.ts",
+          "line": 301,
+          "column": 6,
+          "specs": [
+            {
+              "title": "EMAIL-001: Email verification requirement check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 167,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 EMAIL-001: Verifying email verification is required for login\n"
+                        },
+                        {
+                          "text": "🚨 MEDIUM: EMAIL-001 - Email verification bypassed in MVP mode\n"
+                        },
+                        {
+                          "text": "⚠️ EMAIL-001: Auto-verification detected in code (MVP mode)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:56.147Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-37a737a813b715ecb135",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 303,
+              "column": 7
+            },
+            {
+              "title": "EMAIL-002: Email verification page accessibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 479,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 EMAIL-002: Testing email verification page\n"
+                        },
+                        {
+                          "text": "✅ EMAIL-002: Email verification page accessible\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:56.331Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-e168bdd47d4b7566f5ec",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 322,
+              "column": 7
+            },
+            {
+              "title": "EMAIL-003: Resend verification email functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 415,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 EMAIL-003: Testing resend verification email\n"
+                        },
+                        {
+                          "text": "🚨 MEDIUM: EMAIL-003 - No resend verification email option found\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:56.826Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-c70993910452a5471636",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 344,
+              "column": 7
+            },
+            {
+              "title": "EMAIL-004: Email verification with invalid token",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2796,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 EMAIL-004: Testing verification with invalid token\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: EMAIL-004 - No error message for invalid verification token\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:11:57.257Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-0f48d4144acc96cc6b2a",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 366,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Password Change (Authenticated)",
+          "file": "sprint1-password-recovery.spec.ts",
+          "line": 394,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CHANGE-001: Access password change page when authenticated",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3718,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 CHANGE-001: Testing authenticated password change access\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: CHANGE-001 - Cannot test password change - login failed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:00.072Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-d1caf42463a36d49032a",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 396,
+              "column": 7
+            },
+            {
+              "title": "CHANGE-002: Password change requires current password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5001,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 CHANGE-002: Testing current password requirement\n"
+                        },
+                        {
+                          "text": "🚨 CRITICAL: CHANGE-002 - Current password field not found on password change form\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:03.806Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-564f4efc6e3f0196755b",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 446,
+              "column": 7
+            },
+            {
+              "title": "CHANGE-003: Password change with incorrect current password",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5056,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 CHANGE-003: Testing incorrect current password handling\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:08.829Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-b3f89a1163658547a04d",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 473,
+              "column": 7
+            },
+            {
+              "title": "CHANGE-004: Password confirmation mismatch handling",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5155,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 CHANGE-004: Testing password confirmation mismatch\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:13.904Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-3acf083f59d55645b82e",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 513,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Security Validation",
+          "file": "sprint1-password-recovery.spec.ts",
+          "line": 554,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SEC-001: Password reset token implementation check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 144,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 SEC-001: Checking password reset token implementation\n"
+                        },
+                        {
+                          "text": "🚨 CRITICAL: SEC-001 - Password reset token management not implemented\n"
+                        },
+                        {
+                          "text": "⚠️ SEC-001: CRITICAL - Password reset not functional\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:19.075Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-db676ba3ab7167265735",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 556,
+              "column": 7
+            },
+            {
+              "title": "SEC-002: Session management implementation check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 155,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 SEC-002: Checking session management\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: SEC-002 - Session management not fully implemented\n"
+                        },
+                        {
+                          "text": "⚠️ SEC-002: Session management incomplete\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:19.235Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-f1b198191086e60d029c",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 570,
+              "column": 7
+            },
+            {
+              "title": "SEC-003: Brute force protection implementation check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 175,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 SEC-003: Checking brute force protection\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: SEC-003 - Brute force protection not implemented\n"
+                        },
+                        {
+                          "text": "⚠️ SEC-003: No brute force protection\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:19.407Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-fff20912dcb7cd3224e4",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 582,
+              "column": 7
+            },
+            {
+              "title": "SEC-004: Email service implementation check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 199,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 SEC-004: Checking email service implementation\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: SEC-004 - Email services not implemented\n"
+                        },
+                        {
+                          "text": "⚠️ SEC-004: Email sending not implemented\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:19.598Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-97801324dac75fa5da23",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 595,
+              "column": 7
+            },
+            {
+              "title": "SEC-005: Rate limiting on password reset requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3807,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 SEC-005: Testing rate limiting on password reset\n"
+                        },
+                        {
+                          "text": "🚨 HIGH: SEC-005 - No rate limiting on password reset requests\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:19.816Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-3f8a4fbe145e7a737fad",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 607,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "UI/UX Validation",
+          "file": "sprint1-password-recovery.spec.ts",
+          "line": 648,
+          "column": 6,
+          "specs": [
+            {
+              "title": "UX-001: Password reset form accessibility",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 528,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 UX-001: Testing form accessibility\n"
+                        },
+                        {
+                          "text": "🚨 MEDIUM: UX-001 - Email input missing proper label\n"
+                        },
+                        {
+                          "text": "🚨 LOW: UX-001 - No helpful instructions on password reset page\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:23.641Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-21db93b691e0779eea25",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 650,
+              "column": 7
+            },
+            {
+              "title": "UX-002: Loading states during async operations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 444,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 UX-002: Testing loading states\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:24.193Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-e35346af7db53a9bb76d",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 682,
+              "column": 7
+            },
+            {
+              "title": "UX-003: Mobile responsiveness of password flows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 949,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 UX-003: Testing mobile responsiveness\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:24.654Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-e582302960e4c3b80a25",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 714,
+              "column": 7
+            },
+            {
+              "title": "UX-004: Error messages are actionable and helpful",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 454,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n🔍 UX-004: Testing error message quality\n"
+                        },
+                        {
+                          "text": "\n📊 Findings report generated: C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\claudedocs\\SPRINT1-PASSWORD-RECOVERY-FINDINGS.md\n"
+                        },
+                        {
+                          "text": "\n📈 Summary: 15 issues found\n"
+                        },
+                        {
+                          "text": "   - Critical: 4\n"
+                        },
+                        {
+                          "text": "   - High: 7\n"
+                        },
+                        {
+                          "text": "   - Medium: 3\n"
+                        },
+                        {
+                          "text": "   - Low: 1\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-11-09T18:12:25.620Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e8a41083bb36aa44e512-3701a5c9cf221a10c5ef",
+              "file": "sprint1-password-recovery.spec.ts",
+              "line": 755,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-11-09T18:11:51.733Z",
+    "duration": 34488.829,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

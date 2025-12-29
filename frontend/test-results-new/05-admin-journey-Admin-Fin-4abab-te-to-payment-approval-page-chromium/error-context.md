@@ -1,0 +1,82 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - link "Skip to main content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e4]:
+    - paragraph [ref=e8]: Loading...
+  - contentinfo [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Taska" [level=3] [ref=e13]
+          - paragraph [ref=e14]: Connecting skilled artisans with clients across South Africa for quality home improvement services.
+          - generic [ref=e15]:
+            - link "Facebook" [ref=e16] [cursor=pointer]:
+              - /url: https://facebook.com/taska
+              - img [ref=e17]
+            - link "Twitter" [ref=e19] [cursor=pointer]:
+              - /url: https://twitter.com/taskaplatform
+              - img [ref=e20]
+            - link "LinkedIn" [ref=e22] [cursor=pointer]:
+              - /url: https://linkedin.com/company/taska
+              - img [ref=e23]
+            - link "Instagram" [ref=e25] [cursor=pointer]:
+              - /url: https://instagram.com/taska
+              - img [ref=e26]
+        - generic [ref=e28]:
+          - heading "Company" [level=4] [ref=e29]
+          - list [ref=e30]:
+            - listitem [ref=e31]:
+              - link "About" [ref=e32] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e33]:
+              - link "How It Works" [ref=e34] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e35]:
+              - link "Careers" [ref=e36] [cursor=pointer]:
+                - /url: /careers
+            - listitem [ref=e37]:
+              - link "Press" [ref=e38] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e39]:
+          - heading "Services" [level=4] [ref=e40]
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - link "For Clients" [ref=e43] [cursor=pointer]:
+                - /url: /post-job
+            - listitem [ref=e44]:
+              - link "For Artisans" [ref=e45] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e46]:
+              - link "Categories" [ref=e47] [cursor=pointer]:
+                - /url: /categories
+            - listitem [ref=e48]:
+              - link "Pricing" [ref=e49] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e50]:
+          - heading "Support" [level=4] [ref=e51]
+          - list [ref=e52]:
+            - listitem [ref=e53]:
+              - link "Contact" [ref=e54] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e55]:
+              - link "Help Center" [ref=e56] [cursor=pointer]:
+                - /url: /resources
+            - listitem [ref=e57]:
+              - link "Safety" [ref=e58] [cursor=pointer]:
+                - /url: /safety
+            - listitem [ref=e59]:
+              - link "Insurance" [ref=e60] [cursor=pointer]:
+                - /url: /insurance
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - link "Privacy Policy" [ref=e64] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms of Service" [ref=e65] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookie Policy" [ref=e66] [cursor=pointer]:
+            - /url: /cookies
+        - paragraph [ref=e67]: © 2025 Taska. All rights reserved.
+```

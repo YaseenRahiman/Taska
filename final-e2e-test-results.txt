@@ -1,0 +1,22 @@
+
+> taska-frontend@1.0.0 test:e2e
+> playwright test
+
+[2m[WebServer] [22m[Backend ERROR] Failed to start the application: PrismaClientInitializationError: Database `taska_test` does not exist on the database server at `localhost:5432`.
+[2m[WebServer] [22m    at t [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39mnode_modules\[4m@prisma[24m\client\runtime\library.js:112:2488[90m)[39m
+[2m[WebServer] [22m    at async Proxy.onModuleInit [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39msrc\prisma\prisma.service.ts:11:5[90m)[39m
+[2m[WebServer] [22m    at async Promise.all (index 0)
+[2m[WebServer] [22m    at async callModuleInitHook [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39mnode_modules\[4m@nestjs[24m\core\hooks\on-module-init.hook.js:43:5[90m)[39m
+[2m[WebServer] [22m    at async NestApplication.callInitHook [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39mnode_modules\[4m@nestjs[24m\core\nest-application-context.js:234:13[90m)[39m
+[2m[WebServer] [22m    at async NestApplication.init [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39mnode_modules\[4m@nestjs[24m\core\nest-application.js:100:9[90m)[39m
+[2m[WebServer] [22m    at async NestApplication.listen [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39mnode_modules\[4m@nestjs[24m\core\nest-application.js:170:13[90m)[39m
+[2m[WebServer] [22m    at async bootstrap [90m(C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\backend\[39msrc\main.ts:48:3[90m)[39m {
+[2m[WebServer] [22m  clientVersion: [32m'5.22.0'[39m,
+[2m[WebServer] [22m  errorCode: [32m'P1003'[39m
+[2m[WebServer] [22m}
+[2m[WebServer] [22m❌ Backend failed to become healthy after 60 attempts
+[2m[WebServer] [22m
+[2m[WebServer] [22m❌ Backend failed to start properly
+[2m[WebServer] [22m⚠️  Cannot proceed without backend API
+Error: Process from config.webServer was not able to start. Exit code: 1
+

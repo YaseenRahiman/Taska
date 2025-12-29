@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Taska logo - Letter "T" in white -->
+    <group
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:translateX="54"
+        android:translateY="54">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M-25,-40 L25,-40 L25,-30 L5,-30 L5,40 L-5,40 L-5,-30 L-25,-30 Z"/>
+    </group>
+</vector>

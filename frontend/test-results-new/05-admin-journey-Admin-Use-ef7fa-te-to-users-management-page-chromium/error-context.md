@@ -1,0 +1,217 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - status [ref=e7]: Real-time connection established
+  - generic [ref=e8]:
+    - link "Skip to main content" [ref=e9] [cursor=pointer]:
+      - /url: "#main-content"
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - complementary [ref=e12]:
+          - generic [ref=e14]:
+            - img [ref=e16]
+            - generic [ref=e18]:
+              - heading "Admin" [level=1] [ref=e19]
+              - paragraph [ref=e20]: Control Panel
+          - generic [ref=e22]:
+            - img [ref=e24]
+            - generic [ref=e29]:
+              - paragraph [ref=e30]: Test Admin
+              - paragraph [ref=e31]: admin@test.com
+          - navigation [ref=e32]:
+            - link "Dashboard Platform overview and analytics" [ref=e33] [cursor=pointer]:
+              - /url: /admin/dashboard
+              - img [ref=e34]
+              - generic [ref=e39]:
+                - paragraph [ref=e40]: Dashboard
+                - paragraph [ref=e41]: Platform overview and analytics
+            - link "Analytics Advanced analytics and insights" [ref=e42] [cursor=pointer]:
+              - /url: /admin/analytics
+              - img [ref=e43]
+              - generic [ref=e45]:
+                - paragraph [ref=e46]: Analytics
+                - paragraph [ref=e47]: Advanced analytics and insights
+            - link "User Management Manage users and verification" [ref=e48] [cursor=pointer]:
+              - /url: /admin/users
+              - img [ref=e49]
+              - generic [ref=e54]:
+                - paragraph [ref=e55]: User Management
+                - paragraph [ref=e56]: Manage users and verification
+            - link "Bulk Operations Mass actions and batch processing" [ref=e57] [cursor=pointer]:
+              - /url: /admin/bulk-operations
+              - img [ref=e58]
+              - generic [ref=e61]:
+                - paragraph [ref=e62]: Bulk Operations
+                - paragraph [ref=e63]: Mass actions and batch processing
+            - link "Activity Logs Audit trail and activity tracking" [ref=e64] [cursor=pointer]:
+              - /url: /admin/activity-logs
+              - img [ref=e65]
+              - generic [ref=e67]:
+                - paragraph [ref=e68]: Activity Logs
+                - paragraph [ref=e69]: Audit trail and activity tracking
+            - link "Reports Custom reports and scheduling" [ref=e70] [cursor=pointer]:
+              - /url: /admin/reports
+              - img [ref=e71]
+              - generic [ref=e74]:
+                - paragraph [ref=e75]: Reports
+                - paragraph [ref=e76]: Custom reports and scheduling
+            - link "Financial Revenue, payouts, and reconciliation" [ref=e77] [cursor=pointer]:
+              - /url: /admin/financial
+              - img [ref=e78]
+              - generic [ref=e80]:
+                - paragraph [ref=e81]: Financial
+                - paragraph [ref=e82]: Revenue, payouts, and reconciliation
+            - link "Moderation Content moderation and disputes" [ref=e83] [cursor=pointer]:
+              - /url: /admin/moderation
+              - img [ref=e84]
+              - generic [ref=e86]:
+                - paragraph [ref=e87]: Moderation
+                - paragraph [ref=e88]: Content moderation and disputes
+            - link "Review Moderation Flagged reviews and quality control" [ref=e89] [cursor=pointer]:
+              - /url: /admin/review-moderation
+              - img [ref=e90]
+              - generic [ref=e92]:
+                - paragraph [ref=e93]: Review Moderation
+                - paragraph [ref=e94]: Flagged reviews and quality control
+            - link "Settings System configuration" [ref=e95] [cursor=pointer]:
+              - /url: /admin/settings
+              - img [ref=e96]
+              - generic [ref=e99]:
+                - paragraph [ref=e100]: Settings
+                - paragraph [ref=e101]: System configuration
+          - button "Logout" [ref=e103] [cursor=pointer]:
+            - img [ref=e104]
+            - generic [ref=e107]: Logout
+        - generic [ref=e108]:
+          - generic [ref=e110]:
+            - generic [ref=e112]:
+              - img [ref=e113]
+              - heading "Admin Control Panel" [level=2] [ref=e115]
+            - generic [ref=e116]:
+              - button [ref=e117] [cursor=pointer]:
+                - img [ref=e118]
+              - button [ref=e121] [cursor=pointer]:
+                - img [ref=e122]
+              - button [ref=e126] [cursor=pointer]:
+                - img [ref=e127]
+          - main [ref=e129]:
+            - generic [ref=e131]:
+              - generic [ref=e132]:
+                - generic [ref=e133]:
+                  - heading "User Management" [level=1] [ref=e134]
+                  - paragraph [ref=e135]: Manage platform users, verification, and account status
+                - generic [ref=e136]:
+                  - button "Filters" [ref=e137] [cursor=pointer]:
+                    - img [ref=e138]
+                    - text: Filters
+                  - button "Refresh" [ref=e140] [cursor=pointer]:
+                    - img [ref=e141]
+                    - text: Refresh
+                  - button "Export" [ref=e146] [cursor=pointer]:
+                    - img [ref=e147]
+                    - text: Export
+              - generic [ref=e150]:
+                - generic [ref=e152]:
+                  - heading "Users (0)" [level=2] [ref=e153]
+                  - generic [ref=e155]: Showing 0 of 0
+                - table [ref=e157]:
+                  - rowgroup [ref=e158]:
+                    - row "User Role Status Activity Joined Actions" [ref=e159]:
+                      - cell "User" [ref=e160]
+                      - cell "Role" [ref=e161]
+                      - cell "Status" [ref=e162]
+                      - cell "Activity" [ref=e163]
+                      - cell "Joined" [ref=e164]
+                      - cell "Actions" [ref=e165]
+                  - rowgroup
+                - generic [ref=e167]:
+                  - generic [ref=e168]: Showing 1 to 0 of 0 results
+                  - generic [ref=e169]:
+                    - button "Previous" [disabled]
+                    - button "Next" [disabled]
+              - paragraph [ref=e171]: Internal server error
+          - generic [ref=e173]:
+            - generic [ref=e174]: © 2025 Taska Platform. All rights reserved.
+            - generic [ref=e175]:
+              - link "Help Center" [ref=e176] [cursor=pointer]:
+                - /url: "#"
+              - link "Documentation" [ref=e177] [cursor=pointer]:
+                - /url: "#"
+              - link "System Status" [ref=e178] [cursor=pointer]:
+                - /url: "#"
+    - contentinfo [ref=e179]:
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - generic [ref=e182]:
+            - heading "Taska" [level=3] [ref=e183]
+            - paragraph [ref=e184]: Connecting skilled artisans with clients across South Africa for quality home improvement services.
+            - generic [ref=e185]:
+              - link "Facebook" [ref=e186] [cursor=pointer]:
+                - /url: https://facebook.com/taska
+                - img [ref=e187]
+              - link "Twitter" [ref=e189] [cursor=pointer]:
+                - /url: https://twitter.com/taskaplatform
+                - img [ref=e190]
+              - link "LinkedIn" [ref=e192] [cursor=pointer]:
+                - /url: https://linkedin.com/company/taska
+                - img [ref=e193]
+              - link "Instagram" [ref=e195] [cursor=pointer]:
+                - /url: https://instagram.com/taska
+                - img [ref=e196]
+          - generic [ref=e198]:
+            - heading "Company" [level=4] [ref=e199]
+            - list [ref=e200]:
+              - listitem [ref=e201]:
+                - link "About" [ref=e202] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e203]:
+                - link "How It Works" [ref=e204] [cursor=pointer]:
+                  - /url: /how-it-works
+              - listitem [ref=e205]:
+                - link "Careers" [ref=e206] [cursor=pointer]:
+                  - /url: /careers
+              - listitem [ref=e207]:
+                - link "Press" [ref=e208] [cursor=pointer]:
+                  - /url: /press
+          - generic [ref=e209]:
+            - heading "Services" [level=4] [ref=e210]
+            - list [ref=e211]:
+              - listitem [ref=e212]:
+                - link "For Clients" [ref=e213] [cursor=pointer]:
+                  - /url: /post-job
+              - listitem [ref=e214]:
+                - link "For Artisans" [ref=e215] [cursor=pointer]:
+                  - /url: /browse
+              - listitem [ref=e216]:
+                - link "Categories" [ref=e217] [cursor=pointer]:
+                  - /url: /categories
+              - listitem [ref=e218]:
+                - link "Pricing" [ref=e219] [cursor=pointer]:
+                  - /url: /pricing
+          - generic [ref=e220]:
+            - heading "Support" [level=4] [ref=e221]
+            - list [ref=e222]:
+              - listitem [ref=e223]:
+                - link "Contact" [ref=e224] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e225]:
+                - link "Help Center" [ref=e226] [cursor=pointer]:
+                  - /url: /resources
+              - listitem [ref=e227]:
+                - link "Safety" [ref=e228] [cursor=pointer]:
+                  - /url: /safety
+              - listitem [ref=e229]:
+                - link "Insurance" [ref=e230] [cursor=pointer]:
+                  - /url: /insurance
+        - generic [ref=e232]:
+          - generic [ref=e233]:
+            - link "Privacy Policy" [ref=e234] [cursor=pointer]:
+              - /url: /privacy
+            - link "Terms of Service" [ref=e235] [cursor=pointer]:
+              - /url: /terms
+            - link "Cookie Policy" [ref=e236] [cursor=pointer]:
+              - /url: /cookies
+          - paragraph [ref=e237]: © 2025 Taska. All rights reserved.
+  - alert [ref=e238]
+```

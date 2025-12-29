@@ -1,0 +1,190 @@
+<testsuites id="" name="" tests="22" failures="0" skipped="0" errors="0" time="34.488828999999996">
+<testsuite name="sprint1-password-recovery.spec.ts" timestamp="2025-11-09T18:11:52.194Z" hostname="chromium" tests="22" failures="0" skipped="0" time="32.212" errors="0">
+<testcase name="Password Reset Flow › PWD-001: Request password reset with valid registered email" classname="sprint1-password-recovery.spec.ts" time="0.606">
+<system-out>
+<![CDATA[🎯 SPRINT 1 - Password Management & Account Recovery Testing
+📁 Screenshots will be saved to: C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\claudedocs\test-screenshots\password-recovery
+
+🔍 PWD-001: Testing password reset request with valid email
+🚨 CRITICAL: PWD-001 - Email input not found on forgot password page
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Reset Flow › PWD-002: Request password reset with unregistered email" classname="sprint1-password-recovery.spec.ts" time="0.476">
+<system-out>
+<![CDATA[
+🔍 PWD-002: Testing password reset with unregistered email (anti-enumeration)
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Reset Flow › PWD-003: Password reset form validation - invalid email format" classname="sprint1-password-recovery.spec.ts" time="0.679">
+<system-out>
+<![CDATA[
+🔍 PWD-003: Testing email validation on password reset form
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Reset Flow › PWD-004: Password reset - new password validation" classname="sprint1-password-recovery.spec.ts" time="0.643">
+<system-out>
+<![CDATA[
+🔍 PWD-004: Testing new password validation rules
+🚨 CRITICAL: PWD-004 - New password input not found on reset password page
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Reset Flow › PWD-005: Password reset - cannot reuse old password" classname="sprint1-password-recovery.spec.ts" time="0.166">
+<system-out>
+<![CDATA[
+🔍 PWD-005: Testing that old password cannot be reused
+⚠️ PWD-005: Backend verification needed - checking AuthService implementation
+🚨 HIGH: PWD-005 - Password reset does not prevent reusing old password
+]]>
+</system-out>
+</testcase>
+<testcase name="Email Verification Flow › EMAIL-001: Email verification requirement check" classname="sprint1-password-recovery.spec.ts" time="0.167">
+<system-out>
+<![CDATA[
+🔍 EMAIL-001: Verifying email verification is required for login
+🚨 MEDIUM: EMAIL-001 - Email verification bypassed in MVP mode
+⚠️ EMAIL-001: Auto-verification detected in code (MVP mode)
+]]>
+</system-out>
+</testcase>
+<testcase name="Email Verification Flow › EMAIL-002: Email verification page accessibility" classname="sprint1-password-recovery.spec.ts" time="0.479">
+<system-out>
+<![CDATA[
+🔍 EMAIL-002: Testing email verification page
+✅ EMAIL-002: Email verification page accessible
+]]>
+</system-out>
+</testcase>
+<testcase name="Email Verification Flow › EMAIL-003: Resend verification email functionality" classname="sprint1-password-recovery.spec.ts" time="0.415">
+<system-out>
+<![CDATA[
+🔍 EMAIL-003: Testing resend verification email
+🚨 MEDIUM: EMAIL-003 - No resend verification email option found
+]]>
+</system-out>
+</testcase>
+<testcase name="Email Verification Flow › EMAIL-004: Email verification with invalid token" classname="sprint1-password-recovery.spec.ts" time="2.796">
+<system-out>
+<![CDATA[
+🔍 EMAIL-004: Testing verification with invalid token
+🚨 HIGH: EMAIL-004 - No error message for invalid verification token
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Change (Authenticated) › CHANGE-001: Access password change page when authenticated" classname="sprint1-password-recovery.spec.ts" time="3.718">
+<system-out>
+<![CDATA[
+🔍 CHANGE-001: Testing authenticated password change access
+🚨 HIGH: CHANGE-001 - Cannot test password change - login failed
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Change (Authenticated) › CHANGE-002: Password change requires current password" classname="sprint1-password-recovery.spec.ts" time="5.001">
+<system-out>
+<![CDATA[
+🔍 CHANGE-002: Testing current password requirement
+🚨 CRITICAL: CHANGE-002 - Current password field not found on password change form
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Change (Authenticated) › CHANGE-003: Password change with incorrect current password" classname="sprint1-password-recovery.spec.ts" time="5.056">
+<system-out>
+<![CDATA[
+🔍 CHANGE-003: Testing incorrect current password handling
+]]>
+</system-out>
+</testcase>
+<testcase name="Password Change (Authenticated) › CHANGE-004: Password confirmation mismatch handling" classname="sprint1-password-recovery.spec.ts" time="5.155">
+<system-out>
+<![CDATA[
+🔍 CHANGE-004: Testing password confirmation mismatch
+]]>
+</system-out>
+</testcase>
+<testcase name="Security Validation › SEC-001: Password reset token implementation check" classname="sprint1-password-recovery.spec.ts" time="0.144">
+<system-out>
+<![CDATA[
+🔍 SEC-001: Checking password reset token implementation
+🚨 CRITICAL: SEC-001 - Password reset token management not implemented
+⚠️ SEC-001: CRITICAL - Password reset not functional
+]]>
+</system-out>
+</testcase>
+<testcase name="Security Validation › SEC-002: Session management implementation check" classname="sprint1-password-recovery.spec.ts" time="0.155">
+<system-out>
+<![CDATA[
+🔍 SEC-002: Checking session management
+🚨 HIGH: SEC-002 - Session management not fully implemented
+⚠️ SEC-002: Session management incomplete
+]]>
+</system-out>
+</testcase>
+<testcase name="Security Validation › SEC-003: Brute force protection implementation check" classname="sprint1-password-recovery.spec.ts" time="0.175">
+<system-out>
+<![CDATA[
+🔍 SEC-003: Checking brute force protection
+🚨 HIGH: SEC-003 - Brute force protection not implemented
+⚠️ SEC-003: No brute force protection
+]]>
+</system-out>
+</testcase>
+<testcase name="Security Validation › SEC-004: Email service implementation check" classname="sprint1-password-recovery.spec.ts" time="0.199">
+<system-out>
+<![CDATA[
+🔍 SEC-004: Checking email service implementation
+🚨 HIGH: SEC-004 - Email services not implemented
+⚠️ SEC-004: Email sending not implemented
+]]>
+</system-out>
+</testcase>
+<testcase name="Security Validation › SEC-005: Rate limiting on password reset requests" classname="sprint1-password-recovery.spec.ts" time="3.807">
+<system-out>
+<![CDATA[
+🔍 SEC-005: Testing rate limiting on password reset
+🚨 HIGH: SEC-005 - No rate limiting on password reset requests
+]]>
+</system-out>
+</testcase>
+<testcase name="UI/UX Validation › UX-001: Password reset form accessibility" classname="sprint1-password-recovery.spec.ts" time="0.528">
+<system-out>
+<![CDATA[
+🔍 UX-001: Testing form accessibility
+🚨 MEDIUM: UX-001 - Email input missing proper label
+🚨 LOW: UX-001 - No helpful instructions on password reset page
+]]>
+</system-out>
+</testcase>
+<testcase name="UI/UX Validation › UX-002: Loading states during async operations" classname="sprint1-password-recovery.spec.ts" time="0.444">
+<system-out>
+<![CDATA[
+🔍 UX-002: Testing loading states
+]]>
+</system-out>
+</testcase>
+<testcase name="UI/UX Validation › UX-003: Mobile responsiveness of password flows" classname="sprint1-password-recovery.spec.ts" time="0.949">
+<system-out>
+<![CDATA[
+🔍 UX-003: Testing mobile responsiveness
+]]>
+</system-out>
+</testcase>
+<testcase name="UI/UX Validation › UX-004: Error messages are actionable and helpful" classname="sprint1-password-recovery.spec.ts" time="0.454">
+<system-out>
+<![CDATA[
+🔍 UX-004: Testing error message quality
+
+📊 Findings report generated: C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\claudedocs\SPRINT1-PASSWORD-RECOVERY-FINDINGS.md
+
+📈 Summary: 15 issues found
+   - Critical: 4
+   - High: 7
+   - Medium: 3
+   - Low: 1
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

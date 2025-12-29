@@ -1,0 +1,38 @@
+appId: za.co.taska.artisan
+---
+# Login Flow E2E Test
+# Tests user authentication
+# Expected duration: ~15 seconds
+
+- launchApp:
+    clearState: true
+
+# Navigate to login (if not default screen)
+- tapOn: "Sign In"
+
+- assertVisible: "Login"
+
+# ═══════════════════════════════════════════════════════════════
+# Enter Credentials
+# ═══════════════════════════════════════════════════════════════
+
+- tapOn: "Email"
+- inputText: "${TEST_EMAIL}"
+- hideKeyboard
+
+- tapOn: "Password"
+- inputText: "${TEST_PASSWORD}"
+- hideKeyboard
+
+# Submit login
+- tapOn: "Login"
+
+# ═══════════════════════════════════════════════════════════════
+# Verification: Login Success
+# ═══════════════════════════════════════════════════════════════
+
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# Verify dashboard is visible after login
+- assertVisible: "Dashboard"

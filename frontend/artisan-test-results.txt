@@ -1,0 +1,797 @@
+
+> taska-frontend@1.0.0 test:e2e
+> playwright test tests/e2e/07-artisan-comprehensive.spec.ts
+
+
+Running 36 tests using 6 workers
+
+✓ API login successful for artisan@test.com
+✓ API login successful for artisan@test.com
+✓ API login successful for artisan@test.com
+✓ API login successful for artisan@test.com
+✓ API login successful for artisan@test.com
+✓ API login successful for artisan@test.com
+✓ Bids route accessible (200)
+✓ Profile route accessible (200)
+✓ Dashboard route accessible (200)
+✓ Projects route accessible (200)
+✓ Jobs route accessible (200)
+  ok  2 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:57:7 › Artisan Navigation - Route Accessibility › should access bids page without 404 error (16.9s)
+  ok  6 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:79:7 › Artisan Navigation - Route Accessibility › should access profile page without 404 error (17.0s)
+API login failed: Error
+  ok  5 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:33:7 › Artisan Navigation - Route Accessibility › should access dashboard without 404 error (17.1s)
+  ok  1 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:46:7 › Artisan Navigation - Route Accessibility › should access jobs page without 404 error (17.2s)
+  ok  4 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:68:7 › Artisan Navigation - Route Accessibility › should access projects page without 404 error (17.1s)
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+  x   7 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:110:7 › Artisan Dashboard - Page Rendering › should display dashboard statistics or cards (608ms)
+  x  10 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:162:7 › Artisan Jobs Page - Job Browsing › should display job listings or empty state (572ms)
+  x   8 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:127:7 › Artisan Dashboard - Page Rendering › should have navigation links to other artisan pages (652ms)
+  x  11 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:185:7 › Artisan Jobs Page - Job Browsing › should have search or filter functionality (624ms)
+  x   9 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:152:7 › Artisan Jobs Page - Job Browsing › should render jobs page without errors (604ms)
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+  x  12 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:204:7 › Artisan Jobs Page - Job Browsing › should display job details when clicking a job (1.4s)
+  x  13 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:235:7 › Artisan Jobs Page - Bid Submission › should show bid button on job details (1.4s)
+  x  14 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:325:7 › Artisan Jobs Page - Bid Submission › should validate bid amount - negative value (1.7s)
+  x  16 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:259:7 › Artisan Jobs Page - Bid Submission › should open bid form when clicking bid button (1.5s)
+  x  15 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:287:7 › Artisan Jobs Page - Bid Submission › should validate bid form - empty submission (1.3s)
+  x   3 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:97:7 › Artisan Dashboard - Page Rendering › should render dashboard without errors (24.0s)
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+  x  18 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:409:7 › Artisan Bids Page - Bid Management › should render bids page without errors (689ms)
+  x  17 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:365:7 › Artisan Jobs Page - Bid Submission › should allow filling bid form with valid data (690ms)
+  x  20 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:418:7 › Artisan Bids Page - Bid Management › should display bids list or empty state (709ms)
+  x  19 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:441:7 › Artisan Bids Page - Bid Management › should show bid status indicators (765ms)
+API login failed: Error
+  x  21 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:458:7 › Artisan Bids Page - Bid Management › should have filter or sort functionality (618ms)
+  x  22 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:482:7 › Artisan Projects Page - Project Management › should render projects page without errors (632ms)
+API login failed: Error
+API login failed: Error
+API login failed: Error
+API login failed: Error
+  x  23 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:514:7 › Artisan Projects Page - Project Management › should show project status indicators (760ms)
+API login failed: Error
+  x  24 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:491:7 › Artisan Projects Page - Project Management › should display projects list or empty state (692ms)
+  x  25 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:538:7 › Artisan Profile Page - Profile Management › should render profile page without errors (835ms)
+  x  27 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:564:7 › Artisan Profile Page - Profile Management › should have edit profile functionality (604ms)
+  x  26 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:547:7 › Artisan Profile Page - Profile Management › should display profile information (680ms)
+✓ Page content loaded (main)
+✓ Artisan registration page renders
+  ok 28 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:585:7 › Artisan Registration - New User Flow › should render artisan registration page (2.0s)
+API login failed: Error
+  x  29 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:735:7 › Artisan Error States and Edge Cases › should handle no jobs available gracefully (784ms)
+Creating new artisan user: test.artisan.1765055355338.379@playwright.test
+Testing authentication requirement for /artisan/dashboard
+✓ Page content loaded (main)
+✓ Found email field
+✓ Found password field
+✓ Found firstName field
+✓ Found lastName field
+✓ Found phone field
+✓ Found 5/5 required fields
+  ok 30 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:596:7 › Artisan Registration - New User Flow › should have required artisan registration fields (3.7s)
+API login failed: Error
+API login failed: Error
+✓ Page content loaded (main)
+✓ Artisan-specific fields found
+  ok 31 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:623:7 › Artisan Registration - New User Flow › should have artisan-specific fields (5.2s)
+✓ /artisan/dashboard requires authentication
+Testing authentication requirement for /artisan/jobs
+✓ Page content loaded (main)
+  x  35 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:749:7 › Artisan Error States and Edge Cases › should handle no bids gracefully (935ms)
+  x  36 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:762:7 › Artisan Error States and Edge Cases › should handle no projects gracefully (870ms)
+Submit button enabled: [33mtrue[39m
+✓ /artisan/jobs requires authentication
+Testing authentication requirement for /artisan/bids
+✓ Empty form validation works - stayed on registration
+  ok 32 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:644:7 › Artisan Registration - New User Flow › should validate registration form - empty submission (6.6s)
+✓ /artisan/bids requires authentication
+Testing authentication requirement for /artisan/projects
+✓ /artisan/projects requires authentication
+Testing authentication requirement for /artisan/profile
+✓ /artisan/profile requires authentication
+  ok 34 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:715:7 › Artisan Error States and Edge Cases › should require authentication for artisan routes (10.4s)
+Registration may have failed or redirected elsewhere
+Current URL: http://localhost:3001/artisan/register?firstName=Test&lastName=ARTISAN+1765055355338&email=test.artisan.1765055355338.379%40playwright.test&phoneNumber=%2B27055355338&trade=plumbing&experience=5&location=Johannesburg&bio=Experienced+artisan+with+quality+workmanship&password=TestPassword123%21&terms=on
+  x  33 [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:673:7 › Artisan Complete User Journey › should complete full artisan journey from registration to job viewing (39.1s)
+
+
+  1) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:97:7 › Artisan Dashboard - Page Rendering › should render dashboard without errors 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('h1, h2').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('h1, h2').first()[22m
+
+
+      103 |     // Check for heading
+      104 |     const heading = page.locator('h1, h2').first();
+    > 105 |     await expect(heading).toBeVisible();
+          |                           ^
+      106 |
+      107 |     console.log('✓ Dashboard renders without errors');
+      108 |   });
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:105:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-ff8ea-er-dashboard-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-ff8ea-er-dashboard-without-errors-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\07-artisan-comprehensive-A-ff8ea-er-dashboard-without-errors-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:110:7 › Artisan Dashboard - Page Rendering › should display dashboard statistics or cards 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:94:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-1aa2d-shboard-statistics-or-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-1aa2d-shboard-statistics-or-cards-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:127:7 › Artisan Dashboard - Page Rendering › should have navigation links to other artisan pages 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:94:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-7d28f-inks-to-other-artisan-pages-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-7d28f-inks-to-other-artisan-pages-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:152:7 › Artisan Jobs Page - Job Browsing › should render jobs page without errors 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:149:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-e8985-er-jobs-page-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-e8985-er-jobs-page-without-errors-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:162:7 › Artisan Jobs Page - Job Browsing › should display job listings or empty state 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:149:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-62f45-job-listings-or-empty-state-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-62f45-job-listings-or-empty-state-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:185:7 › Artisan Jobs Page - Job Browsing › should have search or filter functionality 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:149:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-e3bff-rch-or-filter-functionality-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-e3bff-rch-or-filter-functionality-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:204:7 › Artisan Jobs Page - Job Browsing › should display job details when clicking a job 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:149:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-6e616-details-when-clicking-a-job-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-6e616-details-when-clicking-a-job-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:235:7 › Artisan Jobs Page - Bid Submission › should show bid button on job details 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:232:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-d9d17-w-bid-button-on-job-details-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-d9d17-w-bid-button-on-job-details-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:259:7 › Artisan Jobs Page - Bid Submission › should open bid form when clicking bid button 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:232:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-ab4cd-rm-when-clicking-bid-button-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-ab4cd-rm-when-clicking-bid-button-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:287:7 › Artisan Jobs Page - Bid Submission › should validate bid form - empty submission 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:232:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-feef2-bid-form---empty-submission-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-feef2-bid-form---empty-submission-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:325:7 › Artisan Jobs Page - Bid Submission › should validate bid amount - negative value 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:232:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-02259-bid-amount---negative-value-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-02259-bid-amount---negative-value-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:365:7 › Artisan Jobs Page - Bid Submission › should allow filling bid form with valid data 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:232:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-3f9aa-ng-bid-form-with-valid-data-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-3f9aa-ng-bid-form-with-valid-data-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:409:7 › Artisan Bids Page - Bid Management › should render bids page without errors 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:406:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-de2c8-er-bids-page-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-de2c8-er-bids-page-without-errors-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:418:7 › Artisan Bids Page - Bid Management › should display bids list or empty state 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:406:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-bd76a-ay-bids-list-or-empty-state-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-bd76a-ay-bids-list-or-empty-state-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:441:7 › Artisan Bids Page - Bid Management › should show bid status indicators 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:406:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-c53b9--show-bid-status-indicators-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-c53b9--show-bid-status-indicators-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:458:7 › Artisan Bids Page - Bid Management › should have filter or sort functionality 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:406:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-88e3c-ilter-or-sort-functionality-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-88e3c-ilter-or-sort-functionality-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:482:7 › Artisan Projects Page - Project Management › should render projects page without errors 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:479:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-9563d-rojects-page-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-9563d-rojects-page-without-errors-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  18) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:491:7 › Artisan Projects Page - Project Management › should display projects list or empty state 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:479:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-f029e-rojects-list-or-empty-state-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-f029e-rojects-list-or-empty-state-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  19) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:514:7 › Artisan Projects Page - Project Management › should show project status indicators 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:479:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-641ab-w-project-status-indicators-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-641ab-w-project-status-indicators-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  20) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:538:7 › Artisan Profile Page - Profile Management › should render profile page without errors 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:535:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-42296-profile-page-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-42296-profile-page-without-errors-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  21) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:547:7 › Artisan Profile Page - Profile Management › should display profile information 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:535:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-a30c9-display-profile-information-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-a30c9-display-profile-information-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  22) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:564:7 › Artisan Profile Page - Profile Management › should have edit profile functionality 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:535:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-3c4c6--edit-profile-functionality-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-3c4c6--edit-profile-functionality-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  23) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:673:7 › Artisan Complete User Journey › should complete full artisan journey from registration to job viewing 
+
+    Error: Registration failed: TimeoutError: page.waitForURL: Timeout 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+       at helpers\user-management.helper.ts:193
+
+      191 |     await page.screenshot({ path: `test-results/registration-failure-${Date.now()}.png`, fullPage: true }).catch(() => {});
+      192 |
+    > 193 |     throw new Error(`Registration failed: ${error}`);
+          |           ^
+      194 |   }
+      195 |
+      196 |   return user;
+        at createUser (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\user-management.helper.ts:193:11)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:678:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-7dfaf-registration-to-job-viewing-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-7dfaf-registration-to-job-viewing-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\07-artisan-comprehensive-A-7dfaf-registration-to-job-viewing-chromium\error-context.md
+
+  24) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:735:7 › Artisan Error States and Edge Cases › should handle no jobs available gracefully 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:737:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-f5fe5-o-jobs-available-gracefully-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-f5fe5-o-jobs-available-gracefully-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  25) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:749:7 › Artisan Error States and Edge Cases › should handle no bids gracefully 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:751:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-898a3-d-handle-no-bids-gracefully-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-898a3-d-handle-no-bids-gracefully-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  26) [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:762:7 › Artisan Error States and Edge Cases › should handle no projects gracefully 
+
+    Error: API login failed: Error
+
+       at helpers\auth.helper.ts:307
+
+      305 |   } catch (error: any) {
+      306 |     console.error('API login failed:', error.response?.data || error.message);
+    > 307 |     throw new Error(`API login failed: ${error.response?.data?.message || error.message}`);
+          |           ^
+      308 |   }
+      309 | }
+      310 |
+        at loginViaAPI (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:307:11)
+        at loginAsArtisan (C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\helpers\auth.helper.ts:326:5)
+        at C:\Users\Yaseen\OneDrive\Documents\Investments\Taska\frontend\tests\e2e\07-artisan-comprehensive.spec.ts:764:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-c43c5-ndle-no-projects-gracefully-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\07-artisan-comprehensive-A-c43c5-ndle-no-projects-gracefully-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  26 failed
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:97:7 › Artisan Dashboard - Page Rendering › should render dashboard without errors 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:110:7 › Artisan Dashboard - Page Rendering › should display dashboard statistics or cards 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:127:7 › Artisan Dashboard - Page Rendering › should have navigation links to other artisan pages 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:152:7 › Artisan Jobs Page - Job Browsing › should render jobs page without errors 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:162:7 › Artisan Jobs Page - Job Browsing › should display job listings or empty state 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:185:7 › Artisan Jobs Page - Job Browsing › should have search or filter functionality 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:204:7 › Artisan Jobs Page - Job Browsing › should display job details when clicking a job 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:235:7 › Artisan Jobs Page - Bid Submission › should show bid button on job details 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:259:7 › Artisan Jobs Page - Bid Submission › should open bid form when clicking bid button 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:287:7 › Artisan Jobs Page - Bid Submission › should validate bid form - empty submission 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:325:7 › Artisan Jobs Page - Bid Submission › should validate bid amount - negative value 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:365:7 › Artisan Jobs Page - Bid Submission › should allow filling bid form with valid data 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:409:7 › Artisan Bids Page - Bid Management › should render bids page without errors 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:418:7 › Artisan Bids Page - Bid Management › should display bids list or empty state 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:441:7 › Artisan Bids Page - Bid Management › should show bid status indicators 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:458:7 › Artisan Bids Page - Bid Management › should have filter or sort functionality 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:482:7 › Artisan Projects Page - Project Management › should render projects page without errors 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:491:7 › Artisan Projects Page - Project Management › should display projects list or empty state 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:514:7 › Artisan Projects Page - Project Management › should show project status indicators 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:538:7 › Artisan Profile Page - Profile Management › should render profile page without errors 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:547:7 › Artisan Profile Page - Profile Management › should display profile information 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:564:7 › Artisan Profile Page - Profile Management › should have edit profile functionality 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:673:7 › Artisan Complete User Journey › should complete full artisan journey from registration to job viewing 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:735:7 › Artisan Error States and Edge Cases › should handle no jobs available gracefully 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:749:7 › Artisan Error States and Edge Cases › should handle no bids gracefully 
+    [chromium] › tests\e2e\07-artisan-comprehensive.spec.ts:762:7 › Artisan Error States and Edge Cases › should handle no projects gracefully 
+  10 passed (1.8m)

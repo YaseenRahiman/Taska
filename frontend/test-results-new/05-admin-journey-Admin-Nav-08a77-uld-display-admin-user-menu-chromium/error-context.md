@@ -1,0 +1,192 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - link "Skip to main content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e4]:
+    - generic [ref=e5]:
+      - navigation [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e10]: Taska
+          - generic [ref=e11]:
+            - link "Find Artisans" [ref=e12] [cursor=pointer]:
+              - /url: /browse
+            - link "Categories" [ref=e13] [cursor=pointer]:
+              - /url: /categories
+            - link "How It Works" [ref=e14] [cursor=pointer]:
+              - /url: /how-it-works
+            - link "About" [ref=e15] [cursor=pointer]:
+              - /url: /about
+          - generic [ref=e16]:
+            - link "Sign In" [ref=e17] [cursor=pointer]:
+              - /url: /auth/login
+            - link "Get Started" [ref=e18] [cursor=pointer]:
+              - /url: /auth/register
+      - generic [ref=e21]:
+        - heading "Connect with Skilled Artisans across South Africa" [level=1] [ref=e22]
+        - paragraph [ref=e23]: Find trusted professionals for your home improvement projects. From plumbing to electrical work, carpentry to painting - connect with verified artisans in your area.
+        - generic [ref=e24]:
+          - link "Post Your Job" [ref=e25] [cursor=pointer]:
+            - /url: /auth/register
+            - text: Post Your Job
+            - img [ref=e26]
+          - link "Find Artisans" [ref=e28] [cursor=pointer]:
+            - /url: /browse
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - heading "Why Choose Taska?" [level=2] [ref=e34]
+          - paragraph [ref=e35]: We make it easy to find trusted artisans and complete your projects with confidence.
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e40]
+            - term [ref=e42]: Verified Professionals
+            - definition [ref=e43]:
+              - paragraph [ref=e44]: All artisans are background-checked and verified. View ratings, reviews, and portfolios before making your choice.
+          - generic [ref=e45]:
+            - img [ref=e47]
+            - term [ref=e50]: Quick Responses
+            - definition [ref=e51]:
+              - paragraph [ref=e52]: Get multiple quotes within hours. Our platform ensures artisans respond quickly to your project requirements.
+          - generic [ref=e53]:
+            - img [ref=e55]
+            - term [ref=e60]: Local Community
+            - definition [ref=e61]:
+              - paragraph [ref=e62]: Support local businesses and skilled craftspeople in your community. Build lasting relationships with trusted professionals.
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - heading "Popular Services" [level=2] [ref=e66]
+          - paragraph [ref=e67]: Find skilled artisans for the most common home improvement projects.
+        - generic [ref=e68]:
+          - generic [ref=e70] [cursor=pointer]:
+            - generic [ref=e71]: 🔧
+            - heading "Plumbing" [level=3] [ref=e72]
+            - paragraph [ref=e73]: 150+ active jobs
+          - generic [ref=e75] [cursor=pointer]:
+            - generic [ref=e76]: ⚡
+            - heading "Electrical" [level=3] [ref=e77]
+            - paragraph [ref=e78]: 120+ active jobs
+          - generic [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]: 🔨
+            - heading "Carpentry" [level=3] [ref=e82]
+            - paragraph [ref=e83]: 200+ active jobs
+          - generic [ref=e85] [cursor=pointer]:
+            - generic [ref=e86]: 🎨
+            - heading "Painting" [level=3] [ref=e87]
+            - paragraph [ref=e88]: 180+ active jobs
+          - generic [ref=e90] [cursor=pointer]:
+            - generic [ref=e91]: 🏠
+            - heading "Roofing" [level=3] [ref=e92]
+            - paragraph [ref=e93]: 90+ active jobs
+          - generic [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: 🧱
+            - heading "Tiling" [level=3] [ref=e97]
+            - paragraph [ref=e98]: 110+ active jobs
+          - generic [ref=e100] [cursor=pointer]:
+            - generic [ref=e101]: 🌱
+            - heading "Garden Services" [level=3] [ref=e102]
+            - paragraph [ref=e103]: 140+ active jobs
+          - generic [ref=e105] [cursor=pointer]:
+            - generic [ref=e106]: ✨
+            - heading "Cleaning" [level=3] [ref=e107]
+            - paragraph [ref=e108]: 160+ active jobs
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - heading "How Taska Works" [level=2] [ref=e112]
+          - paragraph [ref=e113]: Getting your project done is simple with our streamlined process.
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]: "01"
+            - heading "Post Your Job" [level=3] [ref=e118]
+            - paragraph [ref=e119]: Describe your project, upload photos, set your budget and timeline. Our easy form takes just minutes to complete.
+          - generic [ref=e120]:
+            - generic [ref=e121]: "02"
+            - heading "Receive Quotes" [level=3] [ref=e122]
+            - paragraph [ref=e123]: Qualified artisans in your area will review your job and send you detailed quotes with timelines and pricing.
+          - generic [ref=e124]:
+            - generic [ref=e125]: "03"
+            - heading "Choose & Complete" [level=3] [ref=e126]
+            - paragraph [ref=e127]: Compare quotes, read reviews, and choose the best artisan. Pay securely through our platform when the job is done.
+      - generic [ref=e130]:
+        - heading "Ready to get started?" [level=2] [ref=e131]
+        - paragraph [ref=e132]: Join thousands of satisfied customers who have found their perfect artisan on Taska.
+        - generic [ref=e133]:
+          - link "Post Your First Job" [ref=e134] [cursor=pointer]:
+            - /url: /auth/register
+          - link "Browse Artisans" [ref=e135] [cursor=pointer]:
+            - /url: /browse
+            - text: Browse Artisans →
+  - contentinfo [ref=e136]:
+    - generic [ref=e137]:
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - heading "Taska" [level=3] [ref=e140]
+          - paragraph [ref=e141]: Connecting skilled artisans with clients across South Africa for quality home improvement services.
+          - generic [ref=e142]:
+            - link "Facebook" [ref=e143] [cursor=pointer]:
+              - /url: https://facebook.com/taska
+              - img [ref=e144]
+            - link "Twitter" [ref=e146] [cursor=pointer]:
+              - /url: https://twitter.com/taskaplatform
+              - img [ref=e147]
+            - link "LinkedIn" [ref=e149] [cursor=pointer]:
+              - /url: https://linkedin.com/company/taska
+              - img [ref=e150]
+            - link "Instagram" [ref=e152] [cursor=pointer]:
+              - /url: https://instagram.com/taska
+              - img [ref=e153]
+        - generic [ref=e155]:
+          - heading "Company" [level=4] [ref=e156]
+          - list [ref=e157]:
+            - listitem [ref=e158]:
+              - link "About" [ref=e159] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e160]:
+              - link "How It Works" [ref=e161] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e162]:
+              - link "Careers" [ref=e163] [cursor=pointer]:
+                - /url: /careers
+            - listitem [ref=e164]:
+              - link "Press" [ref=e165] [cursor=pointer]:
+                - /url: /press
+        - generic [ref=e166]:
+          - heading "Services" [level=4] [ref=e167]
+          - list [ref=e168]:
+            - listitem [ref=e169]:
+              - link "For Clients" [ref=e170] [cursor=pointer]:
+                - /url: /post-job
+            - listitem [ref=e171]:
+              - link "For Artisans" [ref=e172] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e173]:
+              - link "Categories" [ref=e174] [cursor=pointer]:
+                - /url: /categories
+            - listitem [ref=e175]:
+              - link "Pricing" [ref=e176] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e177]:
+          - heading "Support" [level=4] [ref=e178]
+          - list [ref=e179]:
+            - listitem [ref=e180]:
+              - link "Contact" [ref=e181] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e182]:
+              - link "Help Center" [ref=e183] [cursor=pointer]:
+                - /url: /resources
+            - listitem [ref=e184]:
+              - link "Safety" [ref=e185] [cursor=pointer]:
+                - /url: /safety
+            - listitem [ref=e186]:
+              - link "Insurance" [ref=e187] [cursor=pointer]:
+                - /url: /insurance
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - link "Privacy Policy" [ref=e191] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms of Service" [ref=e192] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookie Policy" [ref=e193] [cursor=pointer]:
+            - /url: /cookies
+        - paragraph [ref=e194]: © 2025 Taska. All rights reserved.
+```

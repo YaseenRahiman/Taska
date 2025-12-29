@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taska - You're Offline</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#16A085">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      background: linear-gradient(135deg, #FDF5E6 0%, #F5F5DC 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      background: white;
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border: 1px solid #E5E5E5;
+    }
+
+    .logo {
+      color: #16A085;
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .logo::before {
+      content: '🔧';
+      font-size: 2rem;
+    }
+
+    .offline-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFE4E1 0%, #FFF0F5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .message {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .offline-features {
+      background: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: left;
+    }
+
+    .offline-features h3 {
+      color: #16A085;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      color: #16A085;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.875rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #16A085 0%, #2ECC71 100%);
+      color: white;
+      box-shadow: 0 4px 14px rgba(22, 160, 133, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(22, 160, 133, 0.35);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #16A085;
+      border: 2px solid #16A085;
+    }
+
+    .btn-secondary:hover {
+      background: #16A085;
+      color: white;
+    }
+
+    .network-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #FFF3CD;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: #856404;
+    }
+
+    .network-status.online {
+      background: #D4F6DB;
+      color: #0F5132;
+    }
+
+    .connection-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FFC107;
+    }
+
+    .connection-indicator.online {
+      background: #198754;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .actions {
+        gap: 0.75rem;
+      }
+      
+      .btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #16A085;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Pulse animation for offline indicator */
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Taska</div>
+    
+    <div class="offline-icon pulse">
+      📱
+    </div>
+    
+    <h1>You're Offline</h1>
+    
+    <div class="message">
+      <p>Don't worry! You can still access some features while offline.</p>
+    </div>
+
+    <div class="offline-features">
+      <h3>Available Offline:</h3>
+      <ul class="feature-list">
+        <li>View your dashboard</li>
+        <li>Browse cached job listings</li>
+        <li>Read previous messages</li>
+        <li>Access your profile</li>
+        <li>View completed projects</li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="checkConnection()">
+        <span id="retry-text">Try Again</span>
+        <span id="loading" class="loading" style="display: none;"></span>
+      </button>
+      
+      <a href="/" class="btn btn-secondary">
+        Go to Dashboard
+      </a>
+    </div>
+
+    <div class="network-status" id="network-status">
+      <div class="connection-indicator" id="connection-indicator"></div>
+      <span id="status-text">Checking connection...</span>
+    </div>
+  </div>
+
+  <script>
+    // Check network status
+    function updateNetworkStatus() {
+      const statusElement = document.getElementById('network-status');
+      const indicatorElement = document.getElementById('connection-indicator');
+      const statusTextElement = document.getElementById('status-text');
+      
+      if (navigator.onLine) {
+        statusElement.classList.add('online');
+        indicatorElement.classList.add('online');
+        statusTextElement.textContent = 'Back online! You can now refresh the page.';
+      } else {
+        statusElement.classList.remove('online');
+        indicatorElement.classList.remove('online');
+        statusTextElement.textContent = 'Still offline. Check your connection.';
+      }
+    }
+
+    // Check connection with retry
+    async function checkConnection() {
+      const retryButton = document.querySelector('.btn-primary');
+      const retryText = document.getElementById('retry-text');
+      const loading = document.getElementById('loading');
+      
+      retryText.style.display = 'none';
+      loading.style.display = 'inline-block';
+      retryButton.disabled = true;
+      
+      try {
+        // Try to fetch a small resource to test connectivity
+        const response = await fetch('/manifest.json', {
+          method: 'HEAD',
+          cache: 'no-cache'
+        });
+        
+        if (response.ok) {
+          // Connection restored, reload the page
+          window.location.reload();
+        } else {
+          throw new Error('Connection failed');
+        }
+      } catch (error) {
+        // Still offline
+        setTimeout(() => {
+          retryText.style.display = 'inline';
+          loading.style.display = 'none';
+          retryButton.disabled = false;
+          updateNetworkStatus();
+        }, 1000);
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    
+    // Initial status check
+    updateNetworkStatus();
+
+    // Auto-retry connection every 30 seconds
+    setInterval(() => {
+      if (!navigator.onLine) {
+        fetch('/manifest.json', {
+          method: 'HEAD',
+          cache: 'no-cache'
+        }).then(() => {
+          window.location.reload();
+        }).catch(() => {
+          // Still offline, do nothing
+        });
+      }
+    }, 30000);
+
+    // Register service worker if available
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered from offline page');
+        })
+        .catch(error => {
+          console.log('SW registration failed from offline page');
+        });
+    }
+  </script>
+</body>
+</html>

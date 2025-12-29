@@ -1,0 +1,87 @@
+appId: za.co.taska.artisan
+---
+# Registration Flow E2E Test
+# Tests the complete artisan registration journey
+# Expected duration: ~30 seconds
+
+- launchApp:
+    clearState: true
+
+- assertVisible: "Create Account"
+- assertVisible: "Personal Details"
+
+# ═══════════════════════════════════════════════════════════════
+# Step 1: Personal Details
+# ═══════════════════════════════════════════════════════════════
+
+- tapOn: "First Name"
+- inputText: "Test"
+- hideKeyboard
+
+- tapOn: "Last Name"
+- inputText: "Artisan"
+- hideKeyboard
+
+- tapOn: "Next"
+
+# Verify we moved to step 2
+- assertVisible: "Contact Information"
+
+# ═══════════════════════════════════════════════════════════════
+# Step 2: Contact Information
+# ═══════════════════════════════════════════════════════════════
+
+- tapOn: "Email"
+- inputText: "test.artisan.${randomEmail()}@taska.test"
+- hideKeyboard
+
+- tapOn: "Phone Number"
+- inputText: "0821234567"
+- hideKeyboard
+
+- tapOn: "Next"
+
+# Verify we moved to step 3
+- assertVisible: "Skills & Experience"
+
+# ═══════════════════════════════════════════════════════════════
+# Step 3: Skills & Experience (Optional)
+# ═══════════════════════════════════════════════════════════════
+
+# Skip skills selection for basic test
+- tapOn: "Next"
+
+# Verify we moved to step 4
+- assertVisible: "Create Account"
+
+# ═══════════════════════════════════════════════════════════════
+# Step 4: Password Creation
+# ═══════════════════════════════════════════════════════════════
+
+- tapOn: "Password"
+- inputText: "SecurePass123!"
+- hideKeyboard
+
+- tapOn: "Confirm Password"
+- inputText: "SecurePass123!"
+- hideKeyboard
+
+# Submit registration
+- tapOn: "Create Account"
+
+# ═══════════════════════════════════════════════════════════════
+# Verification: Registration Success
+# ═══════════════════════════════════════════════════════════════
+
+# Wait for API response (max 10 seconds)
+- waitForAnimationToEnd:
+    timeout: 10000
+
+# Verify successful registration
+# (Adjust these assertions based on your actual success screen)
+- assertVisible:
+    text: "Welcome"
+    timeout: 5000
+
+# Optional: Verify we're logged in and on dashboard
+- assertVisible: "Dashboard"

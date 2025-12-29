@@ -1,0 +1,199 @@
+Starting a Gradle Daemon, 1 busy Daemon could not be reused, use --status for details
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kaptGenerateStubsDebugKotlin UP-TO-DATE
+> Task :app:kaptDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
+> Task :app:hiltJavaCompileDebug UP-TO-DATE
+> Task :app:transformDebugClassesWithAsm UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:kaptGenerateStubsDebugUnitTestKotlin UP-TO-DATE
+> Task :app:kaptDebugUnitTestKotlin UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:hiltAggregateDepsDebugUnitTest UP-TO-DATE
+> Task :app:hiltJavaCompileDebugUnitTest NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:transformDebugUnitTestClassesWithAsm UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+UploadJobImagesUseCaseTest > uploadSingleImage should accept all valid extensions FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:149
+
+UploadJobImagesUseCaseTest > uploadSingleImage should return success with valid image FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:132
+
+UploadJobImagesUseCaseTest > invoke should return success when uploading single valid image FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:31
+
+UploadJobImagesUseCaseTest > invoke should propagate repository errors FAILED
+    org.junit.ComparisonFailure at UploadJobImagesUseCaseTest.kt:349
+
+UploadJobImagesUseCaseTest > invoke should return success when uploading maximum 5 images FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:75
+
+UploadJobImagesUseCaseTest > invoke should accept maximum file size of 10MB FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:115
+
+UploadJobImagesUseCaseTest > invoke should return success when uploading multiple valid images FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:49
+
+UploadJobImagesUseCaseTest > invoke should accept all valid image extensions FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:95
+
+UploadJobImagesUseCaseTest > uploadSingleImage should propagate repository errors FAILED
+    org.junit.ComparisonFailure at UploadJobImagesUseCaseTest.kt:364
+
+UploadJobImagesUseCaseTest > invoke should handle case-insensitive extensions FAILED
+    java.lang.AssertionError at UploadJobImagesUseCaseTest.kt:395
+
+PaymentsRepositoryImplTest > getPayment should emit Loading then Error with cache when API fails FAILED
+    java.lang.AssertionError at Assert.java:89
+        Caused by: java.lang.AssertionError at PaymentsRepositoryImplTest.kt:170
+
+PaymentsRepositoryImplTest > getUserPayments should emit Loading with cache then Success when API succeeds FAILED
+    java.lang.AssertionError at Assert.java:87
+        Caused by: java.lang.AssertionError at PaymentsRepositoryImplTest.kt:248
+
+PaymentsRepositoryImplTest > releasePayment should return success and update cache when API succeeds FAILED
+    java.lang.AssertionError at PaymentsRepositoryImplTest.kt:351
+
+PaymentsRepositoryImplTest > getPayment should emit Loading then Success when API succeeds FAILED
+    java.lang.AssertionError at Assert.java:89
+        Caused by: java.lang.AssertionError at PaymentsRepositoryImplTest.kt:140
+
+PaymentsRepositoryImplTest > getPayment should emit Error with cache when network exception occurs FAILED
+    java.lang.AssertionError at Assert.java:89
+        Caused by: java.lang.AssertionError at PaymentsRepositoryImplTest.kt:220
+
+PaymentsRepositoryImplTest > createPaymentIntent should return success when API call succeeds FAILED
+    org.mockito.exceptions.verification.junit.ArgumentsAreDifferent at PaymentsRepositoryImplTest.kt:51
+
+CreateBidUseCaseTest > invoke should handle null attachments correctly FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at CreateBidUseCaseTest.kt:425
+
+CreateBidUseCaseTest > invoke should propagate repository errors FAILED
+    java.lang.AssertionError at CreateBidUseCaseTest.kt:406
+
+CreateBidUseCaseTest > invoke should succeed with minimum required fields FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at CreateBidUseCaseTest.kt:62
+
+CreateBidUseCaseTest > invoke should filter blank attachments FAILED
+    java.lang.AssertionError at CreateBidUseCaseTest.kt:136
+
+UpdateBidUseCaseTest > invoke should propagate repository errors FAILED
+    java.lang.AssertionError at UpdateBidUseCaseTest.kt:326
+
+CreateJobUseCaseTest > invoke should trim whitespace from title and description FAILED
+    org.mockito.exceptions.verification.junit.ArgumentsAreDifferent at CreateJobUseCaseTest.kt:107
+
+CreateJobUseCaseTest > invoke should propagate repository errors FAILED
+    java.lang.AssertionError at CreateJobUseCaseTest.kt:609
+
+UpdateJobUseCaseTest > invoke should trim whitespace from updated title and description FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at UpdateJobUseCaseTest.kt:135
+
+UpdateJobUseCaseTest > invoke should return success when updating only title FAILED
+    java.lang.AssertionError at UpdateJobUseCaseTest.kt:31
+
+UpdateJobUseCaseTest > invoke should propagate repository errors FAILED
+    java.lang.AssertionError at UpdateJobUseCaseTest.kt:584
+
+UpdateJobUseCaseTest > invoke should propagate job not found errors FAILED
+    java.lang.AssertionError at UpdateJobUseCaseTest.kt:601
+
+SendMessageUseCaseTest > invoke should handle different message types FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at SendMessageUseCaseTest.kt:410
+
+SendMessageUseCaseTest > invoke should succeed with maximum content length FAILED
+    org.mockito.exceptions.verification.junit.ArgumentsAreDifferent at SendMessageUseCaseTest.kt:88
+
+SendMessageUseCaseTest > invoke should propagate repository exception FAILED
+    java.lang.AssertionError at SendMessageUseCaseTest.kt:349
+
+SendMessageUseCaseTest > invoke should trim whitespace from inputs FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at SendMessageUseCaseTest.kt:144
+
+SendMessageUseCaseTest > invoke should succeed with minimum required fields FAILED
+    org.mockito.exceptions.misusing.InvalidUseOfMatchersException at SendMessageUseCaseTest.kt:62
+
+SendMessageUseCaseTest > invoke should return failure when repository fails FAILED
+    java.lang.AssertionError at SendMessageUseCaseTest.kt:329
+
+SendMessageUseCaseTest > invoke should filter blank attachments FAILED
+    org.mockito.exceptions.verification.WantedButNotInvoked at SendMessageUseCaseTest.kt:169
+
+GetUserPaymentsUseCaseTest > invoke should handle large payment list FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:321
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:321
+
+GetUserPaymentsUseCaseTest > invoke should handle boundary values FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:339
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:339
+
+GetUserPaymentsUseCaseTest > invoke should handle null status filter FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:63
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:63
+
+GetUserPaymentsUseCaseTest > invoke should handle custom pagination FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:113
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:113
+
+GetUserPaymentsUseCaseTest > invoke should use default pagination values FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:93
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:93
+
+GetUserPaymentsUseCaseTest > invoke should propagate Loading state from repository FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:269
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:269
+
+GetUserPaymentsUseCaseTest > invoke should handle maximum limit of 100 FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:167
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:167
+
+GetUserPaymentsUseCaseTest > invoke should handle empty payment list FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:306
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:306
+
+GetUserPaymentsUseCaseTest > invoke should propagate Error state from repository FAILED
+    app.cash.turbine.TurbineAssertionError at GetUserPaymentsUseCaseTest.kt:291
+        Caused by: java.lang.NullPointerException at GetUserPaymentsUseCaseTest.kt:291
+
+ReleasePaymentUseCaseTest > invoke should propagate network errors from repository FAILED
+    java.lang.AssertionError at ReleasePaymentUseCaseTest.kt:275
+
+UpdateReviewUseCaseTest > invoke should propagate repository errors FAILED
+    java.lang.AssertionError at UpdateReviewUseCaseTest.kt:398
+
+UpdateReviewUseCaseTest > invoke should propagate network errors FAILED
+    java.lang.AssertionError at UpdateReviewUseCaseTest.kt:415
+
+UpdateReviewUseCaseTest > invoke should return success when inputs valid and repository succeeds FAILED
+    java.lang.AssertionError at UpdateReviewUseCaseTest.kt:31
+
+> Task :app:testDebugUnitTest FAILED
+34 actionable tasks: 1 executed, 33 up-to-date

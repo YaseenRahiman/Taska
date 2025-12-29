@@ -1,0 +1,1092 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users Table - Core authentication and user management
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  name         String?    // Full name or display name
+  role         UserRole
+  status       UserStatus @default(ACTIVE) // User account status
+  verifiedAt   DateTime?  @map("verified_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  profile          Profile?
+  clientJobs       Job[]                   @relation("ClientJobs")
+  artisanBids      Bid[]                   @relation("ArtisanBids")
+  sentMessages     Message[]               @relation("SentMessages")
+  receivedMessages Message[]               @relation("ReceivedMessages")
+  reviews          Review[]                @relation("UserReviews")
+  givenReviews     Review[]                @relation("ReviewAuthor")
+  wallet           Wallet?
+  notifications    Notification[]
+  activities       ActivityLog[]
+  payerPayments    Payment[]               @relation("PayerPayments")
+  payeePayments    Payment[]               @relation("PayeePayments")
+  specializations  ArtisanSpecialization[]
+  bulkOperations   BulkOperation[]         @relation("BulkOperationInitiator")
+  adminAuditLogs   AuditLog[]              @relation("AdminAuditLogs")
+  createdReports   Report[]                @relation("ReportCreator")
+
+  // Monetization Relations
+  creditWallet        CreditWallet?
+  artisanLevel        ArtisanLevel?
+  loyaltyTransactions LoyaltyTransaction[]
+  profileBoosts       ProfileBoost[]
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+  @@index([verifiedAt])
+  @@map("users")
+}
+
+// User Roles Enum
+enum UserRole {
+  CLIENT
+  ARTISAN
+  ADMIN
+  ASSESSOR
+}
+
+// User Status Enum
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DEACTIVATED
+}
+
+// Profiles Table - Extended user information
+model Profile {
+  id                String   @id @default(cuid())
+  userId            String   @unique @map("user_id")
+  firstName         String?  @map("first_name")
+  lastName          String?  @map("last_name")
+  phoneNumber       String?  @map("phone_number")
+  idNumber          String?  @unique @map("id_number")
+  addressLine1      String?  @map("address_line1")
+  addressLine2      String?  @map("address_line2")
+  city              String?
+  province          String?
+  postalCode        String?  @map("postal_code")
+  profilePictureUrl String?  @map("profile_picture_url")
+  bio               String?
+  latitude          Float?
+  longitude         Float?
+  isVerified        Boolean  @default(false) @map("is_verified")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([city, province])
+  @@index([latitude, longitude])
+  @@index([isVerified])
+  @@map("profiles")
+}
+
+// Artisan Specializations
+model ArtisanSpecialization {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  categoryId     String   @map("category_id")
+  experience     Int // years of experience
+  isVerified     Boolean  @default(false) @map("is_verified")
+  portfolio      String[] // Array of portfolio image URLs
+  certifications String[] // Array of certification URLs
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, categoryId])
+  @@map("artisan_specializations")
+}
+
+// Categories Table - Job categories
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  iconUrl     String?  @map("icon_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  parentId    String?  @map("parent_id")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  parent          Category?               @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children        Category[]              @relation("CategoryHierarchy")
+  jobs            Job[]
+  specializations ArtisanSpecialization[]
+
+  @@map("categories")
+}
+
+// Jobs Table - Core job postings
+model Job {
+  id                 String       @id @default(cuid())
+  clientId           String       @map("client_id")
+  categoryId         String       @map("category_id")
+  title              String
+  description        String
+  budget             Decimal      @db.Decimal(10, 2)
+  budgetType         BudgetType   @map("budget_type")
+  urgency            UrgencyLevel
+  status             JobStatus    @default(OPEN)
+  addressLine1       String       @map("address_line1")
+  addressLine2       String?      @map("address_line2")
+  city               String
+  province           String
+  postalCode         String       @map("postal_code")
+  latitude           Float
+  longitude          Float
+  images             String[] // Array of image URLs
+  requirements       String[] // Array of specific requirements
+  startDate          DateTime?    @map("start_date")
+  endDate            DateTime?    @map("end_date")
+  completedAt        DateTime?    @map("completed_at")
+  cancelledAt        DateTime?    @map("cancelled_at")
+  cancellationReason String?      @map("cancellation_reason")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  client     User          @relation("ClientJobs", fields: [clientId], references: [id])
+  category   Category      @relation(fields: [categoryId], references: [id])
+  bids       Bid[]
+  messages   Message[]
+  payments   Payment[]
+  reviews    Review[]
+  activities ActivityLog[]
+
+  @@index([clientId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([latitude, longitude])
+  @@map("jobs")
+}
+
+// Budget Types Enum
+enum BudgetType {
+  FIXED
+  HOURLY
+  NEGOTIABLE
+}
+
+// Urgency Levels Enum
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Job Status Enum
+enum JobStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+// Bids Table - Artisan job proposals
+model Bid {
+  id            String    @id @default(cuid())
+  jobId         String    @map("job_id")
+  artisanId     String    @map("artisan_id")
+  amount        Decimal   @db.Decimal(10, 2)
+  message       String
+  estimatedDays Int       @map("estimated_days")
+  attachments   String[] // Portfolio items, quotes, etc.
+  status        BidStatus @default(PENDING)
+  acceptedAt    DateTime? @map("accepted_at")
+  rejectedAt    DateTime? @map("rejected_at")
+  withdrawnAt   DateTime? @map("withdrawn_at")
+  expiresAt     DateTime  @map("expires_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  job     Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  artisan User @relation("ArtisanBids", fields: [artisanId], references: [id])
+
+  @@unique([jobId, artisanId])
+  @@index([jobId])
+  @@index([artisanId])
+  @@index([status])
+  @@map("bids")
+}
+
+// Bid Status Enum
+enum BidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+// Messages Table - Communication between users
+model Message {
+  id          String      @id @default(cuid())
+  jobId       String      @map("job_id")
+  senderId    String      @map("sender_id")
+  receiverId  String      @map("receiver_id")
+  content     String
+  messageType MessageType @default(TEXT) @map("message_type")
+  attachments String[] // File URLs
+  isRead      Boolean     @default(false) @map("is_read")
+  readAt      DateTime?   @map("read_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([jobId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+// Message Types Enum
+enum MessageType {
+  TEXT
+  IMAGE
+  DOCUMENT
+  SYSTEM
+}
+
+// Payments Table - Payment transactions
+model Payment {
+  id              String        @id @default(cuid())
+  jobId           String        @map("job_id")
+  payerId         String        @map("payer_id") // Usually the client
+  payeeId         String        @map("payee_id") // Usually the artisan
+  amount          Decimal       @db.Decimal(10, 2)
+  platformFee     Decimal       @map("platform_fee") @db.Decimal(10, 2)
+  vatAmount       Decimal       @map("vat_amount") @db.Decimal(10, 2)
+  totalAmount     Decimal       @map("total_amount") @db.Decimal(10, 2)
+  currency        String        @default("ZAR")
+  paymentMethod   PaymentMethod @map("payment_method")
+  paymentProvider String        @map("payment_provider") // Stripe, PayFast, etc.
+  providerTxnId   String        @map("provider_txn_id")
+  status          PaymentStatus @default(PENDING)
+  escrowStatus    EscrowStatus  @default(HELD) @map("escrow_status")
+  paidAt          DateTime?     @map("paid_at")
+  releasedAt      DateTime?     @map("released_at")
+  refundedAt      DateTime?     @map("refunded_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  job   Job  @relation(fields: [jobId], references: [id])
+  payer User @relation("PayerPayments", fields: [payerId], references: [id])
+  payee User @relation("PayeePayments", fields: [payeeId], references: [id])
+
+  @@index([jobId])
+  @@index([payerId])
+  @@index([payeeId])
+  @@index([status])
+  @@map("payments")
+}
+
+// Payment Method Enum
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  EFT
+  MOBILE_MONEY
+  WALLET
+}
+
+// Payment Status Enum
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+// Escrow Status Enum
+enum EscrowStatus {
+  HELD
+  RELEASED
+  DISPUTED
+  REFUNDED
+}
+
+// Wallets Table - Artisan earnings wallet
+model Wallet {
+  id               String   @id @default(cuid())
+  userId           String   @unique @map("user_id")
+  balance          Decimal  @default(0) @db.Decimal(10, 2)
+  pendingBalance   Decimal  @default(0) @map("pending_balance") @db.Decimal(10, 2)
+  totalEarnings    Decimal  @default(0) @map("total_earnings") @db.Decimal(10, 2)
+  totalWithdrawals Decimal  @default(0) @map("total_withdrawals") @db.Decimal(10, 2)
+  currency         String   @default("ZAR")
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+  withdrawals  Withdrawal[]
+
+  @@map("wallets")
+}
+
+// Wallet Transactions Table - All wallet movements
+model WalletTransaction {
+  id            String                @id @default(cuid())
+  walletId      String                @map("wallet_id")
+  type          WalletTransactionType
+  amount        Decimal               @db.Decimal(10, 2)
+  balanceBefore Decimal               @map("balance_before") @db.Decimal(10, 2)
+  balanceAfter  Decimal               @map("balance_after") @db.Decimal(10, 2)
+  reference     String? // Payment ID, Withdrawal ID, etc.
+  description   String
+  createdAt     DateTime              @default(now()) @map("created_at")
+
+  // Relations
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([type])
+  @@map("wallet_transactions")
+}
+
+// Wallet Transaction Types Enum
+enum WalletTransactionType {
+  CREDIT // Money added to wallet
+  DEBIT // Money removed from wallet
+  WITHDRAWAL // Withdrawal to bank account
+  REFUND // Refunded payment
+  FEE // Platform fees
+}
+
+// Withdrawals Table - Withdrawal requests
+model Withdrawal {
+  id               String           @id @default(cuid())
+  walletId         String           @map("wallet_id")
+  amount           Decimal          @db.Decimal(10, 2)
+  bankAccount      String           @map("bank_account") // Encrypted bank details
+  withdrawalMethod WithdrawalMethod @map("withdrawal_method")
+  status           WithdrawalStatus @default(PENDING)
+  processedAt      DateTime?        @map("processed_at")
+  rejectedReason   String?          @map("rejected_reason")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([status])
+  @@map("withdrawals")
+}
+
+// Withdrawal Method Enum
+enum WithdrawalMethod {
+  BANK_TRANSFER
+  MOBILE_MONEY
+  CRYPTO
+}
+
+// Withdrawal Status Enum
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+// Reviews Table - Job completion reviews
+model Review {
+  id                  String    @id @default(cuid())
+  jobId               String    @map("job_id")
+  reviewerId          String    @map("reviewer_id") // Who is giving the review
+  revieweeId          String    @map("reviewee_id") // Who is being reviewed
+  rating              Int // 1-5 stars
+  qualityRating       Int       @map("quality_rating") // 1-5 stars
+  timelinessRating    Int       @map("timeliness_rating") // 1-5 stars
+  communicationRating Int       @map("communication_rating") // 1-5 stars
+  valueRating         Int       @map("value_rating") // 1-5 stars
+  comment             String?
+  images              String[] // Photos of completed work
+  response            String? // Response from reviewee
+  respondedAt         DateTime? @map("responded_at")
+  isVerified          Boolean   @default(false) @map("is_verified") // Verified job completion
+  helpfulCount        Int       @default(0) @map("helpful_count")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  reviewer User @relation("ReviewAuthor", fields: [reviewerId], references: [id])
+  reviewee User @relation("UserReviews", fields: [revieweeId], references: [id])
+
+  @@unique([jobId, reviewerId])
+  @@index([revieweeId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+// Notifications Table - User notifications
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  data      Json? // Additional notification data
+  isRead    Boolean          @default(false) @map("is_read")
+  readAt    DateTime?        @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// Notification Types Enum
+enum NotificationType {
+  JOB_POSTED
+  BID_RECEIVED
+  BID_ACCEPTED
+  BID_REJECTED
+  JOB_COMPLETED
+  PAYMENT_RECEIVED
+  MESSAGE_RECEIVED
+  REVIEW_RECEIVED
+  WITHDRAWAL_PROCESSED
+  SYSTEM_ANNOUNCEMENT
+}
+
+// Activity Logs Table - Audit trail
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id")
+  jobId      String?  @map("job_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  oldData    Json?    @map("old_data")
+  newData    Json?    @map("new_data")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+  job  Job?  @relation(fields: [jobId], references: [id])
+
+  @@index([userId])
+  @@index([jobId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([action, ipAddress, createdAt]) // Performance index for brute force protection
+  @@map("activity_logs")
+}
+
+// System Settings Table - Platform configuration
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  isPublic    Boolean  @default(false) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
+
+// Session Table - User session management
+model Session {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  token        String   @unique
+  refreshToken String?  @unique @map("refresh_token")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// Password Reset Token Table - Password reset management
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+// Bulk Operations Table - Track bulk admin operations
+model BulkOperation {
+  id          String              @id @default(cuid())
+  type        BulkOperationType
+  status      BulkOperationStatus @default(PENDING)
+  totalItems  Int                 @map("total_items")
+  processed   Int                 @default(0)
+  succeeded   Int                 @default(0)
+  failed      Int                 @default(0)
+  initiatedBy String              @map("initiated_by")
+  initiator   User                @relation("BulkOperationInitiator", fields: [initiatedBy], references: [id])
+  config      Json // Operation configuration (filters, params, etc.)
+  results     Json? // Results and error details
+  errorLog    String?             @map("error_log") @db.Text
+  startedAt   DateTime            @default(now()) @map("started_at")
+  completedAt DateTime?           @map("completed_at")
+
+  @@index([initiatedBy, startedAt])
+  @@index([status, type])
+  @@index([startedAt])
+  @@map("bulk_operations")
+}
+
+// Bulk Operation Types Enum
+enum BulkOperationType {
+  USER_BAN
+  USER_SUSPEND
+  USER_VERIFY
+  USER_EXPORT
+  JOB_EXPORT
+  PAYMENT_EXPORT
+  EMAIL_SEND
+  CONTENT_MODERATE
+  DATA_IMPORT
+}
+
+// Bulk Operation Status Enum
+enum BulkOperationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// Audit Log Table - Enhanced admin action audit trail
+model AuditLog {
+  id           String   @id @default(cuid())
+  adminId      String   @map("admin_id")
+  admin        User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
+  action       String // e.g., "USER_BAN", "PAYMENT_APPROVE"
+  entityType   String   @map("entity_type") // e.g., "USER", "JOB", "PAYMENT"
+  entityId     String   @map("entity_id")
+  beforeState  Json?    @map("before_state")
+  afterState   Json?    @map("after_state")
+  reason       String?  @db.Text
+  ipAddress    String   @map("ip_address")
+  userAgent    String   @map("user_agent") @db.Text
+  success      Boolean  @default(true)
+  errorMessage String?  @map("error_message") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([adminId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// Report Table - Custom report definitions
+model Report {
+  id          String    @id @default(cuid())
+  name        String
+  description String?   @db.Text
+  createdBy   String    @map("created_by")
+  creator     User      @relation("ReportCreator", fields: [createdBy], references: [id])
+  config      Json // Report configuration (data sources, metrics, filters)
+  schedule    Json? // Cron expression and recipient list
+  lastRun     DateTime? @map("last_run")
+  nextRun     DateTime? @map("next_run")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  executions ReportExecution[]
+
+  @@index([createdBy])
+  @@index([isActive, nextRun])
+  @@map("reports")
+}
+
+// Report Execution Table - Track report generation runs
+model ReportExecution {
+  id           String                @id @default(cuid())
+  reportId     String                @map("report_id")
+  report       Report                @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  status       ReportExecutionStatus
+  format       ReportFormat
+  fileUrl      String?               @map("file_url")
+  fileSizeMb   Float?                @map("file_size_mb")
+  rowCount     Int?                  @map("row_count")
+  errorMessage String?               @map("error_message") @db.Text
+  startedAt    DateTime              @default(now()) @map("started_at")
+  completedAt  DateTime?             @map("completed_at")
+
+  @@index([reportId, startedAt])
+  @@index([status])
+  @@map("report_executions")
+}
+
+// Report Execution Status Enum
+enum ReportExecutionStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+// Report Format Enum
+enum ReportFormat {
+  PDF
+  CSV
+  EXCEL
+  JSON
+}
+
+// Escrow Configuration Table - Platform-wide escrow settings
+model EscrowConfig {
+  id                String   @id @default(cuid())
+  autoReleaseDays   Int      @default(7) @map("auto_release_days") // Auto-release funds after N days
+  holdDurationDays  Int      @default(14) @map("hold_duration_days") // Maximum hold duration
+  disputeWindowDays Int      @default(14) @map("dispute_window_days") // Dispute window after completion
+  feePercentage     Decimal  @default(10.00) @map("fee_percentage") @db.Decimal(5, 2) // Platform fee %
+  minHoldAmount     Decimal  @default(0.00) @map("min_hold_amount") @db.Decimal(10, 2) // Minimum escrow amount
+  maxHoldAmount     Decimal  @default(100000.00) @map("max_hold_amount") @db.Decimal(10, 2) // Maximum escrow amount
+  isActive          Boolean  @default(true) @map("is_active") // Configuration active status
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("escrow_config")
+}
+
+// ============================================================================
+// TASKA CREDITS SYSTEM - Prepaid credits for platform actions
+// ============================================================================
+
+// Credit Wallet - Artisan's credit balance for bids, boosts, features
+model CreditWallet {
+  id                 String   @id @default(cuid())
+  userId             String   @unique @map("user_id")
+  balance            Int      @default(0) // Current credit balance
+  lifetimeCredits    Int      @default(0) @map("lifetime_credits") // Total credits ever received
+  lifetimeSpent      Int      @default(0) @map("lifetime_spent") // Total credits ever spent
+  autoTopUpEnabled   Boolean  @default(false) @map("auto_top_up_enabled")
+  autoTopUpThreshold Int?     @map("auto_top_up_threshold") // Top up when balance drops below
+  autoTopUpAmount    Int?     @map("auto_top_up_amount") // Credits to purchase on auto top-up
+  autoTopUpSource    CreditTopUpSource? @map("auto_top_up_source") // Where to deduct funds
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions CreditTransaction[]
+
+  @@map("credit_wallets")
+}
+
+// Credit Top Up Source Enum
+enum CreditTopUpSource {
+  WALLET    // Deduct from ZAR wallet balance
+  CARD      // Charge saved card
+}
+
+// Credit Transactions - All credit movements
+model CreditTransaction {
+  id             String                @id @default(cuid())
+  creditWalletId String                @map("credit_wallet_id")
+  type           CreditTransactionType
+  amount         Int                   // Positive = credit, Negative = debit
+  balanceBefore  Int                   @map("balance_before")
+  balanceAfter   Int                   @map("balance_after")
+  reference      String?               // Bid ID, boost ID, voucher code, bundle purchase ID
+  referenceType  String?               @map("reference_type") // BID, BOOST, PURCHASE, VOUCHER, etc.
+  description    String
+  metadata       Json?                 // Additional context (bundle name, voucher code, etc.)
+  createdAt      DateTime              @default(now()) @map("created_at")
+
+  // Relations
+  creditWallet CreditWallet @relation(fields: [creditWalletId], references: [id], onDelete: Cascade)
+
+  @@index([creditWalletId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([reference, referenceType])
+  @@map("credit_transactions")
+}
+
+// Credit Transaction Types Enum
+enum CreditTransactionType {
+  PURCHASE          // Bought credits (card, EFT, voucher)
+  WALLET_CONVERSION // Converted ZAR wallet balance to credits
+  BID               // Spent on submitting a bid
+  BOOST             // Spent on boosting a bid
+  SUPER_BOOST       // Spent on super boost (featured + notification)
+  FEATURE_PROFILE   // Spent on featuring profile
+  UNLOCK_CONTACT    // Spent on unlocking client contact
+  JOB_ALERT         // Spent on urgent job alert subscription
+  REFUND            // Refunded (job cancelled, bid expired)
+  BONUS             // Bonus credits (promotions, loyalty)
+  REFERRAL          // Earned from referral
+  EXPIRED           // Credits expired (if expiry is enabled)
+  ADJUSTMENT        // Admin adjustment
+}
+
+// Credit Bundles - Available credit packages for purchase
+model CreditBundle {
+  id           String   @id @default(cuid())
+  name         String   // "Starter", "Value", "Pro", "Bulk"
+  credits      Int      // Number of credits in bundle
+  bonusCredits Int      @default(0) @map("bonus_credits") // Bonus credits (e.g., +15%)
+  priceZar     Decimal  @map("price_zar") @db.Decimal(10, 2) // Price in ZAR
+  isActive     Boolean  @default(true) @map("is_active")
+  isPopular    Boolean  @default(false) @map("is_popular") // Highlight in UI
+  sortOrder    Int      @default(0) @map("sort_order")
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  purchases CreditPurchase[]
+
+  @@map("credit_bundles")
+}
+
+// Credit Purchases - Track credit bundle purchases
+model CreditPurchase {
+  id              String               @id @default(cuid())
+  userId          String               @map("user_id")
+  bundleId        String?              @map("bundle_id") // Null if custom/voucher
+  creditsReceived Int                  @map("credits_received")
+  amountPaid      Decimal              @map("amount_paid") @db.Decimal(10, 2)
+  currency        String               @default("ZAR")
+  purchaseMethod  CreditPurchaseMethod @map("purchase_method")
+  paymentProvider String?              @map("payment_provider") // PayFast, Ozow, Flash, etc.
+  providerTxnId   String?              @map("provider_txn_id")
+  voucherCode     String?              @map("voucher_code") // If purchased via retail voucher
+  status          CreditPurchaseStatus @default(PENDING)
+  completedAt     DateTime?            @map("completed_at")
+  failedReason    String?              @map("failed_reason")
+  createdAt       DateTime             @default(now()) @map("created_at")
+
+  // Relations
+  bundle CreditBundle? @relation(fields: [bundleId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([voucherCode])
+  @@index([createdAt])
+  @@map("credit_purchases")
+}
+
+// Credit Purchase Method Enum
+enum CreditPurchaseMethod {
+  CARD              // Credit/Debit card
+  EFT               // Instant EFT (Ozow, PayFast)
+  WALLET            // Converted from ZAR wallet
+  RETAIL_VOUCHER    // Flash/Blu voucher from Shoprite, PEP, etc.
+  MOBILE_MONEY      // MTN MoMo, Vodapay
+  AIRTIME           // Purchased with airtime
+  PROMOTIONAL       // Free credits from promotion
+}
+
+// Credit Purchase Status Enum
+enum CreditPurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Retail Voucher Codes - Pre-generated vouchers for retail distribution
+model CreditVoucher {
+  id           String              @id @default(cuid())
+  code         String              @unique // 16-char alphanumeric
+  credits      Int                 // Credits to grant on redemption
+  priceZar     Decimal             @map("price_zar") @db.Decimal(10, 2)
+  batchId      String?             @map("batch_id") // For tracking voucher batches
+  retailer     String?             // "SHOPRITE", "PEP", "SPAZA", etc.
+  status       CreditVoucherStatus @default(AVAILABLE)
+  redeemedBy   String?             @map("redeemed_by") // User ID who redeemed
+  redeemedAt   DateTime?           @map("redeemed_at")
+  expiresAt    DateTime?           @map("expires_at")
+  createdAt    DateTime            @default(now()) @map("created_at")
+
+  @@index([code])
+  @@index([status])
+  @@index([batchId])
+  @@index([expiresAt])
+  @@map("credit_vouchers")
+}
+
+// Credit Voucher Status Enum
+enum CreditVoucherStatus {
+  AVAILABLE  // Ready to be sold/distributed
+  SOLD       // Sold to retailer, not yet redeemed
+  REDEEMED   // Used by artisan
+  EXPIRED    // Past expiry date
+  CANCELLED  // Voided by admin
+}
+
+// ============================================================================
+// TASKA LOYALTY SYSTEM - Artisan levels and rewards
+// ============================================================================
+
+// Artisan Level Tiers Enum
+enum ArtisanLevelTier {
+  STARTER // 🌱 New artisan - 12% fee
+  RISING  // ⭐ 10+ jobs - 10% fee
+  EXPERT  // 🥈 25+ jobs - 8% fee
+  MASTER  // 🥇 50+ jobs - 7% fee
+  LEGEND  // 👑 100+ jobs - 5% fee
+}
+
+// Level Warning Status Enum
+enum LevelWarningStatus {
+  RATING_DROP    // Rating dropped below tier minimum
+  RESPONSE_LOW   // Response rate too low
+  INACTIVE       // No activity for extended period
+  DISPUTE        // Lost a dispute
+  COMPLETION_LOW // Completion rate dropped
+}
+
+// Artisan Level - Tracks artisan's level and performance metrics
+model ArtisanLevel {
+  id                  String             @id @default(cuid())
+  userId              String             @unique @map("user_id")
+  currentLevel        ArtisanLevelTier   @default(STARTER) @map("current_level")
+  currentFeePercent   Decimal            @default(12.00) @map("current_fee_percent") @db.Decimal(5, 2)
+
+  // Performance Metrics
+  totalJobsCompleted  Int                @default(0) @map("total_jobs_completed")
+  totalJobsThisMonth  Int                @default(0) @map("total_jobs_this_month")
+  averageRating       Decimal            @default(0) @map("average_rating") @db.Decimal(3, 2)
+  totalRatings        Int                @default(0) @map("total_ratings")
+  responseRate        Decimal            @default(100) @map("response_rate") @db.Decimal(5, 2) // % of bids responded to
+  completionRate      Decimal            @default(100) @map("completion_rate") @db.Decimal(5, 2) // % of accepted jobs completed
+  repeatClientCount   Int                @default(0) @map("repeat_client_count")
+  disputesLost        Int                @default(0) @map("disputes_lost")
+  disputesLostLast12m Int                @default(0) @map("disputes_lost_last_12m")
+
+  // Loyalty Points
+  loyaltyPoints       Int                @default(0) @map("loyalty_points") // Current redeemable points
+  lifetimePoints      Int                @default(0) @map("lifetime_points") // Total points ever earned
+
+  // Free Allocation Tracking (monthly)
+  freeBidsRemaining   Int                @default(10) @map("free_bids_remaining")
+  freeBoostsRemaining Int                @default(0) @map("free_boosts_remaining")
+  allocationResetAt   DateTime           @map("allocation_reset_at") @default(now())
+
+  // Level Status
+  memberSince         DateTime           @default(now()) @map("member_since")
+  levelAchievedAt     DateTime           @default(now()) @map("level_achieved_at")
+  warningStatus       LevelWarningStatus? @map("warning_status")
+  warningIssuedAt     DateTime?          @map("warning_issued_at")
+  warningExpiresAt    DateTime?          @map("warning_expires_at")
+  pausedUntil         DateTime?          @map("paused_until") // Medical/emergency pause
+  pauseReason         String?            @map("pause_reason")
+
+  // Verification Status
+  isIdentityVerified  Boolean            @default(false) @map("is_identity_verified")
+  isSkillsVerified    Boolean            @default(false) @map("is_skills_verified")
+  verificationPaidAt  DateTime?          @map("verification_paid_at")
+  skillsAssessedAt    DateTime?          @map("skills_assessed_at")
+
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  levelHistory LevelHistory[]
+
+  @@index([currentLevel])
+  @@index([averageRating])
+  @@index([totalJobsCompleted])
+  @@index([loyaltyPoints])
+  @@map("artisan_levels")
+}
+
+// Level History - Tracks level changes over time
+model LevelHistory {
+  id             String           @id @default(cuid())
+  artisanLevelId String           @map("artisan_level_id")
+  fromLevel      ArtisanLevelTier @map("from_level")
+  toLevel        ArtisanLevelTier @map("to_level")
+  reason         String           // "PROMOTION", "DEMOTION", "MANUAL_ADJUSTMENT"
+  triggeredBy    String?          @map("triggered_by") // "SYSTEM" or admin user ID
+  metadata       Json?            // Stats at time of change
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  artisanLevel ArtisanLevel @relation(fields: [artisanLevelId], references: [id], onDelete: Cascade)
+
+  @@index([artisanLevelId])
+  @@index([createdAt])
+  @@map("level_history")
+}
+
+// Loyalty Transaction Types Enum
+enum LoyaltyActionType {
+  // Earning Points
+  JOB_COMPLETED          // +100 base points
+  FIVE_STAR_REVIEW       // +50 bonus
+  FOUR_STAR_REVIEW       // +25 bonus
+  CLIENT_TIP             // +25 bonus
+  FAST_RESPONSE          // +10 (responded < 1 hour)
+  EARLY_COMPLETION       // +20 (completed before deadline)
+  REPEAT_CLIENT          // +75 (returning client)
+  REFERRAL_ARTISAN       // +200 (referred artisan verified)
+  REFERRAL_CLIENT        // +150 (referred client first job)
+  PROFILE_COMPLETE       // +25 (one-time)
+  PORTFOLIO_UPLOAD       // +10 per photo (max 10)
+  VERIFICATION_COMPLETE  // +100 (one-time)
+  STREAK_BONUS           // +50 (5 jobs in a row with 4.5+)
+  MONTHLY_TOP_PERFORMER  // +500 (top 10 in category)
+
+  // Spending Points
+  REDEEM_CREDITS         // Convert to Taska credits
+  REDEEM_FEATURE         // Featured listing
+  REDEEM_FEE_DISCOUNT    // Temporary fee reduction
+  REDEEM_MERCHANDISE     // Taska branded items
+  REDEEM_TOOL_VOUCHER    // Hardware store voucher
+
+  // Adjustments
+  EXPIRED                // Points expired (if enabled)
+  ADMIN_ADJUSTMENT       // Manual adjustment
+  PROMOTION_BONUS        // Special promotion
+}
+
+// Loyalty Transactions - All points movements
+model LoyaltyTransaction {
+  id          String            @id @default(cuid())
+  userId      String            @map("user_id")
+  action      LoyaltyActionType
+  points      Int               // Positive = earned, Negative = spent
+  balance     Int               // Balance after transaction
+  reference   String?           // Job ID, redemption ID, etc.
+  description String
+  metadata    Json?             // Additional context
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("loyalty_transactions")
+}
+
+// Loyalty Rewards - Available rewards for points redemption
+model LoyaltyReward {
+  id           String   @id @default(cuid())
+  name         String   // "50 Taska Credits", "Featured 3 Days", etc.
+  description  String?
+  pointsCost   Int      @map("points_cost")
+  rewardType   String   @map("reward_type") // CREDITS, FEATURE, FEE_DISCOUNT, MERCHANDISE
+  rewardValue  Json     @map("reward_value") // { credits: 50 } or { days: 3 } or { discount: 1 }
+  isActive     Boolean  @default(true) @map("is_active")
+  stockCount   Int?     @map("stock_count") // Null = unlimited
+  maxPerUser   Int?     @map("max_per_user") // Max redemptions per user
+  sortOrder    Int      @default(0) @map("sort_order")
+  imageUrl     String?  @map("image_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("loyalty_rewards")
+}
+
+// Level Configuration - Platform settings for each level
+model LevelConfig {
+  id                 String           @id @default(cuid())
+  level              ArtisanLevelTier @unique
+  displayName        String           @map("display_name") // "Starter 🌱", "Rising ⭐", etc.
+  feePercent         Decimal          @map("fee_percent") @db.Decimal(5, 2)
+  minJobsRequired    Int              @map("min_jobs_required")
+  minRatingRequired  Decimal          @map("min_rating_required") @db.Decimal(3, 2)
+  minMonthsActive    Int              @map("min_months_active")
+  freeBidsPerMonth   Int              @map("free_bids_per_month")
+  freeBoostsPerMonth Int              @map("free_boosts_per_month")
+  searchBoostPercent Int              @default(0) @map("search_boost_percent") // +10%, +25%, etc.
+  payoutDays         Int              @map("payout_days") // 3, 2, 1, 0 (instant)
+  featuredDaysPerMonth Int            @default(0) @map("featured_days_per_month")
+  requiresVerification Boolean        @default(false) @map("requires_verification")
+  requiresSkillsAssessment Boolean    @default(false) @map("requires_skills_assessment")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+
+  @@map("level_config")
+}
+
+// Profile Boost - Tracks active profile boosts for visibility
+model ProfileBoost {
+  id           String        @id @default(cuid())
+  userId       String        @map("user_id")
+  boostType    BoostType     @map("boost_type")
+  boostPercent Int           @map("boost_percent") // Visibility boost percentage (e.g., 25, 50, 100)
+  startedAt    DateTime      @default(now()) @map("started_at")
+  expiresAt    DateTime      @map("expires_at")
+  usedFreeBid  Boolean       @default(false) @map("used_free_bid") // Whether this used a free boost allocation
+  creditsSpent Int           @default(0) @map("credits_spent")
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@map("profile_boosts")
+}
+
+enum BoostType {
+  STANDARD     // 25% visibility boost for 24 hours (10 credits)
+  SUPER        // 50% visibility boost for 48 hours + featured badge (25 credits)
+  PREMIUM      // 100% visibility boost for 7 days + featured + notifications (50 credits)
+}
