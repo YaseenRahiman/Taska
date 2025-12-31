@@ -11,6 +11,23 @@ pnpm-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.env.staging
+
+# AWS & Terraform
+.aws-outputs.json
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+tfplan
+*.tfvars
+!terraform.tfvars.example
+
+# AWS Credentials
+*.pem
+*.ppk
+credentials.csv
 
 # Build outputs
 dist/
