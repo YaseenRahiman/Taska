@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: taska-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: taska_dev
+      POSTGRES_USER: taska_user
+      POSTGRES_PASSWORD: taska_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - taska-network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: taska-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - taska-network
+
+  # Backend (NestJS)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: taska-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://taska_user:taska_password@postgres:5432/taska_dev
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      PORT: 3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /app/dist
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - taska-network
+    command: npm run start:dev
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: taska-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+      NEXT_PUBLIC_WEBSOCKET_URL: ws://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - taska-network
+    command: npm run dev
+
+  # MinIO for file storage (S3 compatible)
+  minio:
+    image: minio/minio:latest
+    container_name: taska-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: taska-admin
+      MINIO_ROOT_PASSWORD: taska-password
+    volumes:
+      - minio_data:/data
+    networks:
+      - taska-network
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Mailhog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: taska-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - taska-network
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: taska-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@taska.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - taska-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  pgadmin_data:
+
+networks:
+  taska-network:
+    driver: bridge

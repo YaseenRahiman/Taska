@@ -1,0 +1,39 @@
+# Maestro Configuration for Taska Android App
+
+# Environment variables (can be overridden via CLI or CI/CD)
+env:
+  TEST_EMAIL: "test.user@taska.test"
+  TEST_PASSWORD: "TestPass123!"
+  API_BASE_URL: "http://10.0.2.2:3000/api/v1/"
+
+# Default settings
+settings:
+  # Timeout for individual commands (milliseconds)
+  timeout: 10000
+
+  # Whether to take screenshots on failures
+  screenshotOnFailure: true
+
+  # Video recording settings
+  recording:
+    enabled: false # Enable for CI/CD
+    quality: medium
+
+# Retry configuration
+retry:
+  maxAttempts: 3
+  delay: 1000
+
+# Test execution order (optional)
+flows:
+  - registration-flow.yaml
+  - login-flow.yaml
+
+# Platform-specific settings
+android:
+  appId: za.co.taska.artisan
+  launchTimeout: 30000
+
+ios:
+  appId: za.co.taska.artisan
+  launchTimeout: 30000

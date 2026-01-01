@@ -1,0 +1,30 @@
+{
+  "testUser": {
+    "email": "grahiman02@gmail.com",
+    "password": "Qwerty12345!@",
+    "firstName": "Graham",
+    "lastName": "Iman",
+    "role": "CLIENT"
+  },
+  "registration": {
+    "formFilled": true,
+    "submitted": true,
+    "finalUrl": "http://localhost:3001/auth/register",
+    "pageTitle": "Sign Up | Taska",
+    "redirectedToLogin": false,
+    "redirectedToDashboard": false
+  },
+  "messages": [
+    "Sign Up | Taska"
+  ],
+  "errors": {
+    "console": [],
+    "network": []
+  },
+  "screenshots": [
+    "01-homepage.png",
+    "02-registration-page.png",
+    "03-form-filled.png",
+    "04-after-submit.png"
+  ]
+}

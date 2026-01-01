@@ -1,0 +1,117 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 50
+      rampTo: 1
+      name: "Ramp down"
+  
+  variables:
+    user_emails:
+      - "test1@example.com"
+      - "test2@example.com"
+      - "test3@example.com"
+      - "test4@example.com"
+      - "test5@example.com"
+  
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "User Authentication Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/auth/register"
+          json:
+            email: "test-{{ $randomString() }}@example.com"
+            password: "TestPassword123!"
+            name: "Test User"
+          capture:
+            - json: "$.access_token"
+              as: "access_token"
+      - post:
+          url: "/auth/login"
+          json:
+            email: "{{ user_emails[$randomNumber(0, 4)] }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.access_token"
+              as: "access_token"
+
+  - name: "Job Management"
+    weight: 40
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "{{ user_emails[$randomNumber(0, 4)] }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.access_token"
+              as: "access_token"
+      - get:
+          url: "/jobs"
+          headers:
+            Authorization: "Bearer {{ access_token }}"
+      - post:
+          url: "/jobs"
+          headers:
+            Authorization: "Bearer {{ access_token }}"
+          json:
+            title: "Load Test Job {{ $randomString() }}"
+            description: "This is a test job created during load testing"
+            category: "OTHER"
+            budget: "{{ $randomNumber(100, 1000) }}"
+            location:
+              address: "Test Address"
+              city: "Test City"
+              latitude: -26.2041
+              longitude: 28.0473
+      - get:
+          url: "/jobs/{{ job_id }}"
+          headers:
+            Authorization: "Bearer {{ access_token }}"
+
+  - name: "Bid Management"
+    weight: 20
+    flow:
+      - post:
+          url: "/auth/login"
+          json:
+            email: "{{ user_emails[$randomNumber(0, 4)] }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.access_token"
+              as: "access_token"
+      - get:
+          url: "/jobs"
+          headers:
+            Authorization: "Bearer {{ access_token }}"
+      - post:
+          url: "/bids"
+          headers:
+            Authorization: "Bearer {{ access_token }}"
+          json:
+            jobId: "{{ job_id }}"
+            amount: "{{ $randomNumber(50, 500) }}"
+            message: "Test bid message"
+
+  - name: "Health Check"
+    weight: 10
+    flow:
+      - get:
+          url: "/health"
+      - get:
+          url: "/health/detailed"

@@ -1,0 +1,353 @@
+# CI/CD Pipeline for Taska Platform
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: taska/backend
+  IMAGE_NAME_FRONTEND: taska/frontend
+
+jobs:
+  # Test Backend
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: ./backend
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+
+      - name: Run database migrations
+        working-directory: ./backend
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+
+      - name: Run tests
+        working-directory: ./backend
+        run: npm run test:cov
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_SECRET: test-jwt-secret
+
+      - name: Run e2e tests
+        working-directory: ./backend
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_SECRET: test-jwt-secret
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage/lcov.info
+          flags: backend
+          name: backend-coverage
+
+  # Test Frontend
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run linting
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Run type checking
+        working-directory: ./frontend
+        run: npm run type-check
+
+      - name: Run tests
+        working-directory: ./frontend
+        run: npm run test:coverage
+
+      - name: Build application
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3000
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./frontend/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          languages: javascript, typescript
+
+  # Build and Push Docker Images
+  build-and-push:
+    needs: [test-backend, test-frontend, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ matrix.service == 'backend' && env.IMAGE_NAME_BACKEND || env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # Deploy to Staging
+  deploy-staging:
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to ECS Staging
+        run: |
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster taska-staging \
+            --service taska-backend-staging \
+            --force-new-deployment
+          
+          aws ecs update-service \
+            --cluster taska-staging \
+            --service taska-frontend-staging \
+            --force-new-deployment
+
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster taska-staging \
+            --services taska-backend-staging taska-frontend-staging
+
+      - name: Run smoke tests
+        run: |
+          # Wait for services to be healthy
+          sleep 60
+          
+          # Test backend health
+          curl -f ${{ secrets.STAGING_BACKEND_URL }}/health
+          
+          # Test frontend health
+          curl -f ${{ secrets.STAGING_FRONTEND_URL }}/api/health
+
+  # Deploy to Production (Manual Approval Required)
+  deploy-production:
+    needs: [deploy-staging]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Run database migrations
+        run: |
+          # Connect to production database and run migrations
+          kubectl exec -n taska deployment/backend -- npx prisma migrate deploy
+
+      - name: Deploy to ECS Production
+        run: |
+          # Blue-green deployment strategy
+          aws ecs update-service \
+            --cluster taska-production \
+            --service taska-backend-production \
+            --force-new-deployment
+          
+          aws ecs update-service \
+            --cluster taska-production \
+            --service taska-frontend-production \
+            --force-new-deployment
+
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster taska-production \
+            --services taska-backend-production taska-frontend-production
+
+      - name: Run production smoke tests
+        run: |
+          # Wait for services to be healthy
+          sleep 60
+          
+          # Test backend health
+          curl -f ${{ secrets.PRODUCTION_BACKEND_URL }}/health
+          
+          # Test frontend health
+          curl -f ${{ secrets.PRODUCTION_FRONTEND_URL }}/api/health
+
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: "Taska production deployment completed successfully! 🚀"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Rollback Production (Manual trigger)
+  rollback-production:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment: production
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Rollback production deployment
+        run: |
+          # Get previous task definition
+          PREVIOUS_TASK_DEF=$(aws ecs describe-services \
+            --cluster taska-production \
+            --services taska-backend-production \
+            --query 'services[0].deployments[1].taskDefinition' \
+            --output text)
+          
+          # Update service to use previous task definition
+          aws ecs update-service \
+            --cluster taska-production \
+            --service taska-backend-production \
+            --task-definition $PREVIOUS_TASK_DEF
+
+      - name: Notify rollback completion
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: "Taska production rollback completed! ⚠️"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

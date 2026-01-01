@@ -1,0 +1,170 @@
+package za.co.taska.domain.usecase.job
+
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.*
+import za.co.taska.domain.model.*
+import za.co.taska.domain.repository.JobsRepository
+
+/**
+ * Unit tests for CompleteJobUseCase
+ * Tests job ID validation and repository interaction
+ *
+ * Coverage target: >85%
+ */
+class CompleteJobUseCaseTest {
+
+    private lateinit var useCase: CompleteJobUseCase
+    private lateinit var repository: JobsRepository
+
+    @Before
+    fun setup() {
+        repository = mock()
+        useCase = CompleteJobUseCase(repository)
+    }
+
+    // ========== Success Cases ==========
+
+    @Test
+    fun `invoke should return success with completed job when jobId is valid`() = runTest {
+        // Given
+        val completedJob = createTestJob(status = JobStatus.COMPLETED)
+        whenever(repository.completeJob(any()))
+            .thenReturn(Result.success(completedJob))
+
+        // When
+        val result = useCase("job_123")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals("job_123", result.getOrNull()?.id)
+        assertEquals(JobStatus.COMPLETED, result.getOrNull()?.status)
+        verify(repository).completeJob("job_123")
+    }
+
+    @Test
+    fun `invoke should call repository with correct jobId`() = runTest {
+        // Given
+        val jobId = "job_abc_xyz_123"
+        whenever(repository.completeJob(any()))
+            .thenReturn(Result.success(createTestJob()))
+
+        // When
+        val result = useCase(jobId)
+
+        // Then
+        assertTrue(result.isSuccess)
+        verify(repository).completeJob(jobId)
+    }
+
+    // ========== Validation Error Cases ==========
+
+    @Test
+    fun `invoke should fail when jobId is empty string`() = runTest {
+        // When
+        val result = useCase("")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals("Job ID cannot be empty", result.exceptionOrNull()?.message)
+        verify(repository, never()).completeJob(any())
+    }
+
+    @Test
+    fun `invoke should fail when jobId is blank whitespace`() = runTest {
+        // When
+        val result = useCase("   ")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals("Job ID cannot be empty", result.exceptionOrNull()?.message)
+        verify(repository, never()).completeJob(any())
+    }
+
+    @Test
+    fun `invoke should fail when jobId is tab and newline characters`() = runTest {
+        // When
+        val result = useCase("\t\n")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals("Job ID cannot be empty", result.exceptionOrNull()?.message)
+        verify(repository, never()).completeJob(any())
+    }
+
+    // ========== Repository Error Propagation ==========
+
+    @Test
+    fun `invoke should propagate repository errors`() = runTest {
+        // Given
+        whenever(repository.completeJob(any()))
+            .thenReturn(Result.failure(RuntimeException("Failed to complete job")))
+
+        // When
+        val result = useCase("job_123")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals("Failed to complete job", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun `invoke should propagate job not found errors`() = runTest {
+        // Given
+        whenever(repository.completeJob(any()))
+            .thenReturn(Result.failure(RuntimeException("Job not found")))
+
+        // When
+        val result = useCase("non_existent_job")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertEquals("Job not found", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun `invoke should propagate permission denied errors`() = runTest {
+        // Given
+        whenever(repository.completeJob(any()))
+            .thenReturn(Result.failure(RuntimeException("Cannot complete cancelled job")))
+
+        // When
+        val result = useCase("cancelled_job_123")
+
+        // Then
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull()?.message?.contains("Cannot complete") == true)
+    }
+
+    // ========== Helper Methods ==========
+
+    private fun createTestJob(status: JobStatus = JobStatus.COMPLETED) = Job(
+        id = "job_123",
+        clientId = "client_456",
+        categoryId = "cat_789",
+        title = "Test Job",
+        description = "Test Description",
+        budget = 500.0,
+        budgetType = BudgetType.FIXED,
+        urgency = UrgencyLevel.HIGH,
+        status = status,
+        address = Address(
+            addressLine1 = "123 Main Street",
+            addressLine2 = null,
+            city = "Cape Town",
+            province = "Western Cape",
+            postalCode = "8001",
+            latitude = -33.9249,
+            longitude = 18.4241
+        ),
+        images = emptyList(),
+        requirements = emptyList(),
+        startDate = null,
+        endDate = null,
+        createdAt = "2025-10-31T10:00:00Z",
+        client = null,
+        category = null
+    )
+}
