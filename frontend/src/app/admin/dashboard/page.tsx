@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/providers/auth-provider';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs } from '@/components/ui/tabs';
@@ -25,7 +27,8 @@ import {
   Eye,
   UserCheck,
   Flag,
-  Zap
+  Zap,
+  LogOut
 } from 'lucide-react';
 
 interface AdminMetrics {
@@ -58,10 +61,21 @@ interface AdminMetrics {
 }
 
 const AdminDashboard: React.FC = () => {
+  const router = useRouter();
+  const { logout } = useAuth();
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/auth/login');
+    } catch (error) {
+      // Error is already handled by the logout function
+    }
+  };
 
   const fetchMetrics = async () => {
     try {
@@ -278,6 +292,14 @@ const AdminDashboard: React.FC = () => {
             >
               <Download className="w-4 h-4" />
               Export Report
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
             </Button>
           </div>
         </div>

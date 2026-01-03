@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils'
+import { useAuth } from '@/hooks/useAuth'
 
 interface Job {
   id: string
@@ -84,6 +85,7 @@ export default function ArtisanDashboard() {
   }, []);
 
   const router = useRouter()
+  const { user } = useAuth()
   const [availableJobs, setAvailableJobs] = useState<Job[]>([])
   const [activeProjects, setActiveProjects] = useState<Job[]>([])
   const [recentBids, setRecentBids] = useState<Bid[]>([])
@@ -106,8 +108,10 @@ export default function ArtisanDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    if (user?.id) {
+      fetchDashboardData()
+    }
+  }, [user?.id])
 
   const fetchDashboardData = async () => {
     try {
@@ -128,25 +132,65 @@ export default function ArtisanDashboard() {
       })
       setRecentBids(bidsResponse.data.bids || [])
 
-      // Mock earnings data (replace with real API call)
-      setEarnings({
-        totalEarnings: 45750.00,
-        pendingPayments: 3200.00,
-        thisMonth: 8950.00,
-        lastMonth: 6450.00,
-        averageJobValue: 1250.00,
-        completedJobs: 36
-      })
+      // Fetch wallet statistics for earnings data
+      try {
+        const walletStatsResponse = await api.get('/wallets/statistics')
+        const walletStats = walletStatsResponse.data
+        setEarnings({
+          totalEarnings: walletStats.totalEarnings || 0,
+          pendingPayments: walletStats.pendingWithdrawals || 0,
+          thisMonth: walletStats.thisMonthEarnings || 0,
+          lastMonth: 0, // Not provided by API, would need separate endpoint
+          averageJobValue: walletStats.averageJobValue || 0,
+          completedJobs: walletStats.completedJobsCount || 0
+        })
+      } catch (err) {
+        // Wallet may not exist yet for new artisans, use defaults
+        setEarnings({
+          totalEarnings: 0,
+          pendingPayments: 0,
+          thisMonth: 0,
+          lastMonth: 0,
+          averageJobValue: 0,
+          completedJobs: 0
+        })
+      }
 
-      // Mock performance data (replace with real API call)
-      setPerformance({
-        totalBids: 84,
-        acceptedBids: 36,
-        successRate: 42.9,
-        averageResponseTime: '2.3 hours',
-        rating: 4.7,
-        reviews: 31
-      })
+      // Fetch bid statistics for performance data
+      try {
+        const bidStatsResponse = await api.get('/bids/statistics')
+        const bidStats = bidStatsResponse.data
+
+        // Fetch review statistics for rating
+        let reviewData = { averageRating: 0, totalReviews: 0 }
+        if (user?.id) {
+          try {
+            const reviewStatsResponse = await api.get(`/reviews/statistics/${user.id}`)
+            reviewData = reviewStatsResponse.data
+          } catch (reviewErr) {
+            // No reviews yet, use defaults
+          }
+        }
+
+        setPerformance({
+          totalBids: bidStats.total || 0,
+          acceptedBids: bidStats.accepted || 0,
+          successRate: (bidStats.successRate || 0) * 100, // API returns decimal, convert to percentage
+          averageResponseTime: 'N/A', // Not provided by current API
+          rating: reviewData.averageRating || 0,
+          reviews: reviewData.totalReviews || 0
+        })
+      } catch (err) {
+        // No bids yet, use defaults
+        setPerformance({
+          totalBids: 0,
+          acceptedBids: 0,
+          successRate: 0,
+          averageResponseTime: 'N/A',
+          rating: 0,
+          reviews: 0
+        })
+      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {
