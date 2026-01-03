@@ -33,10 +33,42 @@ import {
  * Connection URL: ws://localhost:3000/admin
  * Requires JWT authentication
  */
+/**
+ * Parse CORS origins from environment, supporting multiple origins and local network access
+ */
+function getCorsOrigins(): string[] | ((origin: string, callback: (err: Error | null, allow?: boolean) => void) => void) {
+  const frontendUrl = process.env.FRONTEND_URL;
+  const corsOrigin = process.env.CORS_ORIGIN;
+
+  // Build allowed origins list
+  const allowedOrigins = new Set<string>();
+  if (frontendUrl) allowedOrigins.add(frontendUrl);
+  if (corsOrigin) corsOrigin.split(',').forEach(o => allowedOrigins.add(o.trim()));
+
+  // Default development origins
+  if (allowedOrigins.size === 0) {
+    allowedOrigins.add('http://localhost:3001');
+    allowedOrigins.add('http://localhost:3000');
+  }
+
+  // Return a function that also allows local network IPs
+  return (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    const isAllowed = allowedOrigins.has(origin);
+    const isLocalNetwork = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin);
+
+    callback(null, isAllowed || isLocalNetwork);
+  };
+}
+
 @WebSocketGateway({
   namespace: '/admin',
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+    origin: getCorsOrigins(),
     credentials: true,
   },
 })

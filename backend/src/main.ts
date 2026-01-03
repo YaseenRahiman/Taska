@@ -14,9 +14,32 @@ async function bootstrap() {
   // Compression middleware
   app.use(compression());
 
-  // CORS configuration
+  // CORS configuration - allow dynamic origins for LAN/IP access
+  const corsOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+    : ['http://localhost:3001', 'http://localhost:3000'];
+
   app.enableCors({
-    origin: ['http://localhost:3001', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      // Check if origin matches allowed list or is from same network (192.168.x.x, 10.x.x.x, etc.)
+      const isAllowedOrigin = corsOrigins.some((allowed) => origin === allowed);
+      const isLocalNetwork =
+        /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(
+          origin,
+        );
+
+      if (isAllowedOrigin || isLocalNetwork) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

@@ -144,3 +144,6 @@ archive-uat-cleanup/
 nul
 */nul
 **/nul
+
+# Auto Claude data directory
+.auto-claude/

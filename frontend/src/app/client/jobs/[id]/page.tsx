@@ -28,16 +28,19 @@ interface Job {
   id: string;
   title: string;
   description: string;
-  category: string;
+  category: {
+    id: string;
+    name: string;
+  };
   budget: number;
   status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   urgency: 'LOW' | 'MEDIUM' | 'HIGH';
-  location: {
-    address: string;
-    city: string;
-    province: string;
-    postalCode: string;
-  };
+  // Location fields are flat on the job model, not nested
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
   requirements?: string;
   timeline?: string;
   images: string[];
@@ -256,7 +259,7 @@ export default function JobDetailPage() {
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-medium text-gray-900 mb-2">Category</h3>
-                    <p className="text-gray-700">{job.category}</p>
+                    <p className="text-gray-700">{job.category?.name || 'Uncategorized'}</p>
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900 mb-2">Budget</h3>
@@ -268,7 +271,7 @@ export default function JobDetailPage() {
                   <h3 className="font-medium text-gray-900 mb-2">Location</h3>
                   <div className="flex items-center gap-2 text-gray-700">
                     <MapPin className="w-4 h-4" />
-                    <span>{job.location.address}, {job.location.city}, {job.location.province} {job.location.postalCode}</span>
+                    <span>{job.addressLine1 || 'Unknown Address'}, {job.city || 'Unknown City'}, {job.province || 'Unknown Province'} {job.postalCode || ''}</span>
                   </div>
                 </div>
 
@@ -585,7 +588,7 @@ export default function JobDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Category</span>
-                  <span className="font-medium">{job.category}</span>
+                  <span className="font-medium">{job.category?.name || 'Uncategorized'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Posted</span>

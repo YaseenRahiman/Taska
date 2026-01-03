@@ -71,16 +71,49 @@ export class SecurityConfig {
 
   /**
    * Get CORS configuration
+   * Supports environment-configured origins, production domains, and local network IPs for development
    */
   getCorsConfig() {
-    const allowedOrigins = this.configService.get<string>('ALLOWED_ORIGINS')?.split(',') || [
-      'http://localhost:3000',
+    const configuredOrigins = this.configService.get<string>('ALLOWED_ORIGINS')?.split(',').map(o => o.trim()) || [];
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+
+    // Build allowed origins set
+    const allowedOrigins = new Set<string>([
+      ...configuredOrigins,
       'https://taska.co.za',
       'https://www.taska.co.za',
-    ];
+    ]);
+
+    if (frontendUrl) {
+      allowedOrigins.add(frontendUrl);
+    }
+
+    // Add default development origins if none configured
+    if (configuredOrigins.length === 0 && !frontendUrl) {
+      allowedOrigins.add('http://localhost:3000');
+      allowedOrigins.add('http://localhost:3001');
+    }
+
+    // Local network IP regex for development access
+    const localNetworkRegex = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/;
 
     return {
-      origin: allowedOrigins,
+      origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no origin (server-to-server, Postman, etc.)
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
+
+        const isAllowed = allowedOrigins.has(origin);
+        const isLocalNetwork = localNetworkRegex.test(origin);
+
+        if (isAllowed || isLocalNetwork) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: [

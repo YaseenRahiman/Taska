@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -35,7 +36,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+      const apiUrl = getApiBaseUrl();
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);

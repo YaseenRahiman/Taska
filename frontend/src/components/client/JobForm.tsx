@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Category, CreateJobDto, JobStatus } from '@/types/job';
 import Image from 'next/image';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 interface JobFormProps {
   initialData?: Partial<CreateJobDto>;
@@ -49,7 +50,7 @@ export default function JobForm({
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/categories', {
+      const response = await fetch(`${getApiBaseUrl()}/categories`, {
         credentials: 'include'
       });
       if (response.ok) {

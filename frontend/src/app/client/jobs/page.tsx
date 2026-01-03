@@ -27,14 +27,18 @@ interface Job {
   id: string;
   title: string;
   description: string;
-  category: string;
+  category: {
+    id: string;
+    name: string;
+  };
   budget: number;
   status: 'DRAFT' | 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   urgency: 'LOW' | 'MEDIUM' | 'HIGH';
-  location: {
-    city: string;
-    province: string;
-  };
+  // Location fields are flat on the job model, not nested
+  city?: string;
+  province?: string;
+  addressLine1?: string;
+  postalCode?: string;
   createdAt: string;
   updatedAt: string;
   _count?: {
@@ -255,7 +259,7 @@ export default function MyJobsPage() {
                         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Briefcase className="w-4 h-4" />
-                            <span>{job.category}</span>
+                            <span>{job.category?.name || 'Uncategorized'}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <DollarSign className="w-4 h-4" />
@@ -265,7 +269,7 @@ export default function MyJobsPage() {
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="w-4 h-4" />
-                            <span>{job.location.city}, {job.location.province}</span>
+                            <span>{job.city || 'Unknown City'}, {job.province || 'Unknown Province'}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Users className="w-4 h-4" />

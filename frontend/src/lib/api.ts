@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 interface ApiConfig {
   baseURL: string;
@@ -102,7 +103,7 @@ class ApiClient {
       throw new Error('No refresh token available');
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+    const apiUrl = getApiBaseUrl();
     const response = await axios.post(`${apiUrl}/auth/refresh-token`, {
       refreshToken,
     });
@@ -257,10 +258,35 @@ class ApiClient {
   }
 }
 
-// Create API client instance
-const apiClient = new ApiClient({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1',
-  timeout: 10000, // 10 seconds
+// Lazy-initialized API client to ensure proper base URL detection on client-side
+let _apiClient: ApiClient | null = null;
+let _lastBaseUrl: string | null = null;
+
+function getApiClient(): ApiClient {
+  const currentBaseUrl = getApiBaseUrl();
+
+  // Reinitialize if base URL has changed (e.g., SSR to client transition)
+  if (!_apiClient || _lastBaseUrl !== currentBaseUrl) {
+    _apiClient = new ApiClient({
+      baseURL: currentBaseUrl,
+      timeout: 10000, // 10 seconds
+    });
+    _lastBaseUrl = currentBaseUrl;
+  }
+
+  return _apiClient;
+}
+
+// Proxy object that lazily gets the API client
+const apiClient = new Proxy({} as ApiClient, {
+  get(_, prop) {
+    const client = getApiClient();
+    const value = client[prop as keyof ApiClient];
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  },
 });
 
 export default apiClient;

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWebSocket } from '@/components/providers/websocket-provider';
 import toast from 'react-hot-toast';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 export interface Notification {
   id: string;
@@ -31,8 +32,6 @@ export interface UseNotificationsReturn {
   clearAll: () => Promise<void>;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
-
 export function useNotifications(): UseNotificationsReturn {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [counts, setCounts] = useState<NotificationCounts>({ unread: 0, total: 0 });
@@ -48,7 +47,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/notifications?limit=50`, {
+      const response = await fetch(`${getApiBaseUrl()}/admin/notifications?limit=50`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -63,7 +62,7 @@ export function useNotifications(): UseNotificationsReturn {
       setNotifications(data.items || []);
 
       // Fetch counts
-      const countsResponse = await fetch(`${API_BASE_URL}/admin/notifications/counts/summary`, {
+      const countsResponse = await fetch(`${getApiBaseUrl()}/admin/notifications/counts/summary`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -90,7 +89,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/notifications/read`, {
+      const response = await fetch(`${getApiBaseUrl()}/admin/notifications/read`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -129,7 +128,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/notifications/read-all`, {
+      const response = await fetch(`${getApiBaseUrl()}/admin/notifications/read-all`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -160,7 +159,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/notifications/${notificationId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/admin/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -196,7 +195,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/notifications`, {
+      const response = await fetch(`${getApiBaseUrl()}/admin/notifications`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

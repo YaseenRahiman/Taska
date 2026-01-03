@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 export interface JobValidationSettings {
   minBudget: number;
@@ -29,8 +30,6 @@ export const DEFAULT_JOB_VALIDATION_SETTINGS: JobValidationSettings = {
   expiryDays: 30,
 };
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
-
 /**
  * Fetch job validation settings from the backend
  * These settings are public and don't require authentication
@@ -38,7 +37,7 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1'
 export async function getJobValidationSettings(): Promise<JobValidationSettings> {
   try {
     const response = await axios.get<JobValidationSettings>(
-      `${apiUrl}/settings/job-validation`
+      `${getApiBaseUrl()}/settings/job-validation`
     );
     return response.data;
   } catch (error) {
@@ -55,7 +54,7 @@ export async function getJobValidationSettings(): Promise<JobValidationSettings>
 export async function getPublicSettings(): Promise<PublicSettings> {
   try {
     const response = await axios.get<PublicSettings>(
-      `${apiUrl}/settings/public`
+      `${getApiBaseUrl()}/settings/public`
     );
     return response.data;
   } catch (error) {

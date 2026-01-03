@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef } f
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './auth-provider';
 import toast from 'react-hot-toast';
+import { getWsBaseUrl } from '@/lib/api-url';
 
 interface WebSocketContextType {
   socket: Socket | null;
@@ -46,8 +47,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
     console.log('[WebSocket] Initializing connection...');
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const wsUrl = apiUrl.replace('/api/v1', '');
+    // Dynamically determine WebSocket URL based on current hostname
+    const wsUrl = getWsBaseUrl();
 
     // Create socket connection
     const newSocket = io(`${wsUrl}${WS_NAMESPACE}`, {

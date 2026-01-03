@@ -15,6 +15,7 @@ import {
   Calendar
 } from 'lucide-react';
 import type { BulkExportRequest } from '../../../types/bulk-operations.types';
+import { getApiBaseUrl } from '@/lib/api-url';
 
 // Entity field configurations for dynamic field selection
 const ENTITY_FIELDS = {
@@ -127,7 +128,7 @@ export default function CsvExportImport() {
         fields: selectedFields
       };
 
-      const response = await fetch('http://localhost:3000/api/v1/admin/bulk/export', {
+      const response = await fetch(`${getApiBaseUrl()}/admin/bulk/export`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -342,7 +343,7 @@ export default function CsvExportImport() {
         setImportProgress(prev => Math.min(prev + 10, 90));
       }, 500);
 
-      const response = await fetch('http://localhost:3000/api/v1/admin/bulk/import', {
+      const response = await fetch(`${getApiBaseUrl()}/admin/bulk/import`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
