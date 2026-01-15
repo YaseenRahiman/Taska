@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Users, Briefcase, DollarSign, Activity } from 'lucide-react';
-import type { PerformanceMetrics as PerformanceMetricsType } from '@/lib/api/analytics';
+import type { PerformanceMetrics as PerformanceMetricsType } from '@/lib/analytics';
 
 interface PerformanceMetricsProps {
   metrics: PerformanceMetricsType;

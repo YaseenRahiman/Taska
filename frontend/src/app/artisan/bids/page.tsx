@@ -456,23 +456,23 @@ export default function BidManagement() {
               <div className="grid gap-2 text-sm">
                 <div className="flex justify-between">
                   <span>Materials:</span>
-                  <span>{formatCurrency(calculator.materials)} ({((calculator.materials / calculator.total) * 100).toFixed(1)}%)</span>
+                  <span>{formatCurrency(calculator.materials)} ({calculator.total > 0 ? ((calculator.materials / calculator.total) * 100).toFixed(1) : 0}%)</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Labor:</span>
-                  <span>{formatCurrency(calculator.labor)} ({((calculator.labor / calculator.total) * 100).toFixed(1)}%)</span>
+                  <span>{formatCurrency(calculator.labor)} ({calculator.total > 0 ? ((calculator.labor / calculator.total) * 100).toFixed(1) : 0}%)</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Transport:</span>
-                  <span>{formatCurrency(calculator.transport)} ({((calculator.transport / calculator.total) * 100).toFixed(1)}%)</span>
+                  <span>{formatCurrency(calculator.transport)} ({calculator.total > 0 ? ((calculator.transport / calculator.total) * 100).toFixed(1) : 0}%)</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Overhead:</span>
-                  <span>{formatCurrency(calculator.overhead)} ({((calculator.overhead / calculator.total) * 100).toFixed(1)}%)</span>
+                  <span>{formatCurrency(calculator.overhead)} ({calculator.total > 0 ? ((calculator.overhead / calculator.total) * 100).toFixed(1) : 0}%)</span>
                 </div>
                 <div className="flex justify-between font-medium">
                   <span>Profit:</span>
-                  <span>{formatCurrency(calculator.profit)} ({((calculator.profit / calculator.total) * 100).toFixed(1)}%)</span>
+                  <span>{formatCurrency(calculator.profit)} ({calculator.total > 0 ? ((calculator.profit / calculator.total) * 100).toFixed(1) : 0}%)</span>
                 </div>
               </div>
             </div>

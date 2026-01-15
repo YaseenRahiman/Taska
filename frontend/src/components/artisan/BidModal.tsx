@@ -40,6 +40,23 @@ interface FormErrors {
   estimatedDays?: string
 }
 
+/**
+ * Validates if a job ID is a valid Prisma CUID format.
+ * CUIDs are 25+ character strings, not simple numeric IDs.
+ */
+function isValidJobId(id: string): boolean {
+  // Prisma CUIDs are at least 25 characters and contain alphanumeric characters
+  // Simple numeric IDs like '1', '2', '3' are invalid
+  if (!id || id.length < 20) {
+    return false
+  }
+  // CUIDs should not be purely numeric
+  if (/^\d+$/.test(id)) {
+    return false
+  }
+  return true
+}
+
 export function BidModal({ job, isOpen, onClose, onSuccess }: BidModalProps) {
   const [formData, setFormData] = useState<BidFormData>({
     amount: '',
@@ -95,6 +112,12 @@ export function BidModal({ job, isOpen, onClose, onSuccess }: BidModalProps) {
     setSubmitSuccess(false)
 
     if (!validateForm()) {
+      return
+    }
+
+    // Validate job ID format before API submission
+    if (!isValidJobId(job.id)) {
+      setSubmitError('Invalid job ID format. Please refresh the page and try again.')
       return
     }
 

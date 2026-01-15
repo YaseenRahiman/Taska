@@ -9,9 +9,11 @@ interface User {
   id: string;
   email: string;
   role: 'CLIENT' | 'ARTISAN' | 'ADMIN' | 'ASSESSOR';
+  verified?: boolean;
   profile?: {
     firstName: string;
     lastName: string;
+    phoneNumber?: string;
     profilePictureUrl?: string;
   };
 }

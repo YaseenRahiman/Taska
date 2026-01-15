@@ -114,11 +114,35 @@ export default function JobDetailPage() {
       setLoading(true);
       const [jobResponse, bidsResponse] = await Promise.all([
         api.get(`/jobs/${jobId}`),
-        api.get(`/jobs/${jobId}/bids`)
+        api.get(`/bids/job/${jobId}`)
       ]);
 
-      setJob(jobResponse.data);
-      setBids(bidsResponse.data.bids || []);
+      // Handle different API response formats for job data
+      const jobData = jobResponse.data?.job || jobResponse.data?.data || jobResponse.data;
+
+      // Transform job data to expected format if needed
+      if (jobData) {
+        const transformedJob: Job = {
+          ...jobData,
+          // Handle nested client data
+          client: jobData.client?.profile ? {
+            id: jobData.client.id,
+            firstName: jobData.client.profile.firstName || jobData.client.firstName || '',
+            lastName: jobData.client.profile.lastName || jobData.client.lastName || '',
+            email: jobData.client.email || '',
+            profilePicture: jobData.client.profile.profileImage || jobData.client.profilePicture,
+            averageRating: jobData.client.profile.averageRating || jobData.client.averageRating,
+            totalReviews: jobData.client.profile.totalReviews || jobData.client.totalReviews,
+          } : jobData.client,
+          // Handle nested category
+          category: jobData.category || { id: '', name: 'Uncategorized' },
+          // Handle bidsCount
+          bidsCount: jobData.bidsCount || jobData._count?.bids || 0,
+        };
+        setJob(transformedJob);
+      }
+
+      setBids(bidsResponse.data?.bids || bidsResponse.data || []);
     } catch (error) {
       console.error('Failed to fetch job data:', error);
     } finally {

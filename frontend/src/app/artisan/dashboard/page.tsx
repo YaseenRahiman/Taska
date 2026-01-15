@@ -135,16 +135,18 @@ export default function ArtisanDashboard() {
       // Fetch wallet statistics for earnings data
       try {
         const walletStatsResponse = await api.get('/wallets/statistics')
-        const walletStats = walletStatsResponse.data
+        // Handle different API response formats
+        const walletStats = walletStatsResponse.data?.data || walletStatsResponse.data?.statistics || walletStatsResponse.data || {}
         setEarnings({
-          totalEarnings: walletStats.totalEarnings || 0,
-          pendingPayments: walletStats.pendingWithdrawals || 0,
-          thisMonth: walletStats.thisMonthEarnings || 0,
-          lastMonth: 0, // Not provided by API, would need separate endpoint
-          averageJobValue: walletStats.averageJobValue || 0,
-          completedJobs: walletStats.completedJobsCount || 0
+          totalEarnings: Number(walletStats.totalEarnings) || Number(walletStats.total_earnings) || 0,
+          pendingPayments: Number(walletStats.pendingWithdrawals) || Number(walletStats.pending_withdrawals) || Number(walletStats.pendingPayments) || 0,
+          thisMonth: Number(walletStats.thisMonthEarnings) || Number(walletStats.this_month_earnings) || Number(walletStats.monthlyEarnings) || 0,
+          lastMonth: Number(walletStats.lastMonthEarnings) || Number(walletStats.last_month_earnings) || 0,
+          averageJobValue: Number(walletStats.averageJobValue) || Number(walletStats.average_job_value) || 0,
+          completedJobs: Number(walletStats.completedJobsCount) || Number(walletStats.completed_jobs_count) || Number(walletStats.completedJobs) || 0
         })
       } catch (err) {
+        console.error('Error fetching wallet statistics:', err)
         // Wallet may not exist yet for new artisans, use defaults
         setEarnings({
           totalEarnings: 0,
@@ -159,28 +161,42 @@ export default function ArtisanDashboard() {
       // Fetch bid statistics for performance data
       try {
         const bidStatsResponse = await api.get('/bids/statistics')
-        const bidStats = bidStatsResponse.data
+        // Handle different API response formats
+        const bidStats = bidStatsResponse.data?.data || bidStatsResponse.data?.statistics || bidStatsResponse.data || {}
 
         // Fetch review statistics for rating
         let reviewData = { averageRating: 0, totalReviews: 0 }
         if (user?.id) {
           try {
             const reviewStatsResponse = await api.get(`/reviews/statistics/${user.id}`)
-            reviewData = reviewStatsResponse.data
+            const reviewStats = reviewStatsResponse.data?.data || reviewStatsResponse.data?.statistics || reviewStatsResponse.data || {}
+            reviewData = {
+              averageRating: Number(reviewStats.averageRating) || Number(reviewStats.average_rating) || Number(reviewStats.rating) || 0,
+              totalReviews: Number(reviewStats.totalReviews) || Number(reviewStats.total_reviews) || Number(reviewStats.count) || 0
+            }
           } catch (reviewErr) {
+            console.error('Error fetching review statistics:', reviewErr)
             // No reviews yet, use defaults
           }
         }
 
+        // Calculate success rate - API might return decimal or percentage
+        let successRate = Number(bidStats.successRate) || Number(bidStats.success_rate) || 0
+        // If success rate is between 0-1, convert to percentage
+        if (successRate > 0 && successRate <= 1) {
+          successRate = successRate * 100
+        }
+
         setPerformance({
-          totalBids: bidStats.total || 0,
-          acceptedBids: bidStats.accepted || 0,
-          successRate: (bidStats.successRate || 0) * 100, // API returns decimal, convert to percentage
-          averageResponseTime: 'N/A', // Not provided by current API
-          rating: reviewData.averageRating || 0,
-          reviews: reviewData.totalReviews || 0
+          totalBids: Number(bidStats.total) || Number(bidStats.totalBids) || Number(bidStats.total_bids) || 0,
+          acceptedBids: Number(bidStats.accepted) || Number(bidStats.acceptedBids) || Number(bidStats.accepted_bids) || 0,
+          successRate: successRate,
+          averageResponseTime: bidStats.averageResponseTime || bidStats.average_response_time || 'N/A',
+          rating: reviewData.averageRating,
+          reviews: reviewData.totalReviews
         })
       } catch (err) {
+        console.error('Error fetching bid statistics:', err)
         // No bids yet, use defaults
         setPerformance({
           totalBids: 0,

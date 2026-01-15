@@ -86,7 +86,6 @@ export function JobCreationWizard({
               </label>
               <input
                 id="title"
-                name="title"
                 {...register('title')}
                 className={`w-full ${inputPadding} border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                 placeholder="e.g., Fix leaky kitchen faucet"
@@ -102,7 +101,6 @@ export function JobCreationWizard({
               </label>
               <textarea
                 id="description"
-                name="description"
                 {...register('description')}
                 rows={layout === 'modal' ? 4 : 6}
                 className={`w-full ${inputPadding} border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none`}
@@ -220,7 +218,6 @@ export function JobCreationWizard({
                 </div>
                 <input
                   id="budget"
-                  name="budget"
                   {...register('budget', { valueAsNumber: true })}
                   type="number"
                   min="50"

@@ -3,16 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-// import type { JobAnalytics } from '@/lib/api/analytics';
-
-interface JobAnalytics {
-  totalJobs: number;
-  activeJobs: number;
-  completedJobs: number;
-  categoryBreakdown: Array<{ category: string; count: number }>;
-  timelineData: Array<{ date: string; jobs: number }>;
-  statusBreakdown?: Array<{ status: string; count: number }>;
-}
+import type { JobAnalytics } from '@/lib/analytics';
 
 interface JobAnalyticsChartProps {
   data: JobAnalytics;
@@ -88,7 +79,7 @@ export function JobAnalyticsChart({ data, isLoading }: JobAnalyticsChartProps) {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"

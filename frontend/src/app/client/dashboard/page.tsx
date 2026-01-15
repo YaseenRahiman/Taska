@@ -449,11 +449,11 @@ export default function ClientDashboardPage() {
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          {bid.artisanAvatar ? (
-                            <img src={bid.artisanAvatar} alt={bid.artisanName || 'Artisan'} className="w-12 h-12 rounded-full object-cover" />
+                          {(bid.artisanAvatar || (bid as any).artisan?.profile?.profileImage) ? (
+                            <img src={bid.artisanAvatar || (bid as any).artisan?.profile?.profileImage} alt={bid.artisanName || (bid as any).artisan?.profile?.firstName || 'Artisan'} className="w-12 h-12 rounded-full object-cover" />
                           ) : (
                             <span className="text-primary-600 font-medium">
-                              {bid.artisanName?.split(' ').map(n => n[0]).join('') || '??'}
+                              {(bid.artisanName || `${(bid as any).artisan?.profile?.firstName || ''} ${(bid as any).artisan?.profile?.lastName || ''}`.trim())?.split(' ').map((n: string) => n[0]).join('') || '??'}
                             </span>
                           )}
                         </div>
@@ -461,8 +461,8 @@ export default function ClientDashboardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3 mb-2">
                             <div>
-                              <h3 className="font-semibold text-gray-900">{bid.jobTitle || 'Untitled Job'}</h3>
-                              <p className="text-sm text-gray-600">by {bid.artisanName || 'Unknown Artisan'}</p>
+                              <h3 className="font-semibold text-gray-900">{bid.jobTitle || (bid as any).job?.title || 'Untitled Job'}</h3>
+                              <p className="text-sm text-gray-600">by {bid.artisanName || (bid as any).artisan?.profile?.firstName || 'Unknown Artisan'}</p>
                             </div>
                             <Badge className={`${getStatusColor(bid.status)} border flex-shrink-0`}>
                               {bid.status}

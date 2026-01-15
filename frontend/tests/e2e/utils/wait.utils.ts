@@ -91,7 +91,7 @@ export async function waitForPageLoad(
     // Wait for body to be visible (basic sanity check)
     await page.waitForSelector('body', { state: 'visible', timeout: 5000 });
   } catch (error) {
-    throw new Error(`Page failed to load within ${timeout}ms: ${error.message}`);
+    throw new Error(`Page failed to load within ${timeout}ms: ${(error as Error).message}`);
   }
 }
 
@@ -111,7 +111,7 @@ export async function waitForNavigation(
   } catch (error) {
     const currentUrl = page.url();
     throw new Error(
-      `Navigation failed. Expected: ${expectedUrl}, Current: ${currentUrl}. Error: ${error.message}`
+      `Navigation failed. Expected: ${expectedUrl}, Current: ${currentUrl}. Error: ${(error as Error).message}`
     );
   }
 }
@@ -259,7 +259,7 @@ export async function waitForAll(
       ),
     ]);
   } catch (error) {
-    throw new Error(`Not all conditions met within ${timeout}ms: ${error.message}`);
+    throw new Error(`Not all conditions met within ${timeout}ms: ${(error as Error).message}`);
   }
 }
 

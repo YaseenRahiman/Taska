@@ -211,5 +211,5 @@ export async function exportAnalytics(
   const response = await api.get<{ downloadUrl: string; fileName: string }>(
     `/admin/analytics/export?${queryParams}`
   );
-  return response;
+  return response.data;
 }

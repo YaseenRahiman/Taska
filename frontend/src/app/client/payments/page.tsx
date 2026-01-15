@@ -107,7 +107,11 @@ export default function ClientPaymentsPage() {
 
       // Process payments
       if (paymentsRes.status === 'fulfilled') {
-        const paymentsData = paymentsRes.value.data || [];
+        const responseData = paymentsRes.value.data;
+        // Handle both array and object with payments property
+        const paymentsData = Array.isArray(responseData)
+          ? responseData
+          : (responseData?.payments || []);
         setPayments(paymentsData);
 
         // Calculate stats
@@ -133,12 +137,18 @@ export default function ClientPaymentsPage() {
 
       // Process payment methods
       if (methodsRes.status === 'fulfilled') {
-        setPaymentMethods(methodsRes.value.data || []);
+        const methodsData = methodsRes.value.data;
+        setPaymentMethods(Array.isArray(methodsData)
+          ? methodsData
+          : (methodsData?.methods || []));
       }
 
       // Process invoices
       if (invoicesRes.status === 'fulfilled') {
-        setInvoices(invoicesRes.value.data || []);
+        const invoicesData = invoicesRes.value.data;
+        setInvoices(Array.isArray(invoicesData)
+          ? invoicesData
+          : (invoicesData?.invoices || []));
       }
 
     } catch (err: any) {

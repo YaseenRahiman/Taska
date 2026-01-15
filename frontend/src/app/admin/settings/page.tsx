@@ -36,6 +36,7 @@ interface SystemSetting {
   key: string;
   value: string;
   description?: string;
+  category?: string;
   isPublic?: boolean;
   updatedAt: string;
 }

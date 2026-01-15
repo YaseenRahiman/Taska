@@ -26,7 +26,8 @@ import {
   TrendingUp,
   Eye,
   Calendar,
-  Zap
+  Zap,
+  Briefcase
 } from 'lucide-react'
 
 interface Job {
@@ -134,122 +135,7 @@ export default function JobDiscovery() {
         }
       })
 
-      // Mock jobs with realistic data (fallback)
-      const mockJobs: Job[] = [
-        {
-          id: '1',
-          title: 'Kitchen Sink Repair - Urgent',
-          description: 'Kitchen sink is completely blocked and overflowing. Need immediate plumbing assistance.',
-          category: 'Plumbing',
-          budget: 800,
-          location: 'Sandton, Johannesburg',
-          coordinates: { lat: -26.1076, lng: 28.0567 },
-          urgency: 'URGENT',
-          status: 'OPEN',
-          distance: 5.2,
-          postedAt: new Date().toISOString(),
-          deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-          requiresVerification: true,
-          client: {
-            name: 'Sarah Miller',
-            rating: 4.8,
-            completedJobs: 12,
-            isVerified: true
-          },
-          requirements: ['Licensed plumber', 'Emergency availability', 'Own tools'],
-          images: ['/api/images/kitchen-sink-1.jpg']
-        },
-        {
-          id: '2',
-          title: 'Bedroom Electrical Installation',
-          description: 'Need additional power outlets installed in bedroom and ceiling fan wiring.',
-          category: 'Electrical',
-          budget: 1200,
-          location: 'Rosebank, Johannesburg',
-          coordinates: { lat: -26.1439, lng: 28.0404 },
-          urgency: 'MEDIUM',
-          status: 'OPEN',
-          distance: 8.7,
-          postedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          requiresVerification: true,
-          client: {
-            name: 'John Davidson',
-            rating: 4.5,
-            completedJobs: 8,
-            isVerified: true
-          },
-          requirements: ['Certified electrician', 'COC certificate', 'Insurance']
-        },
-        {
-          id: '3',
-          title: 'Custom Kitchen Cabinets',
-          description: 'Looking for skilled carpenter to build custom kitchen cabinets. Detailed plans provided.',
-          category: 'Carpentry',
-          budget: 8500,
-          location: 'Parktown, Johannesburg',
-          coordinates: { lat: -26.1875, lng: 28.0421 },
-          urgency: 'LOW',
-          status: 'OPEN',
-          distance: 12.3,
-          postedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          requiresVerification: false,
-          client: {
-            name: 'Mike Chen',
-            rating: 4.9,
-            completedJobs: 25,
-            isVerified: true
-          },
-          requirements: ['Portfolio required', 'Experience with custom work', 'References']
-        },
-        {
-          id: '4',
-          title: 'Garden Landscaping Project',
-          description: 'Complete garden makeover including lawn, flower beds, and irrigation system.',
-          category: 'Gardening',
-          budget: 5500,
-          location: 'Hyde Park, Johannesburg',
-          coordinates: { lat: -26.1202, lng: 28.0387 },
-          urgency: 'MEDIUM',
-          status: 'OPEN',
-          distance: 7.1,
-          postedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          deadline: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
-          requiresVerification: false,
-          client: {
-            name: 'Lisa Thompson',
-            rating: 4.6,
-            completedJobs: 15,
-            isVerified: false
-          },
-          requirements: ['Landscaping experience', 'Own equipment', 'Plant knowledge']
-        },
-        {
-          id: '5',
-          title: 'Office Painting - 3 Rooms',
-          description: 'Professional painting required for small office space. 3 rooms, walls and ceiling.',
-          category: 'Painting',
-          budget: 2800,
-          location: 'Bryanston, Johannesburg',
-          coordinates: { lat: -26.0456, lng: 28.0183 },
-          urgency: 'HIGH',
-          status: 'OPEN',
-          distance: 15.8,
-          postedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-          deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          requiresVerification: false,
-          client: {
-            name: 'David Wilson',
-            rating: 4.3,
-            completedJobs: 6,
-            isVerified: true
-          },
-          requirements: ['Professional painter', 'Own paint and tools', 'Weekend availability']
-        }
-      ]
-
-      setJobs(response.data.jobs || mockJobs)
+      setJobs(response.data.jobs || [])
     } catch (error) {
       console.error('Error fetching jobs:', error)
       setError('Failed to load jobs. Please try again.')
@@ -877,6 +763,22 @@ export default function JobDiscovery() {
                 </Card>
               ))}
             </div>
+          ) : jobs.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-8 h-8 text-primary-600" aria-hidden="true" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs available</h3>
+                <p className="text-gray-600 max-w-md mx-auto mb-4">
+                  Check back soon for new opportunities in your area.
+                </p>
+                <Button variant="outline" onClick={fetchJobs}>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
             <Card>
               <CardContent className="text-center py-12">

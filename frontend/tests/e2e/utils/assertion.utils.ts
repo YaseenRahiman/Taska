@@ -24,7 +24,7 @@ export async function assertVisible(
     await expect(locator).toBeVisible({ timeout });
   } catch (error) {
     const selector = await locator.evaluate((el) => el.outerHTML).catch(() => 'unknown');
-    throw new Error(`${message}. Selector: ${selector}. Error: ${error.message}`);
+    throw new Error(`${message}. Selector: ${selector}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -40,7 +40,7 @@ export async function assertHidden(
   try {
     await expect(locator).toBeHidden({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -59,7 +59,7 @@ export async function assertText(
   } catch (error) {
     const actualText = await locator.textContent().catch(() => 'unable to read text');
     throw new Error(
-      `${message}. Actual text: "${actualText}". Error: ${error.message}`
+      `${message}. Actual text: "${actualText}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -79,7 +79,7 @@ export async function assertExactText(
   } catch (error) {
     const actualText = await locator.textContent().catch(() => 'unable to read text');
     throw new Error(
-      `${message}. Actual text: "${actualText}". Error: ${error.message}`
+      `${message}. Actual text: "${actualText}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -99,7 +99,7 @@ export async function assertUrl(
   } catch (error) {
     const currentUrl = page.url();
     throw new Error(
-      `${message}. Current URL: "${currentUrl}". Error: ${error.message}`
+      `${message}. Current URL: "${currentUrl}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -118,7 +118,7 @@ export async function assertEnabled(
   } catch (error) {
     const isDisabled = await locator.isDisabled().catch(() => 'unknown');
     throw new Error(
-      `${message}. Is disabled: ${isDisabled}. Error: ${error.message}`
+      `${message}. Is disabled: ${isDisabled}. Error: ${(error as Error).message}`
     );
   }
 }
@@ -135,7 +135,7 @@ export async function assertDisabled(
   try {
     await expect(locator).toBeDisabled({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -153,7 +153,7 @@ export async function assertChecked(
   } catch (error) {
     const isChecked = await locator.isChecked().catch(() => 'unknown');
     throw new Error(
-      `${message}. Is checked: ${isChecked}. Error: ${error.message}`
+      `${message}. Is checked: ${isChecked}. Error: ${(error as Error).message}`
     );
   }
 }
@@ -177,7 +177,7 @@ export async function assertAttribute(
   } catch (error) {
     const actualValue = await locator.getAttribute(attribute).catch(() => 'not found');
     throw new Error(
-      `${message}. Actual value: "${actualValue}". Error: ${error.message}`
+      `${message}. Actual value: "${actualValue}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -197,7 +197,7 @@ export async function assertCount(
   } catch (error) {
     const actualCount = await locator.count();
     throw new Error(
-      `${message}. Actual count: ${actualCount}. Error: ${error.message}`
+      `${message}. Actual count: ${actualCount}. Error: ${(error as Error).message}`
     );
   }
 }
@@ -217,7 +217,7 @@ export async function assertClass(
   } catch (error) {
     const actualClasses = await locator.getAttribute('class').catch(() => 'none');
     throw new Error(
-      `${message}. Actual classes: "${actualClasses}". Error: ${error.message}`
+      `${message}. Actual classes: "${actualClasses}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -237,7 +237,7 @@ export async function assertValue(
   } catch (error) {
     const actualValue = await locator.inputValue().catch(() => 'unable to read value');
     throw new Error(
-      `${message}. Actual value: "${actualValue}". Error: ${error.message}`
+      `${message}. Actual value: "${actualValue}". Error: ${(error as Error).message}`
     );
   }
 }
@@ -289,7 +289,7 @@ export async function assertScreenshot(
       maxDiffPixels: 100,
     });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -305,7 +305,7 @@ export async function assertInViewport(
   try {
     await expect(locator).toBeInViewport({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -321,7 +321,7 @@ export async function assertFocused(
   try {
     await expect(locator).toBeFocused({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -337,7 +337,7 @@ export async function assertExists(
   try {
     await expect(locator).toBeAttached({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -353,7 +353,7 @@ export async function assertNotExists(
   try {
     await expect(locator).not.toBeAttached({ timeout });
   } catch (error) {
-    throw new Error(`${message}. Error: ${error.message}`);
+    throw new Error(`${message}. Error: ${(error as Error).message}`);
   }
 }
 
@@ -370,7 +370,7 @@ export async function softAssert(
     await assertion();
     return true;
   } catch (error) {
-    console.warn(`${message}: ${error.message}`);
+    console.warn(`${message}: ${(error as Error).message}`);
     return false;
   }
 }

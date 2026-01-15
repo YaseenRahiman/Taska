@@ -70,9 +70,12 @@ export default function CreditsPage() {
     }
   };
 
-  const handlePurchaseClick = (bundle: CreditBundle) => {
-    setSelectedBundle(bundle);
-    setShowPaymentModal(true);
+  const handlePurchaseClick = async (bundleId: string): Promise<void> => {
+    const bundle = bundles.find(b => b.id === bundleId);
+    if (bundle) {
+      setSelectedBundle(bundle);
+      setShowPaymentModal(true);
+    }
   };
 
   const handlePurchaseConfirm = async () => {
@@ -194,7 +197,7 @@ export default function CreditsPage() {
                 <CreditBundleCard
                   key={bundle.id}
                   bundle={bundle}
-                  onPurchase={() => handlePurchaseClick(bundle)}
+                  onPurchase={handlePurchaseClick}
                 />
               ))}
             </div>

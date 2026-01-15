@@ -97,21 +97,35 @@ export default function ArtisanSettings() {
     try {
       const response = await api.get('/artisan/settings')
 
-      // Mock bank accounts
-      const mockAccounts: BankAccount[] = [
-        {
-          id: '1',
-          accountName: 'John Smith',
-          accountNumber: '****6789',
-          bankName: 'Standard Bank',
-          branchCode: '051001',
-          isPrimary: true
-        }
-      ]
+      // Update user settings from API response
+      if (response.data) {
+        const userData = response.data.user || response.data
+        setUserSettings({
+          email: userData.email || '',
+          phone: userData.phone || '',
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          location: userData.location || '',
+          language: userData.language || 'en',
+          timezone: userData.timezone || 'Africa/Johannesburg'
+        })
 
-      setBankAccounts(mockAccounts)
+        // Update notification settings if provided
+        if (response.data.notifications) {
+          setNotificationSettings(prev => ({
+            ...prev,
+            ...response.data.notifications
+          }))
+        }
+
+        // Update bank accounts if provided
+        if (response.data.bankAccounts && Array.isArray(response.data.bankAccounts)) {
+          setBankAccounts(response.data.bankAccounts)
+        }
+      }
     } catch (error) {
       console.error('Error fetching settings:', error)
+      // Keep default values if API fails
     }
   }
 

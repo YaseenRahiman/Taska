@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import type { RevenueAnalytics } from '@/lib/api/analytics';
+import type { RevenueAnalytics } from '@/lib/analytics';
 
 interface RevenueChartProps {
   data: RevenueAnalytics;

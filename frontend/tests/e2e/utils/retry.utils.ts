@@ -30,16 +30,16 @@ export async function retryAction<T>(
     onRetry,
   } = options;
 
-  let lastError: Error;
+  let lastError: Error = new Error('Unknown error');
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       return await action();
     } catch (error) {
-      lastError = error;
+      lastError = error as Error;
 
       if (attempt < maxAttempts - 1) {
-        onRetry?.(attempt + 1, error);
+        onRetry?.(attempt + 1, error as Error);
 
         if (backoff) {
           const delay = baseDelay * Math.pow(2, attempt);
@@ -170,10 +170,11 @@ export async function retryWithStaleCheck<T>(
       try {
         return await action(locator);
       } catch (error) {
+        const err = error as Error;
         if (
-          error.message.includes('stale') ||
-          error.message.includes('not attached') ||
-          error.message.includes('detached')
+          err.message.includes('stale') ||
+          err.message.includes('not attached') ||
+          err.message.includes('detached')
         ) {
           // Element became stale, retry will get fresh locator
           throw error;
@@ -224,16 +225,16 @@ export async function retryWithHandler<T>(
 ): Promise<T> {
   const { maxAttempts = 3, backoff = true, baseDelay = 500 } = options;
 
-  let lastError: Error;
+  let lastError: Error = new Error('Unknown error');
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       return await action();
     } catch (error) {
-      lastError = error;
+      lastError = error as Error;
 
       // Let handler decide if we should retry
-      const shouldRetry = await errorHandler(error, attempt);
+      const shouldRetry = await errorHandler(error as Error, attempt);
 
       if (!shouldRetry || attempt >= maxAttempts - 1) {
         throw error;
