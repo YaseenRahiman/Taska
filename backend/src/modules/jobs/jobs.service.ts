@@ -5,11 +5,12 @@ import { JobsRepository, JobWithRelations } from './jobs.repository';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobQueryDto, JobStatisticsDto } from './dto/job-query.dto';
+import { ConfirmJobCompletionDto, JobCompletionStatusDto } from './dto/confirm-completion.dto';
 import { JobMatchingService } from './services/job-matching.service';
 import { ImageProcessingService } from './services/image-processing.service';
 import { GeocodingService } from './services/geocoding.service';
 import { EscrowService } from '../payments/services/escrow.service';
-import { JobStatus, UserRole } from '@prisma/client';
+import { JobStatus, UserRole, NotificationType } from '@prisma/client';
 
 export interface User {
   id: string;
@@ -412,6 +413,252 @@ export class JobsService {
       this.logger.error('Error completing job', 'JobsService');
       throw error;
     }
+  }
+
+  /**
+   * Confirm job completion - Both client and artisan must confirm
+   * This replaces the direct completeJob flow with a mutual confirmation process
+   */
+  async confirmJobCompletion(
+    user: User,
+    jobId: string,
+    dto: ConfirmJobCompletionDto,
+  ): Promise<{ job: JobWithRelations; message: string; isFullyConfirmed: boolean }> {
+    const job = await this.findJobById(jobId, user);
+
+    // Only IN_PROGRESS jobs can be confirmed
+    if (job.status !== JobStatus.IN_PROGRESS) {
+      throw new BadRequestException('Only in-progress jobs can have completion confirmed');
+    }
+
+    // Find the accepted bid to get the artisan
+    const acceptedBid = job.bids.find(bid => bid.status === 'ACCEPTED');
+    if (!acceptedBid) {
+      throw new BadRequestException('No accepted bid found for this job');
+    }
+
+    // Determine if user is client or artisan for this job
+    const isClient = job.clientId === user.id;
+    const isArtisan = acceptedBid.artisanId === user.id;
+
+    if (!isClient && !isArtisan && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('You are not authorized to confirm completion for this job');
+    }
+
+    // Determine the role for confirmation
+    const confirmationRole = isClient ? UserRole.CLIENT : UserRole.ARTISAN;
+
+    // Check if user has already confirmed
+    const alreadyConfirmed = await this.jobsRepository.hasUserConfirmed(jobId, confirmationRole);
+    if (alreadyConfirmed) {
+      throw new BadRequestException(`${confirmationRole} has already confirmed completion for this job`);
+    }
+
+    try {
+      // Create the confirmation record with optional rating
+      await this.jobsRepository.createCompletionConfirmation(
+        jobId,
+        user.id,
+        confirmationRole,
+        dto,
+      );
+
+      // Update job with confirmation timestamp
+      let updatedJob = await this.jobsRepository.updateJobConfirmation(jobId, confirmationRole);
+
+      // Log activity
+      await this.logActivity(user.id, jobId, 'CONFIRM_JOB_COMPLETION', 'Job', jobId, null, {
+        role: confirmationRole,
+        rating: dto.rating,
+      });
+
+      // Check if both parties have now confirmed
+      const completionStatus = await this.jobsRepository.getJobCompletionStatus(jobId);
+
+      if (completionStatus.isFullyConfirmed) {
+        // Both parties confirmed - complete the job and release escrow
+        updatedJob = await this.finalizeJobCompletion(user, jobId, acceptedBid.artisanId);
+
+        // Create reviews from the confirmation ratings if provided
+        await this.createReviewsFromConfirmations(jobId, job.clientId, acceptedBid.artisanId);
+
+        this.logger.info(`Job ${jobId} fully confirmed and completed`, 'JobsService');
+
+        return {
+          job: updatedJob,
+          message: 'Both parties have confirmed. Job is now completed and payment has been released.',
+          isFullyConfirmed: true,
+        };
+      } else {
+        // Only one party confirmed - notify the other party
+        const otherPartyId = isClient ? acceptedBid.artisanId : job.clientId;
+        await this.createCompletionRequestNotification(jobId, otherPartyId, confirmationRole);
+
+        this.logger.info(`Job ${jobId} completion confirmed by ${confirmationRole}, waiting for other party`, 'JobsService');
+
+        return {
+          job: updatedJob,
+          message: `Your confirmation has been recorded. Waiting for the ${isClient ? 'artisan' : 'client'} to confirm completion.`,
+          isFullyConfirmed: false,
+        };
+      }
+    } catch (error) {
+      this.logger.error(`Error confirming job completion for job ${jobId}`, 'JobsService');
+      throw error;
+    }
+  }
+
+  /**
+   * Get the completion status of a job
+   */
+  async getJobCompletionStatus(user: User, jobId: string): Promise<JobCompletionStatusDto> {
+    const job = await this.findJobById(jobId, user);
+
+    const status = await this.jobsRepository.getJobCompletionStatus(jobId);
+
+    return {
+      jobId,
+      clientConfirmed: status.clientConfirmed,
+      clientConfirmedAt: status.clientConfirmedAt || undefined,
+      artisanConfirmed: status.artisanConfirmed,
+      artisanConfirmedAt: status.artisanConfirmedAt || undefined,
+      isFullyConfirmed: status.isFullyConfirmed,
+      jobStatus: job.status,
+    };
+  }
+
+  /**
+   * Finalize job completion after both parties confirm
+   */
+  private async finalizeJobCompletion(
+    user: User,
+    jobId: string,
+    artisanId: string,
+  ): Promise<JobWithRelations> {
+    // Find the payment record for this job
+    const payment = await this.prisma.payment.findFirst({
+      where: {
+        jobId,
+        escrowStatus: 'HELD',
+      },
+    });
+
+    if (payment) {
+      // Check if this is a repeat client
+      const job = await this.prisma.job.findUnique({ where: { id: jobId } });
+      let isRepeatClient = false;
+
+      if (job) {
+        const previousJobs = await this.prisma.job.count({
+          where: {
+            clientId: job.clientId,
+            status: 'COMPLETED',
+            bids: {
+              some: {
+                artisanId,
+                status: 'ACCEPTED',
+              },
+            },
+            id: { not: jobId },
+          },
+        });
+        isRepeatClient = previousJobs > 0;
+      }
+
+      // Release escrow
+      await this.escrowService.releaseFunds(
+        payment.id,
+        user.id,
+        'Job completed - both parties confirmed',
+        undefined,
+        isRepeatClient,
+      );
+
+      this.logger.info(`Escrow released for job ${jobId}`, 'JobsService');
+    }
+
+    // Update job status to COMPLETED
+    const completedJob = await this.jobsRepository.completeJobWithBothConfirmations(jobId);
+
+    // Log activity
+    await this.logActivity(user.id, jobId, 'COMPLETE_JOB', 'Job', jobId,
+      { status: JobStatus.IN_PROGRESS },
+      { status: JobStatus.COMPLETED }
+    );
+
+    return completedJob;
+  }
+
+  /**
+   * Create reviews from confirmation ratings
+   */
+  private async createReviewsFromConfirmations(
+    jobId: string,
+    clientId: string,
+    artisanId: string,
+  ): Promise<void> {
+    const confirmations = await this.jobsRepository.getCompletionConfirmations(jobId);
+
+    for (const confirmation of confirmations) {
+      // Only create review if rating was provided
+      if (confirmation.rating) {
+        const reviewerId = confirmation.userRole === UserRole.CLIENT ? clientId : artisanId;
+        const revieweeId = confirmation.userRole === UserRole.CLIENT ? artisanId : clientId;
+
+        // Check if review already exists
+        const existingReview = await this.prisma.review.findUnique({
+          where: {
+            jobId_reviewerId: {
+              jobId,
+              reviewerId,
+            },
+          },
+        });
+
+        if (!existingReview) {
+          await this.prisma.review.create({
+            data: {
+              jobId,
+              reviewerId,
+              revieweeId,
+              rating: confirmation.rating,
+              qualityRating: confirmation.qualityRating || confirmation.rating,
+              timelinessRating: confirmation.timelinessRating || confirmation.rating,
+              communicationRating: confirmation.communicationRating || confirmation.rating,
+              valueRating: confirmation.valueRating || confirmation.rating,
+              comment: confirmation.feedback,
+              isVerified: true,
+            },
+          });
+
+          this.logger.info(`Review created from confirmation for job ${jobId}`, 'JobsService');
+        }
+      }
+    }
+  }
+
+  /**
+   * Create notification for completion request
+   */
+  private async createCompletionRequestNotification(
+    jobId: string,
+    userId: string,
+    confirmedByRole: UserRole,
+  ): Promise<void> {
+    const job = await this.prisma.job.findUnique({
+      where: { id: jobId },
+      select: { title: true },
+    });
+
+    await this.prisma.notification.create({
+      data: {
+        userId,
+        type: NotificationType.JOB_COMPLETION_REQUESTED,
+        title: 'Job Completion Confirmation Requested',
+        message: `The ${confirmedByRole.toLowerCase()} has confirmed completion of "${job?.title}". Please confirm to complete the job and release payment.`,
+        data: { jobId },
+      },
+    });
   }
 
   async getJobStatistics(user?: User): Promise<JobStatisticsDto> {

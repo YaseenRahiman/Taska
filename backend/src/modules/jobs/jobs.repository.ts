@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { LoggingService } from '../../common/logging/logging.service';
-import { Job, JobStatus, Prisma } from '@prisma/client';
+import { Job, JobStatus, Prisma, UserRole, JobCompletionConfirmation } from '@prisma/client';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobQueryDto } from './dto/job-query.dto';
+import { ConfirmJobCompletionDto } from './dto/confirm-completion.dto';
 
 const jobIncludeConfig = {
   client: {
@@ -25,6 +26,7 @@ const jobIncludeConfig = {
       createdAt: 'asc' as const,
     },
   },
+  completionConfirmations: true,
   _count: {
     select: {
       bids: true,
@@ -254,8 +256,8 @@ export class JobsRepository {
           break;
         case 'urgency':
           // Custom urgency ordering: URGENT -> HIGH -> MEDIUM -> LOW
-          orderBy.push({ 
-            urgency: query.sortOrder === 'asc' ? 'asc' : 'desc' 
+          orderBy.push({
+            urgency: query.sortOrder === 'asc' ? 'asc' : 'desc'
           });
           break;
         case 'distance':
@@ -272,5 +274,125 @@ export class JobsRepository {
     }
 
     return orderBy;
+  }
+
+  // ============================================================================
+  // JOB COMPLETION CONFIRMATION METHODS
+  // ============================================================================
+
+  /**
+   * Create a job completion confirmation record
+   */
+  async createCompletionConfirmation(
+    jobId: string,
+    userId: string,
+    userRole: UserRole,
+    dto: ConfirmJobCompletionDto,
+  ): Promise<JobCompletionConfirmation> {
+    return this.prisma.jobCompletionConfirmation.create({
+      data: {
+        jobId,
+        userId,
+        userRole,
+        rating: dto.rating,
+        qualityRating: dto.qualityRating,
+        timelinessRating: dto.timelinessRating,
+        communicationRating: dto.communicationRating,
+        valueRating: dto.valueRating,
+        feedback: dto.feedback,
+      },
+    });
+  }
+
+  /**
+   * Get completion confirmations for a job
+   */
+  async getCompletionConfirmations(jobId: string): Promise<JobCompletionConfirmation[]> {
+    return this.prisma.jobCompletionConfirmation.findMany({
+      where: { jobId },
+    });
+  }
+
+  /**
+   * Check if a user has already confirmed completion for a job
+   */
+  async hasUserConfirmed(jobId: string, userRole: UserRole): Promise<boolean> {
+    const confirmation = await this.prisma.jobCompletionConfirmation.findUnique({
+      where: {
+        jobId_userRole: {
+          jobId,
+          userRole,
+        },
+      },
+    });
+    return !!confirmation;
+  }
+
+  /**
+   * Update job with completion confirmation timestamps
+   */
+  async updateJobConfirmation(
+    jobId: string,
+    userRole: UserRole,
+  ): Promise<JobWithRelations> {
+    const updateData: Prisma.JobUpdateInput = {};
+
+    if (userRole === UserRole.CLIENT) {
+      updateData.clientConfirmedAt = new Date();
+    } else if (userRole === UserRole.ARTISAN) {
+      updateData.artisanConfirmedAt = new Date();
+    }
+
+    return this.prisma.job.update({
+      where: { id: jobId },
+      data: updateData,
+      include: this.getJobIncludes(),
+    });
+  }
+
+  /**
+   * Complete job after both parties confirmed
+   */
+  async completeJobWithBothConfirmations(jobId: string): Promise<JobWithRelations> {
+    return this.prisma.job.update({
+      where: { id: jobId },
+      data: {
+        status: JobStatus.COMPLETED,
+        completedAt: new Date(),
+      },
+      include: this.getJobIncludes(),
+    });
+  }
+
+  /**
+   * Get job completion status
+   */
+  async getJobCompletionStatus(jobId: string): Promise<{
+    clientConfirmed: boolean;
+    clientConfirmedAt: Date | null;
+    artisanConfirmed: boolean;
+    artisanConfirmedAt: Date | null;
+    isFullyConfirmed: boolean;
+  }> {
+    const job = await this.prisma.job.findUnique({
+      where: { id: jobId },
+      select: {
+        clientConfirmedAt: true,
+        artisanConfirmedAt: true,
+        status: true,
+      },
+    });
+
+    if (!job) {
+      throw new Error('Job not found');
+    }
+
+    return {
+      clientConfirmed: !!job.clientConfirmedAt,
+      clientConfirmedAt: job.clientConfirmedAt,
+      artisanConfirmed: !!job.artisanConfirmedAt,
+      artisanConfirmedAt: job.artisanConfirmedAt,
+      isFullyConfirmed: !!job.clientConfirmedAt && !!job.artisanConfirmedAt,
+    };
   }
 }

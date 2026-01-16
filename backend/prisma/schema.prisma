@@ -164,17 +164,21 @@ model Job {
   completedAt        DateTime?    @map("completed_at")
   cancelledAt        DateTime?    @map("cancelled_at")
   cancellationReason String?      @map("cancellation_reason")
+  // Job Completion Confirmation - Both parties must confirm
+  clientConfirmedAt  DateTime?    @map("client_confirmed_at")
+  artisanConfirmedAt DateTime?    @map("artisan_confirmed_at")
   createdAt          DateTime     @default(now()) @map("created_at")
   updatedAt          DateTime     @updatedAt @map("updated_at")
 
   // Relations
-  client     User          @relation("ClientJobs", fields: [clientId], references: [id])
-  category   Category      @relation(fields: [categoryId], references: [id])
-  bids       Bid[]
-  messages   Message[]
-  payments   Payment[]
-  reviews    Review[]
-  activities ActivityLog[]
+  client                   User                       @relation("ClientJobs", fields: [clientId], references: [id])
+  category                 Category                   @relation(fields: [categoryId], references: [id])
+  bids                     Bid[]
+  messages                 Message[]
+  payments                 Payment[]
+  reviews                  Review[]
+  activities               ActivityLog[]
+  completionConfirmations  JobCompletionConfirmation[]
 
   @@index([clientId])
   @@index([categoryId])
@@ -456,6 +460,30 @@ model Review {
   @@map("reviews")
 }
 
+// Job Completion Confirmation - Tracks individual party confirmations with ratings
+model JobCompletionConfirmation {
+  id              String   @id @default(cuid())
+  jobId           String   @map("job_id")
+  userId          String   @map("user_id")
+  userRole        UserRole @map("user_role") // CLIENT or ARTISAN
+  // Rating given during confirmation (1-5 stars)
+  rating          Int?     // Overall rating
+  qualityRating   Int?     @map("quality_rating")
+  timelinessRating Int?    @map("timeliness_rating")
+  communicationRating Int? @map("communication_rating")
+  valueRating     Int?     @map("value_rating")
+  feedback        String?  @db.Text // Optional feedback/comment
+  confirmedAt     DateTime @default(now()) @map("confirmed_at")
+
+  // Relations
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, userRole]) // One confirmation per role per job
+  @@index([jobId])
+  @@index([userId])
+  @@map("job_completion_confirmations")
+}
+
 // Notifications Table - User notifications
 model Notification {
   id        String           @id @default(cuid())
@@ -482,7 +510,8 @@ enum NotificationType {
   BID_RECEIVED
   BID_ACCEPTED
   BID_REJECTED
-  JOB_COMPLETED
+  JOB_COMPLETION_REQUESTED  // First party confirmed, waiting for second
+  JOB_COMPLETED             // Both parties confirmed, job is complete
   PAYMENT_RECEIVED
   MESSAGE_RECEIVED
   REVIEW_RECEIVED

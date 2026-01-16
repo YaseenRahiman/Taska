@@ -21,6 +21,7 @@ import { JobsService, User } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobQueryDto, JobStatisticsDto } from './dto/job-query.dto';
+import { ConfirmJobCompletionDto, JobCompletionStatusDto } from './dto/confirm-completion.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -197,7 +198,7 @@ export class JobsController {
 
   @Put(':id/complete')
   @Roles(UserRole.CLIENT, UserRole.ARTISAN, UserRole.ADMIN)
-  @ApiOperation({ summary: 'Mark job as completed (optionally with rating for artisan)' })
+  @ApiOperation({ summary: 'Mark job as completed (optionally with rating for artisan) - DEPRECATED: Use confirm-completion instead' })
   @ApiResponse({ status: 200, description: 'Job completed successfully, escrow released with dynamic platform fee' })
   @ApiResponse({ status: 400, description: 'Bad request - job cannot be completed' })
   @ApiResponse({ status: 403, description: 'Forbidden - no permission to complete job' })
@@ -208,6 +209,55 @@ export class JobsController {
     @Body() body?: { rating?: number },
   ) {
     return this.jobsService.completeJob(user, id, body?.rating);
+  }
+
+  @Post(':id/confirm-completion')
+  @Roles(UserRole.CLIENT, UserRole.ARTISAN)
+  @ApiOperation({
+    summary: 'Confirm job completion with optional rating',
+    description: 'Both client and artisan must confirm for job to be marked as completed. '
+      + 'When both parties confirm, escrow is released and reviews are created from the provided ratings.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Confirmation recorded. If both parties confirmed, job is completed.',
+    schema: {
+      type: 'object',
+      properties: {
+        job: { type: 'object', description: 'Updated job object' },
+        message: { type: 'string', example: 'Your confirmation has been recorded.' },
+        isFullyConfirmed: { type: 'boolean', example: false },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad request - job not in progress or already confirmed' })
+  @ApiResponse({ status: 403, description: 'Forbidden - not authorized for this job' })
+  @ApiResponse({ status: 404, description: 'Job not found' })
+  async confirmCompletion(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+    @Body() dto: ConfirmJobCompletionDto,
+  ) {
+    return this.jobsService.confirmJobCompletion(user, id, dto);
+  }
+
+  @Get(':id/completion-status')
+  @Roles(UserRole.CLIENT, UserRole.ARTISAN, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Get job completion confirmation status',
+    description: 'Returns the confirmation status showing which parties have confirmed completion.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Completion status retrieved',
+    type: JobCompletionStatusDto,
+  })
+  @ApiResponse({ status: 404, description: 'Job not found' })
+  async getCompletionStatus(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+  ): Promise<JobCompletionStatusDto> {
+    return this.jobsService.getJobCompletionStatus(user, id);
   }
 
   @Delete(':id')

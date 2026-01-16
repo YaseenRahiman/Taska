@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { ArtisanNavbar } from '@/components/artisan/ArtisanNavbar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { api } from '@/lib/api'
+import { JobCompletionConfirmModal } from '@/components/jobs/JobCompletionConfirmModal'
+import { JobCompletionStatus, ConfirmCompletionResponse } from '@/types/job'
+import { CheckCircle2, AlertCircle } from 'lucide-react'
 
 interface Project {
   id: string
@@ -68,6 +71,8 @@ export default function ProjectManagement() {
   const [loading, setLoading] = useState(true)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
+  const [completionStatusMap, setCompletionStatusMap] = useState<Record<string, JobCompletionStatus>>({})
   const [activeTab, setActiveTab] = useState('active')
 
   const [updateForm, setUpdateForm] = useState({
@@ -288,7 +293,14 @@ export default function ProjectManagement() {
         }
       ]
       
-      setProjects(response.data?.projects || mockProjects)
+      const projectsData = response.data?.projects || mockProjects
+      setProjects(projectsData)
+
+      // Fetch completion status for IN_PROGRESS projects
+      const inProgressProjects = projectsData.filter((p: Project) => p.status === 'IN_PROGRESS')
+      if (inProgressProjects.length > 0) {
+        fetchCompletionStatuses(inProgressProjects.map((p: Project) => p.jobId))
+      }
     } catch (error) {
       console.error('Error fetching projects:', error)
       setProjects([])
@@ -296,6 +308,44 @@ export default function ProjectManagement() {
       setLoading(false)
     }
   }
+
+  const fetchCompletionStatuses = useCallback(async (jobIds: string[]) => {
+    try {
+      const statusPromises = jobIds.map(async (jobId) => {
+        try {
+          const status = await api.getJobCompletionStatus(jobId)
+          return { jobId, status }
+        } catch {
+          return { jobId, status: null }
+        }
+      })
+
+      const results = await Promise.all(statusPromises)
+      const statusMap: Record<string, JobCompletionStatus> = {}
+
+      results.forEach(({ jobId, status }) => {
+        if (status) {
+          statusMap[jobId] = status
+        }
+      })
+
+      setCompletionStatusMap(statusMap)
+    } catch (error) {
+      console.error('Error fetching completion statuses:', error)
+    }
+  }, [])
+
+  const handleCompletionSuccess = useCallback((response: ConfirmCompletionResponse) => {
+    // Refresh project data
+    fetchProjects()
+    setShowCompletionModal(false)
+    setSelectedProject(null)
+  }, [])
+
+  const openCompletionModal = useCallback((project: Project) => {
+    setSelectedProject(project)
+    setShowCompletionModal(true)
+  }, [])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-ZA', {
@@ -529,11 +579,45 @@ export default function ProjectManagement() {
                       </div>
                     </div>
 
+                    {/* Completion Status for IN_PROGRESS projects */}
+                    {project.status === 'IN_PROGRESS' && completionStatusMap[project.jobId] && (
+                      <div className="pt-2 pb-1 border-t border-gray-100">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-gray-600">Client confirmed:</span>
+                          {completionStatusMap[project.jobId].clientConfirmed ? (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Yes
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 text-xs">
+                              <AlertCircle className="w-3 h-3 mr-1" />
+                              Pending
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Your confirmation:</span>
+                          {completionStatusMap[project.jobId].artisanConfirmed ? (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 text-xs">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Yes
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 text-xs">
+                              <AlertCircle className="w-3 h-3 mr-1" />
+                              Pending
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Action Buttons */}
                     <div className="pt-2 space-y-2">
                       <div className="grid grid-cols-2 gap-2">
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation()
@@ -548,9 +632,32 @@ export default function ProjectManagement() {
                           Message Client
                         </Button>
                       </div>
+
+                      {/* Confirm Completion Button for IN_PROGRESS projects */}
+                      {project.status === 'IN_PROGRESS' && (
+                        <Button
+                          className={`w-full ${
+                            completionStatusMap[project.jobId]?.artisanConfirmed
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-green-600 hover:bg-green-700'
+                          }`}
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openCompletionModal(project)
+                          }}
+                          disabled={completionStatusMap[project.jobId]?.artisanConfirmed}
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          {completionStatusMap[project.jobId]?.artisanConfirmed
+                            ? 'Completion Confirmed'
+                            : 'Confirm Completion'}
+                        </Button>
+                      )}
+
                       {project.payments.some(p => p.status === 'PENDING') && (
-                        <Button 
-                          className="w-full" 
+                        <Button
+                          className="w-full"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation()
@@ -772,6 +879,23 @@ export default function ProjectManagement() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Job Completion Confirmation Modal */}
+      {showCompletionModal && selectedProject && (
+        <JobCompletionConfirmModal
+          jobId={selectedProject.jobId}
+          jobTitle={selectedProject.title}
+          isClient={false}
+          otherPartyName={selectedProject.client.name}
+          otherPartyConfirmed={completionStatusMap[selectedProject.jobId]?.clientConfirmed ?? false}
+          isOpen={showCompletionModal}
+          onClose={() => {
+            setShowCompletionModal(false)
+            setSelectedProject(null)
+          }}
+          onSuccess={handleCompletionSuccess}
+        />
       )}
         </div>
       </div>

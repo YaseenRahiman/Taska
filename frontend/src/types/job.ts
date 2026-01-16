@@ -3,7 +3,8 @@ export enum JobStatus {
   OPEN = 'OPEN',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
+  DISPUTED = 'DISPUTED'
 }
 
 export interface JobImage {
@@ -11,6 +12,20 @@ export interface JobImage {
   url: string;
   thumbnailUrl?: string;
   order: number;
+}
+
+export interface JobCompletionConfirmation {
+  id: string;
+  jobId: string;
+  userId: string;
+  userRole: 'CLIENT' | 'ARTISAN';
+  rating?: number;
+  qualityRating?: number;
+  timelinessRating?: number;
+  communicationRating?: number;
+  valueRating?: number;
+  feedback?: string;
+  confirmedAt: string;
 }
 
 export interface Job {
@@ -28,9 +43,38 @@ export interface Job {
   status: JobStatus;
   images: JobImage[];
   userId: string;
+  // Completion confirmation tracking
+  clientConfirmedAt?: string;
+  artisanConfirmedAt?: string;
+  completionConfirmations?: JobCompletionConfirmation[];
   createdAt: string;
   updatedAt: string;
   bidCount?: number;
+}
+
+export interface JobCompletionStatus {
+  jobId: string;
+  clientConfirmed: boolean;
+  clientConfirmedAt?: string;
+  artisanConfirmed: boolean;
+  artisanConfirmedAt?: string;
+  isFullyConfirmed: boolean;
+  jobStatus: string;
+}
+
+export interface ConfirmCompletionDto {
+  rating?: number;
+  qualityRating?: number;
+  timelinessRating?: number;
+  communicationRating?: number;
+  valueRating?: number;
+  feedback?: string;
+}
+
+export interface ConfirmCompletionResponse {
+  job: Job;
+  message: string;
+  isFullyConfirmed: boolean;
 }
 
 export interface CreateJobDto {

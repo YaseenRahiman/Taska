@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  ArrowLeft, 
-  MapPin, 
-  Calendar, 
+import {
+  ArrowLeft,
+  MapPin,
+  Calendar,
   DollarSign,
   Users,
   Star,
@@ -19,10 +19,14 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Eye
+  Eye,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils';
+import { JobCompletionConfirmModal } from '@/components/jobs/JobCompletionConfirmModal';
+import { JobCompletionStatus, ConfirmCompletionResponse } from '@/types/job';
 
 interface Job {
   id: string;
@@ -102,10 +106,23 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedBid, setSelectedBid] = useState<string | null>(null);
   const [processingBid, setProcessingBid] = useState<string | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [completionStatus, setCompletionStatus] = useState<JobCompletionStatus | null>(null);
+  const [acceptedArtisan, setAcceptedArtisan] = useState<Bid['artisan'] | null>(null);
 
   useEffect(() => {
     if (jobId) {
       fetchJobData();
+    }
+  }, [jobId]);
+
+  const fetchCompletionStatus = useCallback(async () => {
+    if (!jobId) return;
+    try {
+      const status = await api.getJobCompletionStatus(jobId);
+      setCompletionStatus(status);
+    } catch (error) {
+      console.error('Failed to fetch completion status:', error);
     }
   }, [jobId]);
 
@@ -142,7 +159,19 @@ export default function JobDetailPage() {
         setJob(transformedJob);
       }
 
-      setBids(bidsResponse.data?.bids || bidsResponse.data || []);
+      const bidsData = bidsResponse.data?.bids || bidsResponse.data || [];
+      setBids(bidsData);
+
+      // Find the accepted artisan for IN_PROGRESS jobs
+      const acceptedBid = bidsData.find((bid: Bid) => bid.status === 'ACCEPTED');
+      if (acceptedBid) {
+        setAcceptedArtisan(acceptedBid.artisan);
+      }
+
+      // Fetch completion status for IN_PROGRESS jobs
+      if (jobData?.status === 'IN_PROGRESS') {
+        fetchCompletionStatus();
+      }
     } catch (error) {
       console.error('Failed to fetch job data:', error);
     } finally {
@@ -171,6 +200,14 @@ export default function JobDetailPage() {
       console.error('Failed to reject bid:', error);
     } finally {
       setProcessingBid(null);
+    }
+  };
+
+  const handleCompletionSuccess = (response: ConfirmCompletionResponse) => {
+    // Refresh job data and completion status
+    fetchJobData();
+    if (response.isFullyConfirmed) {
+      // Job is now completed - could show a success message or redirect
     }
   };
 
@@ -627,29 +664,100 @@ export default function JobDetailPage() {
               </CardContent>
             </Card>
 
+            {/* Completion Status Banner for IN_PROGRESS jobs */}
+            {job.status === 'IN_PROGRESS' && (
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2 text-blue-900">
+                    <Clock className="w-5 h-5" />
+                    Job In Progress
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {completionStatus ? (
+                    <>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-blue-700">Your confirmation:</span>
+                        {completionStatus.clientConfirmed ? (
+                          <Badge className="bg-green-100 text-green-800">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Confirmed
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-800">
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Pending
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-blue-700">Artisan confirmation:</span>
+                        {completionStatus.artisanConfirmed ? (
+                          <Badge className="bg-green-100 text-green-800">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Confirmed
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-yellow-100 text-yellow-800">
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Pending
+                          </Badge>
+                        )}
+                      </div>
+                      {!completionStatus.clientConfirmed && (
+                        <Button
+                          className="w-full bg-green-600 hover:bg-green-700 mt-2"
+                          onClick={() => setShowCompletionModal(true)}
+                        >
+                          <CheckCircle2 className="w-4 h-4 mr-2" />
+                          Confirm Completion
+                        </Button>
+                      )}
+                      {completionStatus.clientConfirmed && !completionStatus.artisanConfirmed && (
+                        <p className="text-sm text-blue-700 mt-2">
+                          Waiting for the artisan to confirm completion.
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-sm text-blue-700">
+                      <p>When the work is complete, both you and the artisan need to confirm completion.</p>
+                      <Button
+                        className="w-full bg-green-600 hover:bg-green-700 mt-3"
+                        onClick={() => setShowCompletionModal(true)}
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                        Confirm Completion
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Quick Actions */}
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button 
+                <Button
                   className="w-full"
                   onClick={() => router.push(`/jobs/${job.id}/edit`)}
                   disabled={job.status !== 'OPEN'}
                 >
                   Edit Job
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full"
                   onClick={() => router.push(`/messages?job=${job.id}`)}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   View Messages
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full text-red-600 border-red-600 hover:bg-red-50"
                   onClick={() => {
                     if (confirm('Are you sure you want to cancel this job?')) {
@@ -665,6 +773,23 @@ export default function JobDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Job Completion Confirmation Modal */}
+      {job && job.status === 'IN_PROGRESS' && (
+        <JobCompletionConfirmModal
+          jobId={job.id}
+          jobTitle={job.title}
+          isClient={true}
+          otherPartyName={acceptedArtisan
+            ? `${acceptedArtisan.firstName} ${acceptedArtisan.lastName}`
+            : 'the artisan'
+          }
+          otherPartyConfirmed={completionStatus?.artisanConfirmed ?? false}
+          isOpen={showCompletionModal}
+          onClose={() => setShowCompletionModal(false)}
+          onSuccess={handleCompletionSuccess}
+        />
+      )}
     </div>
   );
 }

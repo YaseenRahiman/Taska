@@ -183,6 +183,24 @@ class ApiClient {
     return response.data;
   }
 
+  // Job completion confirmation endpoints
+  async confirmJobCompletion(jobId: string, data: {
+    rating?: number;
+    qualityRating?: number;
+    timelinessRating?: number;
+    communicationRating?: number;
+    valueRating?: number;
+    feedback?: string;
+  }) {
+    const response = await this.client.post(`/jobs/${jobId}/confirm-completion`, data);
+    return response.data;
+  }
+
+  async getJobCompletionStatus(jobId: string) {
+    const response = await this.client.get(`/jobs/${jobId}/completion-status`);
+    return response.data;
+  }
+
   // Bid endpoints
   async getBids(params?: any) {
     const response = await this.client.get('/bids', { params });
