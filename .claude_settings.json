@@ -11,14 +11,24 @@
       "Edit(./**)",
       "Glob(./**)",
       "Grep(./**)",
+      "Read(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska/**)",
+      "Write(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska/**)",
+      "Edit(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska/**)",
+      "Glob(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska/**)",
+      "Grep(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska/**)",
+      "Read(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\.auto-claude\\specs\\007-fix-nan-display-in-bid-calculator/**)",
+      "Write(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\.auto-claude\\specs\\007-fix-nan-display-in-bid-calculator/**)",
+      "Edit(C:\\Users\\Yaseen\\OneDrive\\Documents\\Investments\\Taska\\.auto-claude\\specs\\007-fix-nan-display-in-bid-calculator/**)",
       "Bash(*)",
-      "mcp__context7__resolve-library-id",
-      "mcp__context7__get-library-docs",
-      "mcp__graphiti-memory__search_nodes",
-      "mcp__graphiti-memory__search_facts",
-      "mcp__graphiti-memory__add_episode",
-      "mcp__graphiti-memory__get_episodes",
-      "mcp__graphiti-memory__get_entity_edge"
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)",
+      "mcp__graphiti-memory__search_nodes(*)",
+      "mcp__graphiti-memory__search_facts(*)",
+      "mcp__graphiti-memory__add_episode(*)",
+      "mcp__graphiti-memory__get_episodes(*)",
+      "mcp__graphiti-memory__get_entity_edge(*)"
     ]
   }
 }
