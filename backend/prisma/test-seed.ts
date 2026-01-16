@@ -20,7 +20,7 @@ async function main() {
   // ============================================
   console.log('👥 Creating test users...');
 
-  const password = await hash('password123', 12); // Same password for all test users - MUST match E2E tests
+  const password = await hash('Test123!', 12); // Same password for all test users - MUST match E2E tests
 
   // CLIENT User
   const client = await prisma.user.upsert({
@@ -522,10 +522,10 @@ async function main() {
   console.log('  - Reviews created: 1');
   console.log('  - Specializations: 4');
   console.log('\n🔑 Test Credentials:');
-  console.log('  CLIENT:  client@test.com / password123');
-  console.log('  ARTISAN: artisan@test.com / password123');
-  console.log('  ARTISAN: artisan2@test.com / password123');
-  console.log('  ADMIN:   admin@test.com / password123');
+  console.log('  CLIENT:  client@test.com / Test123!');
+  console.log('  ARTISAN: artisan@test.com / Test123!');
+  console.log('  ARTISAN: artisan2@test.com / Test123!');
+  console.log('  ADMIN:   admin@test.com / Test123!');
   console.log('\n🎯 Ready for E2E testing!');
   console.log('='.repeat(50) + '\n');
 }

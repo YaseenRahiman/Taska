@@ -27,6 +27,10 @@ const statusConfig = {
   [JobStatus.CANCELLED]: {
     label: 'Cancelled',
     className: 'bg-red-100 text-red-800 border-red-300'
+  },
+  [JobStatus.DISPUTED]: {
+    label: 'Disputed',
+    className: 'bg-orange-100 text-orange-800 border-orange-300'
   }
 };
 

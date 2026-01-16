@@ -77,8 +77,6 @@ export default function ArtisanRegisterForm() {
 
   return (
     <form
-      action="javascript:void(0)"
-      method="POST"
       onSubmit={handleSubmit(onSubmit, (errors) => {
         console.log('[ArtisanRegisterForm] Form validation FAILED - errors:', JSON.stringify(errors));
       })}
