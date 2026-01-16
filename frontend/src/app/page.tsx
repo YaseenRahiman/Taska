@@ -51,12 +51,13 @@ export default function HomePage() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-cream-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+            className="md:hidden relative z-50 inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-cream-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 active:bg-cream-100"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
             data-testid="mobile-menu"
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">{mobileMenuOpen ? 'Close menu' : 'Open main menu'}</span>
             {mobileMenuOpen ? (
               <X className="block h-6 w-6" aria-hidden="true" />
             ) : (
