@@ -46,6 +46,9 @@ model User {
   loyaltyTransactions LoyaltyTransaction[]
   profileBoosts       ProfileBoost[]
 
+  // Subscription Relations
+  subscription        UserSubscription?
+
   @@index([email])
   @@index([role])
   @@index([createdAt])
@@ -1118,4 +1121,119 @@ enum BoostType {
   STANDARD     // 25% visibility boost for 24 hours (10 credits)
   SUPER        // 50% visibility boost for 48 hours + featured badge (25 credits)
   PREMIUM      // 100% visibility boost for 7 days + featured + notifications (50 credits)
+}
+
+// ============================================================================
+// TASKA SUBSCRIPTION SYSTEM - Monthly subscription plans for usage limits
+// ============================================================================
+
+// Subscription Plan - Defines available subscription tiers
+model SubscriptionPlan {
+  id                    String   @id @default(cuid())
+  name                  String   @unique // "FREE", "PREMIUM"
+  displayName           String   @map("display_name") // "Free Plan", "Premium Plan"
+  description           String?
+
+  // Client limits (job postings per month)
+  clientJobsPerMonth    Int      @default(2) @map("client_jobs_per_month")
+
+  // Artisan limits (bids per month)
+  artisanBidsPerMonth   Int      @default(5) @map("artisan_bids_per_month")
+
+  // Pricing in ZAR (0 for free plan)
+  pricePerMonthZar      Decimal  @default(0) @map("price_per_month_zar") @db.Decimal(10, 2)
+  pricePerYearZar       Decimal  @default(0) @map("price_per_year_zar") @db.Decimal(10, 2)
+
+  // Additional features (JSON for flexibility)
+  features              Json?    // e.g., { "prioritySupport": true, "analytics": true }
+
+  // Status
+  isActive              Boolean  @default(true) @map("is_active")
+  isDefault             Boolean  @default(false) @map("is_default") // Default plan for new users
+  sortOrder             Int      @default(0) @map("sort_order")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  subscriptions         UserSubscription[]
+
+  @@index([isActive])
+  @@index([isDefault])
+  @@map("subscription_plans")
+}
+
+// Subscription Status Enum
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  PAUSED
+  EXPIRED
+}
+
+// Billing Cycle Enum
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+// User Subscription - Tracks user's current subscription
+model UserSubscription {
+  id                    String             @id @default(cuid())
+  userId                String             @unique @map("user_id") // One active subscription per user
+  planId                String             @map("plan_id")
+  status                SubscriptionStatus @default(ACTIVE)
+  billingCycle          BillingCycle       @default(MONTHLY) @map("billing_cycle")
+
+  // Billing period dates
+  currentPeriodStart    DateTime           @map("current_period_start")
+  currentPeriodEnd      DateTime           @map("current_period_end")
+
+  // Cancellation tracking
+  cancelledAt           DateTime?          @map("cancelled_at")
+  cancelAtPeriodEnd     Boolean            @default(false) @map("cancel_at_period_end")
+
+  // Payment provider info (optional - for paid subscriptions)
+  stripeSubscriptionId  String?            @map("stripe_subscription_id")
+  stripeCustomerId      String?            @map("stripe_customer_id")
+
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                  SubscriptionPlan   @relation(fields: [planId], references: [id])
+  usageRecords          UsageRecord[]
+
+  @@index([planId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@map("user_subscriptions")
+}
+
+// Usage Record - Tracks monthly usage per user
+model UsageRecord {
+  id                    String           @id @default(cuid())
+  subscriptionId        String           @map("subscription_id")
+  userId                String           @map("user_id")
+
+  // Period tracking
+  periodStart           DateTime         @map("period_start")
+  periodEnd             DateTime         @map("period_end")
+
+  // Usage counts
+  jobsPosted            Int              @default(0) @map("jobs_posted")
+  bidsPlaced            Int              @default(0) @map("bids_placed")
+
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  subscription          UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, periodStart])
+  @@index([userId, periodStart])
+  @@index([periodEnd])
+  @@map("usage_records")
 }

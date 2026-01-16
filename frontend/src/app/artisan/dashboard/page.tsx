@@ -28,6 +28,7 @@ import {
 import { api } from '@/lib/api'
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
+import SubscriptionWidget from '@/components/subscription/SubscriptionWidget'
 
 interface Job {
   id: string
@@ -346,22 +347,30 @@ export default function ArtisanDashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions Banner */}
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 md:p-8 mb-8 text-white shadow-lg" data-testid="quick-actions-banner">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold mb-2">Find Your Next Job</h2>
-              <p className="text-primary-50">Browse available opportunities and submit competitive bids.</p>
+        {/* Quick Actions and Subscription */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Quick Actions Banner */}
+          <div className="lg:col-span-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 md:p-8 text-white shadow-lg" data-testid="quick-actions-banner">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 h-full">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Find Your Next Job</h2>
+                <p className="text-primary-50">Browse available opportunities and submit competitive bids.</p>
+              </div>
+              <Button
+                onClick={() => router.push('/artisan/jobs')}
+                size="lg"
+                className="bg-white text-black hover:bg-cream-50 shadow-md hover:shadow-lg transition-all whitespace-nowrap font-semibold"
+                data-testid="browse-jobs-button"
+              >
+                <Hammer className="w-5 h-5 mr-2" />
+                Browse Jobs
+              </Button>
             </div>
-            <Button
-              onClick={() => router.push('/artisan/jobs')}
-              size="lg"
-              className="bg-white text-black hover:bg-cream-50 shadow-md hover:shadow-lg transition-all whitespace-nowrap font-semibold"
-              data-testid="browse-jobs-button"
-            >
-              <Hammer className="w-5 h-5 mr-2" />
-              Browse Jobs
-            </Button>
+          </div>
+
+          {/* Subscription Widget */}
+          <div className="lg:col-span-1">
+            <SubscriptionWidget userRole="ARTISAN" />
           </div>
         </div>
 

@@ -10,6 +10,7 @@ import { JobMatchingService } from './services/job-matching.service';
 import { ImageProcessingService } from './services/image-processing.service';
 import { GeocodingService } from './services/geocoding.service';
 import { EscrowService } from '../payments/services/escrow.service';
+import { SubscriptionService } from '../monetization/services/subscription.service';
 import { JobStatus, UserRole, NotificationType } from '@prisma/client';
 
 export interface User {
@@ -32,6 +33,8 @@ export class JobsService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => EscrowService))
     private readonly escrowService: EscrowService,
+    @Inject(forwardRef(() => SubscriptionService))
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async createJob(user: User, createJobDto: CreateJobDto): Promise<JobWithRelations> {
@@ -42,6 +45,12 @@ export class JobsService {
     this.logger.info(`Creating job for user ${user.id}`, 'JobsService');
 
     try {
+      // Check subscription limits before creating job
+      const canPost = await this.subscriptionService.canPostJob(user.id);
+      if (!canPost.allowed) {
+        throw new BadRequestException(canPost.reason);
+      }
+
       // Validate budget against system settings
       await this.validateBudget(createJobDto.budget);
 
@@ -66,6 +75,9 @@ export class JobsService {
       if (isDraft === false) {
         finalJob = await this.jobsRepository.updateJobStatus(job.id, JobStatus.OPEN, user.id);
       }
+
+      // Increment subscription usage counter
+      await this.subscriptionService.incrementJobUsage(user.id);
 
       // Log activity
       await this.logActivity(user.id, finalJob.id, 'CREATE_JOB', 'Job', finalJob.id, null, {

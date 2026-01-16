@@ -21,7 +21,8 @@ import {
   FileText,
   Activity,
   ListChecks,
-  MessageSquare
+  MessageSquare,
+  CreditCard
 } from 'lucide-react';
 
 const navigation = [
@@ -66,6 +67,12 @@ const navigation = [
     href: '/admin/financial',
     icon: DollarSign,
     description: 'Revenue, payouts, and reconciliation'
+  },
+  {
+    name: 'Subscriptions',
+    href: '/admin/subscriptions',
+    icon: CreditCard,
+    description: 'Plans, usage limits, and subscribers'
   },
   {
     name: 'Moderation',

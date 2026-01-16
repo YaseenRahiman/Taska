@@ -8,6 +8,7 @@ import { BidQueryDto, BidStatisticsDto } from './dto/bid-query.dto';
 import { BidStatus, UserRole, JobStatus } from '@prisma/client';
 import { LevelService } from '../monetization/services/level.service';
 import { CreditService } from '../monetization/services/credit.service';
+import { SubscriptionService } from '../monetization/services/subscription.service';
 
 export interface User {
   id: string;
@@ -26,6 +27,7 @@ export class BidsService {
     private readonly prisma: PrismaService,
     private readonly levelService: LevelService,
     private readonly creditService: CreditService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async createBid(user: User, createBidDto: CreateBidDto): Promise<BidWithRelations> {
@@ -48,34 +50,51 @@ export class BidsService {
       // Validate artisan specialization matches job category
       await this.validateArtisanSpecialization(user.id, createBidDto.jobId);
 
-      // Check for free bids or deduct credits
+      // Check subscription limits first (primary limit system)
+      const canBid = await this.subscriptionService.canPlaceBid(user.id);
+      let usedSubscriptionBid = false;
       let usedFreeBid = false;
-      try {
-        const freeBidResult = await this.levelService.useFreeBid(user.id);
-        usedFreeBid = freeBidResult.usedFreeBid;
-        if (usedFreeBid) {
-          this.logger.info(`Artisan ${user.id} used a free bid (${freeBidResult.remaining} remaining)`, 'BidsService');
-        }
-      } catch (error) {
-        // No free bids available, will use credits
-        this.logger.info(`No free bids available for artisan ${user.id}, checking credits`, 'BidsService');
-      }
+      let usedCredits = false;
 
-      // If no free bid was used, deduct credits
-      if (!usedFreeBid) {
+      if (canBid.allowed) {
+        // User has subscription bids remaining
+        usedSubscriptionBid = true;
+        this.logger.info(`Artisan ${user.id} using subscription bid (${canBid.remaining} remaining)`, 'BidsService');
+      } else {
+        // Subscription limit reached, try free bids from level system as fallback
         try {
-          await this.creditService.spendCredits(user.id, 'BID', createBidDto.jobId);
-          this.logger.info(`Artisan ${user.id} spent credits for bid on job ${createBidDto.jobId}`, 'BidsService');
-        } catch (error) {
-          this.logger.error(`Insufficient credits for artisan ${user.id}`, 'BidsService');
-          throw new BadRequestException(
-            'Insufficient credits to place a bid. Please purchase credits or wait for your monthly free bids to reset.',
-          );
+          const freeBidResult = await this.levelService.useFreeBid(user.id);
+          usedFreeBid = freeBidResult.usedFreeBid;
+          if (usedFreeBid) {
+            this.logger.info(`Artisan ${user.id} used a level free bid (${freeBidResult.remaining} remaining)`, 'BidsService');
+          }
+        } catch {
+          // No free bids available, try credits as last resort
+          this.logger.info(`No level free bids available for artisan ${user.id}, checking credits`, 'BidsService');
+        }
+
+        // If no free bid was used, try to deduct credits
+        if (!usedFreeBid) {
+          try {
+            await this.creditService.spendCredits(user.id, 'BID', createBidDto.jobId);
+            usedCredits = true;
+            this.logger.info(`Artisan ${user.id} spent credits for bid on job ${createBidDto.jobId}`, 'BidsService');
+          } catch {
+            this.logger.error(`Insufficient credits for artisan ${user.id}`, 'BidsService');
+            throw new BadRequestException(
+              canBid.reason || 'You have reached your monthly bid limit. Upgrade to Premium for more bids or purchase credits.',
+            );
+          }
         }
       }
 
       // Create the bid
       const bid = await this.bidsRepository.createBid(user.id, createBidDto);
+
+      // Track subscription usage if subscription bid was used
+      if (usedSubscriptionBid) {
+        await this.subscriptionService.incrementBidUsage(user.id);
+      }
 
       // Send notification to job client
       await this.notifyJobClient(bid);
@@ -84,7 +103,9 @@ export class BidsService {
       await this.logActivity(user.id, bid.jobId, 'CREATE_BID', 'Bid', bid.id, null, {
         amount: bid.amount,
         estimatedDays: bid.estimatedDays,
+        usedSubscriptionBid,
         usedFreeBid,
+        usedCredits,
       });
 
       this.logger.info(`Bid created successfully`, 'BidsService');

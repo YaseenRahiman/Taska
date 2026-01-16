@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
   ChevronDown,
@@ -22,6 +21,43 @@ import {
   MessageSquare,
   BadgeCheck
 } from 'lucide-react';
+import PublicNavbar from '@/components/layout/public-navbar';
+
+// Subscription plans
+const subscriptionPlans = [
+  {
+    name: 'Free',
+    price: 0,
+    period: '/month',
+    clientJobs: 2,
+    artisanBids: 5,
+    features: [
+      'Basic support',
+      'Job posting',
+      'Bidding on jobs',
+      'Secure escrow payments'
+    ],
+    isPopular: false,
+    cta: 'Get Started Free'
+  },
+  {
+    name: 'Premium',
+    price: 299,
+    period: '/month',
+    clientJobs: 50,
+    artisanBids: 100,
+    features: [
+      'Priority support',
+      '50 job postings/month',
+      '100 bids/month',
+      'Featured listings',
+      'Priority matching',
+      'Advanced analytics'
+    ],
+    isPopular: true,
+    cta: 'Upgrade to Premium'
+  }
+];
 
 // Credit bundles for artisans
 const creditBundles = [
@@ -43,7 +79,7 @@ const artisanLevels = [
 
 // Client features
 const clientFeatures = [
-  { icon: Briefcase, text: 'Post unlimited jobs for free' },
+  { icon: Briefcase, text: '2 free job postings per month (50 with Premium)' },
   { icon: Users, text: 'Receive multiple quotes from verified artisans' },
   { icon: MessageSquare, text: 'Direct messaging with artisans' },
   { icon: BadgeCheck, text: 'Access to verified professional profiles' },
@@ -55,7 +91,7 @@ const clientFeatures = [
 const artisanFeatures = [
   { icon: Users, text: 'Create a professional profile' },
   { icon: Briefcase, text: 'Browse unlimited job listings' },
-  { icon: Coins, text: 'Submit bids (5 credits each)' },
+  { icon: Coins, text: '5 free bids per month (100 with Premium)' },
   { icon: Award, text: 'Level up for lower fees and perks' },
   { icon: Zap, text: 'Boost profile visibility' },
   { icon: Gift, text: 'Earn free credits through referrals' }
@@ -150,20 +186,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 export default function PricingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-cream-200 bg-white/95 backdrop-blur">
-        <div className="container-wide flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="h-5 w-5" />
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary"></div>
-            <span className="text-xl font-bold text-gray-900">Taska</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href="/auth/login" className="nav-link">Sign In</Link>
-            <Link href="/auth/register" className="btn-primary">Get Started</Link>
-          </div>
-        </div>
-      </header>
+      <PublicNavbar />
 
       <main className="flex-1">
         {/* Hero */}
@@ -253,6 +276,86 @@ export default function PricingPage() {
                   Join as Artisan
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Subscription Plans */}
+        <section className="py-16 bg-white">
+          <div className="container-wide">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Subscription Plans</h2>
+              <p className="text-lg text-gray-600">
+                Choose the plan that fits your needs. Upgrade anytime for more posting and bidding power.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {subscriptionPlans.map((plan, index) => (
+                <div
+                  key={index}
+                  className={`bg-white rounded-2xl p-8 shadow-lg transition-all hover:shadow-xl ${
+                    plan.isPopular ? 'border-2 border-primary-500 ring-2 ring-primary-100 relative' : 'border border-cream-200'
+                  }`}
+                >
+                  {plan.isPopular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-primary-500 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold text-primary-600">
+                        {plan.price === 0 ? 'Free' : `R${plan.price}`}
+                      </span>
+                      {plan.price > 0 && <span className="text-gray-500">{plan.period}</span>}
+                    </div>
+                  </div>
+
+                  <div className="bg-cream-50 rounded-lg p-4 mb-6">
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-primary-600">{plan.clientJobs}</div>
+                        <div className="text-xs text-gray-600">Jobs/month</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-primary-600">{plan.artisanBids}</div>
+                        <div className="text-xs text-gray-600">Bids/month</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start">
+                        <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    href="/auth/register"
+                    className={`w-full justify-center text-lg py-3 rounded-lg font-semibold transition-colors flex items-center ${
+                      plan.isPopular
+                        ? 'bg-primary-600 text-white hover:bg-primary-700'
+                        : 'bg-cream-100 text-gray-900 hover:bg-cream-200'
+                    }`}
+                  >
+                    {plan.cta}
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <p className="text-gray-600">
+                Need more? Purchase additional credits to exceed your monthly limits.
+              </p>
             </div>
           </div>
         </section>
