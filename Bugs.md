@@ -5,9 +5,13 @@ Comprehensive E2E testing was run in Chrome with `--headed` flag to test the com
 
 **Test Date**: 2026-01-16
 **Test Environment**: Chrome (Chromium) - Headed Mode
-**Total Test Cases Run**: 140
-**Failed Tests**: 18+
+**Total Test Cases Run**: 279
+**Passed Tests**: 243 ✅
+**Failed Tests**: 30 ❌
+**Skipped Tests**: 6 ⏭️
 **Critical Bugs Found**: 2
+**Test Execution Time**: 9.8 minutes
+**Success Rate**: 87% (243/279)
 
 ---
 
@@ -268,19 +272,62 @@ Occurs during initial page loads
 - ✅ Permission Restrictions - Non-admin users correctly blocked from admin routes
 
 ### Failing Test Categories
-- ❌ Admin Journey Tests - 18+ consecutive failures (all due to Bug #2)
+- ❌ Admin Journey Tests - 28 consecutive failures (all due to Bug #2)
+- ❌ Client Job Creation - 1 failure (related to Bug #1 dashboards)
+- ❌ Example Fixed Test - 1 failure (admin login bug)
 - ⚠️ Job Completion Confirmation Tests - Cannot run (blocked by Bug #1)
 - ⚠️ Dashboard Tests (Client & Artisan) - 500 errors (Bug #1)
 - ⚠️ Job Listing/Browsing - Cannot fetch data (Bug #1)
 
 ### Overall Health
 ```
-Total Tests Run: 140+
-Passed: 122
-Failed: 18
-Blocked: 10+
-Success Rate: 87% (but skewed by blocking bugs)
+Total Tests Run: 279
+Passed: 243
+Failed: 30
+Skipped: 6
+Success Rate: 87% (243/279)
+Execution Time: 9.8 minutes
 ```
+
+**Breakdown of Failures by Category:**
+- Admin tests: 28 failures (Bug #2 - admin login)
+- Client creation: 1 failure (related to dashboard loading)
+- Example test: 1 failure (admin login)
+- Total blocking issues: 2 critical bugs affecting 30 tests
+
+### Complete List of Failed Tests
+1. ❌ Client Job Creation › should open job creation modal/page
+2. ❌ Admin Dashboard › should display admin dashboard correctly
+3. ❌ Admin Dashboard › should show platform statistics
+4. ❌ Admin Dashboard › should have navigation to all admin sections
+5. ❌ Admin Analytics › should navigate to analytics page
+6. ❌ Admin Analytics › should display charts and graphs
+7. ❌ Admin Analytics › should have date range filter
+8. ❌ Admin Analytics › should display key performance indicators
+9. ❌ Admin User Management › should navigate to users management page
+10. ❌ Admin User Management › should display users table
+11. ❌ Admin User Management › should have search functionality
+12. ❌ Admin User Management › should filter users by role
+13. ❌ Admin User Management › should have user action buttons
+14. ❌ Admin User Management › should display user statistics
+15. ❌ Admin Moderation › should navigate to moderation page
+16. ❌ Admin Moderation › should display items pending moderation
+17. ❌ Admin Moderation › should have approve/reject actions
+18. ❌ Admin Moderation › should navigate to review moderation
+19. ❌ Admin Financial Management › should navigate to financial page
+20. ❌ Admin Financial Management › should display revenue metrics
+21. ❌ Admin Financial Management › should navigate to payment approval page
+22. ❌ Admin Financial Management › should navigate to escrow config page
+23. ❌ Admin Settings & Configuration › should navigate to settings page
+24. ❌ Admin Settings & Configuration › should display platform settings
+25. ❌ Admin Settings & Configuration › should have save button for settings
+26. ❌ Admin Settings & Configuration › should navigate to bulk operations page
+27. ❌ Admin Navigation › should have working admin sidebar navigation
+28. ❌ Admin Navigation › should display admin user menu
+29. ❌ Admin Permissions › should display admin-only features
+30. ❌ Client Journey - Fixed Example › should use seeded users for specific scenarios - CORRECT PATTERN
+
+**Note**: Tests 2-29 all fail with same root cause: "API login failed: Invalid credentials" (Bug #2)
 
 ---
 
