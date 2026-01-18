@@ -36,13 +36,6 @@ export default function LoginPage() {
 
           <div className="card mt-8">
             <UserLoginForm />
-
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
-              <Link href="/auth/register" className="font-medium text-primary-600 hover:text-primary-500" data-testid="register-link">
-                Sign up
-              </Link>
-            </div>
           </div>
         </div>
       </main>

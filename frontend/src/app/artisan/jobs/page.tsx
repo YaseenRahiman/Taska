@@ -135,7 +135,39 @@ export default function JobDiscovery() {
         }
       })
 
-      setJobs(response.data.jobs || [])
+      // API returns { data: Job[], meta: {...} }
+      // Transform API response to match frontend Job interface
+      const apiJobs = response.data.data || []
+      const transformedJobs: Job[] = apiJobs.map((job: any) => ({
+        id: job.id,
+        title: job.title,
+        description: job.description,
+        category: job.category?.name || 'General',
+        budget: parseFloat(job.budget) || 0,
+        location: job.city ? `${job.city}, ${job.province}` : 'Location not specified',
+        coordinates: job.latitude && job.longitude ? {
+          lat: job.latitude,
+          lng: job.longitude
+        } : undefined,
+        urgency: job.urgency || 'MEDIUM',
+        status: job.status,
+        distance: job.distance_km,
+        postedAt: job.createdAt,
+        deadline: job.endDate,
+        requiresVerification: false, // Default value, update if API provides this
+        client: {
+          name: job.client?.profile?.firstName && job.client?.profile?.lastName
+            ? `${job.client.profile.firstName} ${job.client.profile.lastName}`
+            : job.client?.email?.split('@')[0] || 'Anonymous',
+          rating: job.client?.profile?.rating || 4.5,
+          completedJobs: job.client?.profile?.completedJobs || 0,
+          isVerified: job.client?.emailVerified || false
+        },
+        requirements: job.requirements || [],
+        images: job.images || []
+      }))
+
+      setJobs(transformedJobs)
     } catch (error) {
       console.error('Error fetching jobs:', error)
       setError('Failed to load jobs. Please try again.')
