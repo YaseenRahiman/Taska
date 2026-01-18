@@ -839,18 +839,30 @@ export default function JobDiscovery() {
             isOpen={showBidModal}
             onClose={() => {
               setShowBidModal(false)
+              // Only clear selectedJob if details modal is also closed
+              if (!showDetailsModal) {
+                setSelectedJob(null)
+              }
+            }}
+            onSuccess={() => {
+              handleBidSuccess()
+              // Clear selection after successful bid
               setSelectedJob(null)
             }}
-            onSuccess={handleBidSuccess}
           />
           <JobDetailsModal
             job={selectedJob}
             isOpen={showDetailsModal}
             onClose={() => {
               setShowDetailsModal(false)
-              setSelectedJob(null)
+              // Only clear selectedJob if bid modal is also closed
+              if (!showBidModal) {
+                setSelectedJob(null)
+              }
             }}
             onBidClick={() => {
+              // First close the details modal, then open bid modal
+              // Keep selectedJob so it's available for bid modal
               setShowDetailsModal(false)
               setShowBidModal(true)
             }}

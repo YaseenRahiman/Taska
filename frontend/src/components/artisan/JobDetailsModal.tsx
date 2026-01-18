@@ -350,7 +350,7 @@ export function JobDetailsModal({ job, isOpen, onClose, onBidClick }: JobDetails
           {!myBid && (
             <Button
               onClick={() => {
-                onClose()
+                // Call onBidClick first to open bid modal, it will close this modal
                 onBidClick()
               }}
               className="flex-1 bg-primary-600 hover:bg-primary-700"

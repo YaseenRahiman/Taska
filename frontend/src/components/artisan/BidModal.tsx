@@ -150,14 +150,23 @@ export function BidModal({ job, isOpen, onClose, onSuccess }: BidModalProps) {
     } catch (error: any) {
       console.error('Error submitting bid:', error)
 
+      // Handle different error types with clear messages
       if (error.response?.data?.message) {
         setSubmitError(error.response.data.message)
       } else if (error.response?.status === 400) {
         setSubmitError('Invalid bid data. Please check your inputs.')
+      } else if (error.response?.status === 401) {
+        setSubmitError('Your session has expired. Please log in again.')
       } else if (error.response?.status === 403) {
         setSubmitError('You are not authorized to submit bids. Please ensure you are logged in as an artisan.')
       } else if (error.response?.status === 404) {
         setSubmitError('Job not found. It may have been closed or removed.')
+      } else if (error.response?.status === 409) {
+        setSubmitError('You have already submitted a bid for this job.')
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        setSubmitError('Request timed out. Please check your connection and try again.')
+      } else if (error.code === 'ERR_NETWORK' || !error.response) {
+        setSubmitError('Network error. Please check your internet connection and try again.')
       } else {
         setSubmitError('Failed to submit bid. Please try again.')
       }
@@ -183,8 +192,15 @@ export function BidModal({ job, isOpen, onClose, onSuccess }: BidModalProps) {
     }).format(amount)
   }
 
+  // Prevent closing modal during submission or after success
+  const handleBackdropClick = () => {
+    if (!submitting && !submitSuccess) {
+      onClose()
+    }
+  }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={handleBackdropClick}>
       <div
         className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -196,9 +212,10 @@ export function BidModal({ job, isOpen, onClose, onSuccess }: BidModalProps) {
             <p className="text-sm text-gray-600 mt-1">{job.title}</p>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleBackdropClick}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Close modal"
+            disabled={submitting || submitSuccess}
           >
             <X className="w-5 h-5 text-gray-500" />
           </button>
