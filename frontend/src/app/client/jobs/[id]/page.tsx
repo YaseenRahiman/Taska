@@ -405,7 +405,7 @@ export default function JobDetailPage() {
                                 />
                               ) : (
                                 <span className="text-turquoise-600 font-medium">
-                                  {bid.artisan.firstName.charAt(0)}{bid.artisan.lastName.charAt(0)}
+                                  {bid.artisan?.firstName?.charAt(0) || ''}{bid.artisan?.lastName?.charAt(0) || ''}
                                 </span>
                               )}
                             </div>
@@ -603,7 +603,7 @@ export default function JobDetailPage() {
                       />
                     ) : (
                       <span className="text-turquoise-600 font-medium">
-                        {job.client.firstName.charAt(0)}{job.client.lastName.charAt(0)}
+                        {job.client?.firstName?.charAt(0) || ''}{job.client?.lastName?.charAt(0) || ''}
                       </span>
                     )}
                   </div>
