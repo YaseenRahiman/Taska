@@ -532,7 +532,10 @@ export default function JobDiscovery() {
                     id="min-budget"
                     type="number"
                     value={filters.minBudget}
-                    onChange={(e) => setFilters(prev => ({ ...prev, minBudget: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      setFilters(prev => ({ ...prev, minBudget: Math.max(0, value) }));
+                    }}
                     className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="0"
                     min="0"
@@ -546,7 +549,10 @@ export default function JobDiscovery() {
                     id="max-budget"
                     type="number"
                     value={filters.maxBudget}
-                    onChange={(e) => setFilters(prev => ({ ...prev, maxBudget: parseInt(e.target.value) || 10000 }))}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 10000;
+                      setFilters(prev => ({ ...prev, maxBudget: Math.max(0, value) }));
+                    }}
                     className="w-full p-2 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="10000"
                     min="0"

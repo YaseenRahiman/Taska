@@ -159,11 +159,32 @@ export default function JobDetailPage() {
         setJob(transformedJob);
       }
 
-      const bidsData = bidsResponse.data?.bids || bidsResponse.data || [];
-      setBids(bidsData);
+      const rawBidsData = bidsResponse.data?.bids || bidsResponse.data || [];
+      // Transform bids data to match frontend interface
+      const transformedBids: Bid[] = (Array.isArray(rawBidsData) ? rawBidsData : []).map((bid: any) => ({
+        ...bid,
+        artisan: {
+          id: bid.artisan?.id || '',
+          firstName: bid.artisan?.profile?.firstName || bid.artisan?.firstName || '',
+          lastName: bid.artisan?.profile?.lastName || bid.artisan?.lastName || '',
+          email: bid.artisan?.email || '',
+          phone: bid.artisan?.profile?.phone || bid.artisan?.phone,
+          profilePicture: bid.artisan?.profile?.profileImage || bid.artisan?.profilePicture,
+          averageRating: bid.artisan?.profile?.averageRating || bid.artisan?.averageRating,
+          totalReviews: bid.artisan?.profile?.totalReviews || bid.artisan?.totalReviews,
+          completedJobs: bid.artisan?.profile?.completedJobs || bid.artisan?.completedJobs,
+          // Transform specializations from objects to strings
+          specializations: bid.artisan?.specializations?.map((spec: any) =>
+            typeof spec === 'string' ? spec : spec?.category?.name || spec?.name || ''
+          ).filter(Boolean) || bid.artisan?.specializations,
+          bio: bid.artisan?.profile?.bio || bid.artisan?.bio,
+          verificationStatus: bid.artisan?.profile?.verificationStatus || bid.artisan?.verificationStatus || 'PENDING',
+        },
+      }));
+      setBids(transformedBids);
 
       // Find the accepted artisan for IN_PROGRESS jobs
-      const acceptedBid = bidsData.find((bid: Bid) => bid.status === 'ACCEPTED');
+      const acceptedBid = transformedBids.find((bid: Bid) => bid.status === 'ACCEPTED');
       if (acceptedBid) {
         setAcceptedArtisan(acceptedBid.artisan);
       }

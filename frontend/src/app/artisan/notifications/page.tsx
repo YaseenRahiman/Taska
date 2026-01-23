@@ -129,7 +129,11 @@ export default function ArtisanNotifications() {
         }
       ]
 
-      setNotifications(response.data || mockNotifications)
+      // Handle both array and object response formats
+      const notificationsData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.notifications || response.data?.data || [];
+      setNotifications(notificationsData.length > 0 ? notificationsData : mockNotifications)
     } catch (error) {
       console.error('Error fetching notifications:', error)
     } finally {

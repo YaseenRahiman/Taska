@@ -57,7 +57,11 @@ export default function ClientNotifications() {
     try {
       setLoading(true)
       const response = await api.get('/notifications')
-      setNotifications(response.data || [])
+      // Handle both array and object response formats
+      const notificationsData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.notifications || response.data?.data || [];
+      setNotifications(notificationsData)
     } catch (error) {
       console.error('Error fetching notifications:', error)
       setNotifications([])
