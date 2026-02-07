@@ -20,12 +20,13 @@ import {
   AlertCircle,
   Clock,
   User,
-  Filter
+  Filter,
+  CalendarDays
 } from 'lucide-react'
 
 interface Notification {
   id: string
-  type: 'BID_ACCEPTED' | 'BID_REJECTED' | 'NEW_MESSAGE' | 'PAYMENT_RECEIVED' | 'REVIEW_RECEIVED' | 'JOB_MATCH' | 'SYSTEM'
+  type: 'BID_ACCEPTED' | 'BID_REJECTED' | 'NEW_MESSAGE' | 'PAYMENT_RECEIVED' | 'REVIEW_RECEIVED' | 'JOB_MATCH' | 'SYSTEM' | 'JOB_REMINDER_24H' | 'JOB_REMINDER_1H'
   title: string
   message: string
   read: boolean
@@ -195,6 +196,9 @@ export default function ArtisanNotifications() {
         return <Bell className="w-5 h-5 text-primary-600" />
       case 'SYSTEM':
         return <AlertCircle className="w-5 h-5 text-gray-600" />
+      case 'JOB_REMINDER_24H':
+      case 'JOB_REMINDER_1H':
+        return <CalendarDays className="w-5 h-5 text-orange-600" />
       default:
         return <Bell className="w-5 h-5 text-gray-600" />
     }
@@ -216,6 +220,9 @@ export default function ArtisanNotifications() {
         return 'bg-primary-100'
       case 'SYSTEM':
         return 'bg-gray-100'
+      case 'JOB_REMINDER_24H':
+      case 'JOB_REMINDER_1H':
+        return 'bg-orange-100'
       default:
         return 'bg-gray-100'
     }

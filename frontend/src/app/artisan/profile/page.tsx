@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { api } from '@/lib/api'
+import WorkScheduleEditor from '@/components/artisan/calendar/WorkScheduleEditor'
 
 interface ArtisanProfile {
   id: string
@@ -94,15 +95,7 @@ export default function ArtisanProfile() {
     location: ''
   })
 
-  const [availabilityForm, setAvailabilityForm] = useState({
-    monday: { available: false, hours: '9:00-17:00' },
-    tuesday: { available: false, hours: '9:00-17:00' },
-    wednesday: { available: false, hours: '9:00-17:00' },
-    thursday: { available: false, hours: '9:00-17:00' },
-    friday: { available: false, hours: '9:00-17:00' },
-    saturday: { available: false, hours: '9:00-17:00' },
-    sunday: { available: false, hours: '9:00-17:00' }
-  })
+  // availabilityForm removed – now managed by WorkScheduleEditor component
 
   useEffect(() => {
     fetchProfile()
@@ -219,7 +212,6 @@ export default function ArtisanProfile() {
         experience: profileToUse.experience,
         location: profileToUse.location
       })
-      setAvailabilityForm(profileToUse.availability)
     } catch (error) {
       console.error('Error in fetchProfile:', error)
     } finally {
@@ -249,15 +241,6 @@ export default function ArtisanProfile() {
       setEditing(false)
     } catch (error) {
       console.error('Error updating profile:', error)
-    }
-  }
-
-  const updateAvailability = async () => {
-    try {
-      await api.put('/artisan/availability', availabilityForm)
-      await fetchProfile()
-    } catch (error) {
-      console.error('Error updating availability:', error)
     }
   }
 
@@ -501,58 +484,7 @@ export default function ArtisanProfile() {
         </TabsContent>
 
         <TabsContent value="availability" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Availability Schedule</CardTitle>
-              <CardDescription>Set your working hours for each day</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {daysOfWeek.map((day) => (
-                <div key={day} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={availabilityForm[day as keyof typeof availabilityForm]?.available || false}
-                      onChange={(e) => {
-                        setAvailabilityForm(prev => ({
-                          ...prev,
-                          [day]: {
-                            ...prev[day as keyof typeof prev],
-                            available: e.target.checked
-                          }
-                        }))
-                      }}
-                    />
-                    <span className="font-medium capitalize">{day}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={availabilityForm[day as keyof typeof availabilityForm]?.hours || ''}
-                      onChange={(e) => {
-                        setAvailabilityForm(prev => ({
-                          ...prev,
-                          [day]: {
-                            ...prev[day as keyof typeof prev],
-                            hours: e.target.value
-                          }
-                        }))
-                      }}
-                      disabled={!availabilityForm[day as keyof typeof availabilityForm]?.available}
-                      className="w-32 p-2 border rounded-md disabled:bg-gray-100"
-                      placeholder="9:00-17:00"
-                    />
-                  </div>
-                </div>
-              ))}
-              
-              <div className="pt-4 border-t">
-                <Button onClick={updateAvailability}>
-                  Update Availability
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <WorkScheduleEditor />
         </TabsContent>
 
         <TabsContent value="portfolio" className="space-y-6">

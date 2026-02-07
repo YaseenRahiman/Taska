@@ -9,6 +9,7 @@ import { BidStatus, UserRole, JobStatus } from '@prisma/client';
 import { LevelService } from '../monetization/services/level.service';
 import { CreditService } from '../monetization/services/credit.service';
 import { SubscriptionService } from '../monetization/services/subscription.service';
+import { CalendarService } from '../calendar/calendar.service';
 
 export interface User {
   id: string;
@@ -28,6 +29,7 @@ export class BidsService {
     private readonly levelService: LevelService,
     private readonly creditService: CreditService,
     private readonly subscriptionService: SubscriptionService,
+    private readonly calendarService: CalendarService,
   ) {}
 
   async createBid(user: User, createBidDto: CreateBidDto): Promise<BidWithRelations> {
@@ -304,7 +306,22 @@ export class BidsService {
       throw new BadRequestException('Only pending bids can be accepted');
     }
 
-    return await this.bidsRepository.updateBidStatus(id, BidStatus.ACCEPTED);
+    const acceptedBid = await this.bidsRepository.updateBidStatus(id, BidStatus.ACCEPTED);
+
+    // Schedule job reminders if the job has a startDate
+    if (bid.job.startDate) {
+      try {
+        await this.calendarService.scheduleJobReminders(
+          bid.artisanId,
+          bid.jobId,
+          new Date(bid.job.startDate),
+        );
+      } catch (error) {
+        this.logger.error('Error scheduling job reminders', 'BidsService');
+      }
+    }
+
+    return acceptedBid;
   }
 
   async rejectBid(user: User, id: string, reason: string): Promise<BidWithRelations> {

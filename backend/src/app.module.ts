@@ -16,6 +16,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { MonetizationModule } from './modules/monetization/monetization.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 import { validationSchema } from './config/env.validation';
 
 @Module({
@@ -59,6 +60,7 @@ import { validationSchema } from './config/env.validation';
     CategoriesModule,
     MonetizationModule,
     SettingsModule,
+    CalendarModule,
   ],
   controllers: [],
   providers: [],

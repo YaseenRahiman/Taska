@@ -30,6 +30,10 @@ model User {
   receivedMessages Message[]               @relation("ReceivedMessages")
   reviews          Review[]                @relation("UserReviews")
   givenReviews     Review[]                @relation("ReviewAuthor")
+  moderatedReviews Review[]                @relation("ReviewModerator")
+  reviewFlags      ReviewFlag[]            @relation("ReviewFlagger")
+  reviewNotes      ReviewModerationNote[]  @relation("ReviewNoteAuthor")
+  reviewEdits      ReviewEditHistory[]     @relation("ReviewEditor")
   wallet           Wallet?
   notifications    Notification[]
   activities       ActivityLog[]
@@ -48,6 +52,11 @@ model User {
 
   // Subscription Relations
   subscription        UserSubscription?
+
+  // Calendar Relations
+  workSchedules    ArtisanWorkSchedule[]
+  timeOffs         ArtisanTimeOff[]
+  specialHours     ArtisanSpecialHours[]
 
   @@index([email])
   @@index([role])
@@ -449,6 +458,13 @@ model Review {
   respondedAt         DateTime? @map("responded_at")
   isVerified          Boolean   @default(false) @map("is_verified") // Verified job completion
   helpfulCount        Int       @default(0) @map("helpful_count")
+  // Moderation fields
+  status              ReviewStatus @default(VISIBLE)
+  isFlagged           Boolean   @default(false) @map("is_flagged")
+  flagCount           Int       @default(0) @map("flag_count")
+  moderatedBy         String?   @map("moderated_by")
+  moderatedAt         DateTime? @map("moderated_at")
+  deletedAt           DateTime? @map("deleted_at") // Soft delete
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 
@@ -456,11 +472,87 @@ model Review {
   job      Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
   reviewer User @relation("ReviewAuthor", fields: [reviewerId], references: [id])
   reviewee User @relation("UserReviews", fields: [revieweeId], references: [id])
+  moderator User? @relation("ReviewModerator", fields: [moderatedBy], references: [id])
+  flags    ReviewFlag[]
+  moderationNotes ReviewModerationNote[]
+  editHistory ReviewEditHistory[]
 
   @@unique([jobId, reviewerId])
   @@index([revieweeId])
   @@index([rating])
+  @@index([isFlagged])
+  @@index([status])
   @@map("reviews")
+}
+
+// Review Status Enum
+enum ReviewStatus {
+  VISIBLE
+  HIDDEN
+  DELETED
+}
+
+// Review Flag Reason Enum
+enum ReviewFlagReason {
+  SPAM
+  INAPPROPRIATE
+  FAKE
+  OFFENSIVE
+  OTHER
+}
+
+// Review Flags - Tracks flagged reviews
+model ReviewFlag {
+  id          String           @id @default(cuid())
+  reviewId    String           @map("review_id")
+  flaggedBy   String           @map("flagged_by")
+  reason      ReviewFlagReason
+  description String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  // Relations
+  review  Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  flagger User   @relation("ReviewFlagger", fields: [flaggedBy], references: [id])
+
+  @@unique([reviewId, flaggedBy])
+  @@index([reviewId])
+  @@map("review_flags")
+}
+
+// Review Moderation Notes - Admin notes on reviews
+model ReviewModerationNote {
+  id        String   @id @default(cuid())
+  reviewId  String   @map("review_id")
+  content   String
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  admin  User   @relation("ReviewNoteAuthor", fields: [createdBy], references: [id])
+
+  @@index([reviewId])
+  @@map("review_moderation_notes")
+}
+
+// Review Edit History - Tracks admin edits to reviews
+model ReviewEditHistory {
+  id              String   @id @default(cuid())
+  reviewId        String   @map("review_id")
+  previousRating  Int      @map("previous_rating")
+  newRating       Int      @map("new_rating")
+  previousContent String?  @map("previous_content")
+  newContent      String?  @map("new_content")
+  editedBy        String   @map("edited_by")
+  editReason      String   @map("edit_reason")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  editor User   @relation("ReviewEditor", fields: [editedBy], references: [id])
+
+  @@index([reviewId])
+  @@map("review_edit_history")
 }
 
 // Job Completion Confirmation - Tracks individual party confirmations with ratings
@@ -520,6 +612,8 @@ enum NotificationType {
   REVIEW_RECEIVED
   WITHDRAWAL_PROCESSED
   SYSTEM_ANNOUNCEMENT
+  JOB_REMINDER_24H          // Reminder 24 hours before job start
+  JOB_REMINDER_1H           // Reminder 1 hour before job start
 }
 
 // Activity Logs Table - Audit trail
@@ -1236,4 +1330,87 @@ model UsageRecord {
   @@index([userId, periodStart])
   @@index([periodEnd])
   @@map("usage_records")
+}
+
+// ============================================================================
+// ARTISAN CALENDAR & WORK SCHEDULE SYSTEM
+// ============================================================================
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum TimeOffReason {
+  HOLIDAY
+  PERSONAL
+  SICK
+  OTHER
+}
+
+// Artisan Work Schedule - Weekly recurring availability (1 row per day per artisan)
+model ArtisanWorkSchedule {
+  id          String    @id @default(cuid())
+  artisanId   String    @map("artisan_id")
+  dayOfWeek   DayOfWeek @map("day_of_week")
+  isAvailable Boolean   @default(true) @map("is_available")
+  startTime   String    @default("09:00") @map("start_time") // HH:mm format
+  endTime     String    @default("17:00") @map("end_time")
+  breakStart  String?   @map("break_start") // HH:mm format
+  breakEnd    String?   @map("break_end")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  artisan User @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([artisanId, dayOfWeek])
+  @@index([artisanId])
+  @@map("artisan_work_schedules")
+}
+
+// Artisan Time Off - Blocked date ranges
+model ArtisanTimeOff {
+  id        String        @id @default(cuid())
+  artisanId String        @map("artisan_id")
+  startDate DateTime      @map("start_date")
+  endDate   DateTime      @map("end_date")
+  reason    TimeOffReason @default(PERSONAL)
+  note      String?
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  artisan User @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@index([startDate, endDate])
+  @@map("artisan_time_offs")
+}
+
+// Artisan Special Hours - Single-day schedule overrides
+model ArtisanSpecialHours {
+  id          String   @id @default(cuid())
+  artisanId   String   @map("artisan_id")
+  date        DateTime
+  isAvailable Boolean  @default(true) @map("is_available")
+  startTime   String?  @map("start_time") // HH:mm format
+  endTime     String?  @map("end_time")
+  breakStart  String?  @map("break_start")
+  breakEnd    String?  @map("break_end")
+  note        String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  artisan User @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([artisanId, date])
+  @@index([artisanId])
+  @@map("artisan_special_hours")
 }

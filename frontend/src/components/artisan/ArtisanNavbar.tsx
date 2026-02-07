@@ -17,7 +17,8 @@ import {
   MessageCircle,
   Search,
   DollarSign,
-  Star
+  Star,
+  Calendar
 } from 'lucide-react';
 
 export function ArtisanNavbar() {
@@ -36,6 +37,7 @@ export function ArtisanNavbar() {
     { label: 'Find Jobs', href: '/artisan/jobs', icon: Search },
     { label: 'My Bids', href: '/artisan/bids', icon: Briefcase },
     { label: 'Projects', href: '/artisan/projects', icon: Star },
+    { label: 'Calendar', href: '/artisan/calendar', icon: Calendar },
     { label: 'Messages', href: '/artisan/messages', icon: MessageCircle },
     { label: 'Earnings', href: '/artisan/earnings', icon: DollarSign },
   ];

@@ -254,6 +254,77 @@ class ApiClient {
     return response.data;
   }
 
+  // Calendar endpoints
+  async getWorkSchedule() {
+    const response = await this.client.get('/calendar/schedule');
+    return response.data;
+  }
+
+  async saveWorkSchedule(schedule: any[]) {
+    const response = await this.client.put('/calendar/schedule', { schedule });
+    return response.data;
+  }
+
+  async updateScheduleDay(dayOfWeek: string, data: any) {
+    const response = await this.client.patch(`/calendar/schedule/${dayOfWeek}`, data);
+    return response.data;
+  }
+
+  async getCalendarEvents(params?: { startDate?: string; endDate?: string }) {
+    const response = await this.client.get('/calendar/events', { params });
+    return response.data;
+  }
+
+  async getUpcomingJobs() {
+    const response = await this.client.get('/calendar/upcoming-jobs');
+    return response.data;
+  }
+
+  async getTodaySchedule() {
+    const response = await this.client.get('/calendar/today');
+    return response.data;
+  }
+
+  async getTimeOffs(params?: { startDate?: string; endDate?: string }) {
+    const response = await this.client.get('/calendar/time-off', { params });
+    return response.data;
+  }
+
+  async createTimeOff(data: { startDate: string; endDate: string; reason: string; note?: string }) {
+    const response = await this.client.post('/calendar/time-off', data);
+    return response.data;
+  }
+
+  async updateTimeOff(id: string, data: any) {
+    const response = await this.client.patch(`/calendar/time-off/${id}`, data);
+    return response.data;
+  }
+
+  async deleteTimeOff(id: string) {
+    const response = await this.client.delete(`/calendar/time-off/${id}`);
+    return response.data;
+  }
+
+  async getSpecialHours(params?: { startDate?: string; endDate?: string }) {
+    const response = await this.client.get('/calendar/special-hours', { params });
+    return response.data;
+  }
+
+  async createSpecialHours(data: any) {
+    const response = await this.client.post('/calendar/special-hours', data);
+    return response.data;
+  }
+
+  async updateSpecialHours(id: string, data: any) {
+    const response = await this.client.patch(`/calendar/special-hours/${id}`, data);
+    return response.data;
+  }
+
+  async deleteSpecialHours(id: string) {
+    const response = await this.client.delete(`/calendar/special-hours/${id}`);
+    return response.data;
+  }
+
   // Generic methods for direct access
   get<T = any>(url: string, config?: any) {
     return this.client.get<T>(url, config);

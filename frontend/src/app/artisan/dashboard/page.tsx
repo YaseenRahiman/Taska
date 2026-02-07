@@ -29,6 +29,7 @@ import { api } from '@/lib/api'
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils'
 import { useAuth } from '@/hooks/useAuth'
 import SubscriptionWidget from '@/components/subscription/SubscriptionWidget'
+import TodayScheduleWidget from '@/components/artisan/calendar/TodayScheduleWidget'
 
 interface Job {
   id: string
@@ -345,6 +346,11 @@ export default function ArtisanDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Today's Schedule Widget */}
+        <div className="mb-8">
+          <TodayScheduleWidget />
         </div>
 
         {/* Quick Actions and Subscription */}
