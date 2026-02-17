@@ -53,7 +53,12 @@ export default function UserSelectionTable({
       if (!response.ok) throw new Error('Failed to fetch users');
 
       const data = await response.json();
-      setUsers(data.users || []);
+      // Map backend response to frontend User type (verifiedAt -> verified)
+      const mappedUsers = (data.users || []).map((user: any) => ({
+        ...user,
+        verified: !!user.verifiedAt,
+      }));
+      setUsers(mappedUsers);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error('Error fetching users:', error);

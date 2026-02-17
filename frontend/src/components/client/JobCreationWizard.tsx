@@ -230,7 +230,7 @@ export function JobCreationWizard({
               {errors.budget && (
                 <p className="text-red-500 text-sm mt-1">{errors.budget.message}</p>
               )}
-              {watchedValues.budget && (
+              {watchedValues.budget != null && !isNaN(watchedValues.budget) && (
                 <p className="text-gray-600 text-sm mt-1">
                   Budget: {formatCurrency(watchedValues.budget)}
                 </p>
@@ -464,6 +464,13 @@ export function JobCreationWizard({
                   {...register('postalCode')}
                   className={`w-full ${inputPadding} border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                   placeholder="8001"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  onInput={(e) => {
+                    // Filter out non-numeric characters
+                    const input = e.currentTarget;
+                    input.value = input.value.replace(/[^0-9]/g, '');
+                  }}
                 />
                 {errors.postalCode && (
                   <p className="text-red-500 text-sm mt-1">{errors.postalCode.message}</p>

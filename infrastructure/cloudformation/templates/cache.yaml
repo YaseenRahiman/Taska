@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - ElastiCache Redis'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  NetworkStackName:
+    Type: String
+    Default: taska-network-dev
+    Description: Name of the network stack to import values from
+
+  CacheNodeType:
+    Type: String
+    Default: cache.t3.micro
+    Description: Cache node instance type
+    AllowedValues:
+      - cache.t3.micro
+      - cache.t3.small
+      - cache.t3.medium
+      - cache.r6g.large
+
+  NumCacheNodes:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 6
+    Description: Number of cache nodes
+
+Resources:
+  # Cache Subnet Group
+  CacheSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      CacheSubnetGroupName: !Sub 'taska-cache-subnet-${Environment}'
+      Description: !Sub 'Subnet group for Taska ${Environment} cache'
+      SubnetIds:
+        - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet1'
+        - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet2'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-cache-subnet-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Cache Parameter Group
+  CacheParameterGroup:
+    Type: AWS::ElastiCache::ParameterGroup
+    Properties:
+      CacheParameterGroupFamily: redis7
+      Description: !Sub 'Redis parameters for Taska ${Environment}'
+      Properties:
+        maxmemory-policy: 'allkeys-lru'
+        timeout: '300'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-cache-params-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Redis Cluster
+  CacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      Engine: redis
+      EngineVersion: '7.0'
+      CacheNodeType: !Ref CacheNodeType
+      NumCacheNodes: !Ref NumCacheNodes
+      CacheSubnetGroupName: !Ref CacheSubnetGroup
+      CacheParameterGroupName: !Ref CacheParameterGroup
+      VpcSecurityGroupIds:
+        - Fn::ImportValue: !Sub '${NetworkStackName}-ElastiCacheSecurityGroup'
+      PreferredMaintenanceWindow: 'sun:05:00-sun:06:00'
+      SnapshotRetentionLimit: !If
+        - IsProd
+        - 7
+        - 1
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-redis-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+Conditions:
+  IsProd: !Equals [!Ref Environment, 'prod']
+
+Outputs:
+  CacheEndpoint:
+    Description: Redis cache endpoint
+    Value: !GetAtt CacheCluster.RedisEndpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-CacheEndpoint'
+
+  CachePort:
+    Description: Redis cache port
+    Value: !GetAtt CacheCluster.RedisEndpoint.Port
+    Export:
+      Name: !Sub '${AWS::StackName}-CachePort'
+
+  ConnectionString:
+    Description: Redis connection string
+    Value: !Sub 'redis://${CacheCluster.RedisEndpoint.Address}:${CacheCluster.RedisEndpoint.Port}'

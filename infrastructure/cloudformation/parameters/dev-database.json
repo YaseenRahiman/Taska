@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "taska-network-dev"
+  },
+  {
+    "ParameterKey": "DBInstanceClass",
+    "ParameterValue": "db.t3.micro"
+  },
+  {
+    "ParameterKey": "DBAllocatedStorage",
+    "ParameterValue": "20"
+  },
+  {
+    "ParameterKey": "DBName",
+    "ParameterValue": "taska_dev"
+  },
+  {
+    "ParameterKey": "DBUsername",
+    "ParameterValue": "taska_user"
+  },
+  {
+    "ParameterKey": "DBPassword",
+    "ParameterValue": "CHANGE_THIS_PASSWORD_123!"
+  },
+  {
+    "ParameterKey": "MultiAZ",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "BackupRetentionPeriod",
+    "ParameterValue": "7"
+  }
+]

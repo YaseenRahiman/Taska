@@ -34,7 +34,7 @@ export class AdminRepository extends BaseRepository<User> {
   // User Management Queries
   async getUsersWithFilters(filters: AdminUserFilters): Promise<{ users: any[]; total: number }> {
     const where: any = {};
-    
+
     if (filters.role) where.role = filters.role;
     if (filters.status) where.status = filters.status;
     if (filters.verified !== undefined) where.verifiedAt = filters.verified ? { not: null } : null;
@@ -49,6 +49,22 @@ export class AdminRepository extends BaseRepository<User> {
         { profile: { firstName: { contains: filters.search, mode: 'insensitive' } } },
         { profile: { lastName: { contains: filters.search, mode: 'insensitive' } } },
       ];
+    }
+
+    // Handle sorting - map sortBy field to Prisma orderBy
+    const sortField = filters.sortBy || 'createdAt';
+    const sortDirection = filters.sortOrder || 'desc';
+    let orderBy: any = { createdAt: sortDirection };
+
+    // Map sortBy to valid Prisma fields
+    if (sortField === 'email') {
+      orderBy = { email: sortDirection };
+    } else if (sortField === 'role') {
+      orderBy = { role: sortDirection };
+    } else if (sortField === 'status') {
+      orderBy = { status: sortDirection };
+    } else if (sortField === 'createdAt') {
+      orderBy = { createdAt: sortDirection };
     }
 
     const [users, total] = await Promise.all([
@@ -66,7 +82,7 @@ export class AdminRepository extends BaseRepository<User> {
         },
         skip: filters.skip || 0,
         take: filters.take || 20,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
       }),
       this.prismaService.user.count({ where }),
     ]);

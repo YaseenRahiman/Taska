@@ -1,0 +1,216 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - CI/CD Pipeline'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  IAMStackName:
+    Type: String
+    Default: taska-iam-dev
+    Description: IAM stack name
+
+  CodeBuildStackName:
+    Type: String
+    Default: taska-codebuild-dev
+    Description: CodeBuild stack name
+
+  ECSServicesStackName:
+    Type: String
+    Default: taska-ecs-services-dev
+    Description: ECS services stack name
+
+  ECSClusterStackName:
+    Type: String
+    Default: taska-ecs-cluster-dev
+    Description: ECS cluster stack name
+
+  GitHubOwner:
+    Type: String
+    Default: YaseenRahiman
+    Description: GitHub repository owner
+
+  GitHubRepo:
+    Type: String
+    Default: Taska
+    Description: GitHub repository name
+
+  GitHubBranch:
+    Type: String
+    Default: main
+    Description: GitHub branch name
+
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    Description: GitHub personal access token
+
+Resources:
+  # S3 Bucket for Pipeline Artifacts
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'taska-pipeline-artifacts-${Environment}-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldArtifacts
+            Status: Enabled
+            ExpirationInDays: 30
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-pipeline-artifacts-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # CodePipeline
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub 'taska-pipeline-${Environment}'
+      RoleArn:
+        Fn::ImportValue: !Sub '${IAMStackName}-CodePipelineServiceRoleArn'
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Stages:
+        # Source Stage
+        - Name: Source
+          Actions:
+            - Name: SourceAction
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: '1'
+              Configuration:
+                Owner: !Ref GitHubOwner
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceOutput
+
+        # Build Stage
+        - Name: Build
+          Actions:
+            - Name: BuildFrontend
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName:
+                  Fn::ImportValue: !Sub '${CodeBuildStackName}-FrontendBuildProject'
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: FrontendBuildOutput
+              RunOrder: 1
+
+            - Name: BuildBackend
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              Configuration:
+                ProjectName:
+                  Fn::ImportValue: !Sub '${CodeBuildStackName}-BackendBuildProject'
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: BackendBuildOutput
+              RunOrder: 1
+
+        # Deploy Stage
+        - Name: Deploy
+          Actions:
+            - Name: DeployFrontend
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: ECS
+                Version: '1'
+              Configuration:
+                ClusterName:
+                  Fn::ImportValue: !Sub '${ECSClusterStackName}-ClusterName'
+                ServiceName:
+                  Fn::ImportValue: !Sub '${ECSServicesStackName}-FrontendServiceName'
+                FileName: imagedefinitions.json
+              InputArtifacts:
+                - Name: FrontendBuildOutput
+              RunOrder: 1
+
+            - Name: DeployBackend
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: ECS
+                Version: '1'
+              Configuration:
+                ClusterName:
+                  Fn::ImportValue: !Sub '${ECSClusterStackName}-ClusterName'
+                ServiceName:
+                  Fn::ImportValue: !Sub '${ECSServicesStackName}-BackendServiceName'
+                FileName: imagedefinitions.json
+              InputArtifacts:
+                - Name: BackendBuildOutput
+              RunOrder: 1
+
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-pipeline-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Webhook for GitHub
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Name: !Sub 'taska-pipeline-webhook-${Environment}'
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubToken
+      Filters:
+        - JsonPath: '$.ref'
+          MatchEquals: 'refs/heads/{Branch}'
+      TargetPipeline: !Ref Pipeline
+      TargetAction: SourceAction
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
+
+Outputs:
+  PipelineName:
+    Description: Pipeline Name
+    Value: !Ref Pipeline
+    Export:
+      Name: !Sub '${AWS::StackName}-PipelineName'
+
+  PipelineUrl:
+    Description: Pipeline URL
+    Value: !Sub 'https://console.aws.amazon.com/codesuite/codepipeline/pipelines/${Pipeline}/view?region=${AWS::Region}'
+
+  ArtifactBucketName:
+    Description: Artifact Bucket Name
+    Value: !Ref ArtifactBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-ArtifactBucket'

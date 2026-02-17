@@ -8,6 +8,12 @@ export interface AdminUserFilters {
   search?: string;
   skip?: number;
   take?: number;
+  // Frontend pagination parameters (converted to skip/take)
+  page?: number;
+  limit?: number;
+  // Sorting parameters
+  sortBy?: 'email' | 'role' | 'status' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface AdminUserManagementDto {

@@ -1,0 +1,334 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - ECS Services (Frontend & Backend)'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  NetworkStackName:
+    Type: String
+    Default: taska-network-dev
+    Description: Network stack name
+
+  ECSClusterStackName:
+    Type: String
+    Default: taska-ecs-cluster-dev
+    Description: ECS cluster stack name
+
+  LoadBalancerStackName:
+    Type: String
+    Default: taska-load-balancer-dev
+    Description: Load balancer stack name
+
+  IAMStackName:
+    Type: String
+    Default: taska-iam-dev
+    Description: IAM stack name
+
+  ECRStackName:
+    Type: String
+    Default: taska-ecr-dev
+    Description: ECR stack name
+
+  DatabaseStackName:
+    Type: String
+    Default: taska-database-dev
+    Description: Database stack name
+
+  CacheStackName:
+    Type: String
+    Default: taska-cache-dev
+    Description: Cache stack name
+
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: Database password
+
+  JWTSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT signing secret
+
+  JWTRefreshSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT refresh token signing secret
+
+  StripeSecretKey:
+    Type: String
+    NoEcho: true
+    Default: 'sk_test_placeholder'
+    Description: Stripe secret key (use real key for payments)
+
+  StripeWebhookSecret:
+    Type: String
+    NoEcho: true
+    Default: 'whsec_placeholder'
+    Description: Stripe webhook secret
+
+  FrontendCPU:
+    Type: String
+    Default: '256'
+    AllowedValues: ['256', '512', '1024', '2048', '4096']
+    Description: Frontend task CPU units
+
+  FrontendMemory:
+    Type: String
+    Default: '512'
+    AllowedValues: ['512', '1024', '2048', '4096', '8192']
+    Description: Frontend task memory in MB
+
+  BackendCPU:
+    Type: String
+    Default: '512'
+    AllowedValues: ['256', '512', '1024', '2048', '4096']
+    Description: Backend task CPU units
+
+  BackendMemory:
+    Type: String
+    Default: '1024'
+    AllowedValues: ['512', '1024', '2048', '4096', '8192']
+    Description: Backend task memory in MB
+
+  DesiredCount:
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 10
+    Description: Desired number of tasks
+
+Resources:
+  # Frontend Task Definition
+  FrontendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub 'taska-frontend-${Environment}'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref FrontendCPU
+      Memory: !Ref FrontendMemory
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub '${IAMStackName}-ECSTaskExecutionRoleArn'
+      TaskRoleArn:
+        Fn::ImportValue: !Sub '${IAMStackName}-ECSTaskRoleArn'
+      ContainerDefinitions:
+        - Name: frontend
+          Image: !Sub
+            - '${RepositoryUri}:latest'
+            - RepositoryUri:
+                Fn::ImportValue: !Sub '${ECRStackName}-FrontendRepositoryUri'
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3000
+              Protocol: tcp
+          Environment:
+            - Name: NODE_ENV
+              Value: !Ref Environment
+            - Name: NEXT_PUBLIC_API_URL
+              Value: !Sub
+                - 'http://${LoadBalancerDNS}'
+                - LoadBalancerDNS:
+                    Fn::ImportValue: !Sub '${LoadBalancerStackName}-LoadBalancerDNS'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Fn::ImportValue: !Sub '${ECSClusterStackName}-FrontendLogGroup'
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - curl -f http://localhost:3000/ || exit 1
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-frontend-task-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Backend Task Definition
+  BackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub 'taska-backend-${Environment}'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref BackendCPU
+      Memory: !Ref BackendMemory
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub '${IAMStackName}-ECSTaskExecutionRoleArn'
+      TaskRoleArn:
+        Fn::ImportValue: !Sub '${IAMStackName}-ECSTaskRoleArn'
+      ContainerDefinitions:
+        - Name: backend
+          Image: !Sub
+            - '${RepositoryUri}:latest'
+            - RepositoryUri:
+                Fn::ImportValue: !Sub '${ECRStackName}-BackendRepositoryUri'
+          Essential: true
+          PortMappings:
+            - ContainerPort: 3000
+              Protocol: tcp
+          Environment:
+            - Name: NODE_ENV
+              Value: production
+            - Name: PORT
+              Value: '3000'
+            - Name: DATABASE_URL
+              Value: !Sub
+                - 'postgresql://${DBUsername}:${DBPwd}@${DBEndpoint}:${DBPort}/${DBName}'
+                - DBUsername:
+                    Fn::ImportValue: !Sub '${DatabaseStackName}-DBUsername'
+                  DBPwd: !Ref DBPassword
+                  DBEndpoint:
+                    Fn::ImportValue: !Sub '${DatabaseStackName}-DBEndpoint'
+                  DBPort:
+                    Fn::ImportValue: !Sub '${DatabaseStackName}-DBPort'
+                  DBName:
+                    Fn::ImportValue: !Sub '${DatabaseStackName}-DBName'
+            - Name: REDIS_HOST
+              Value:
+                Fn::ImportValue: !Sub '${CacheStackName}-CacheEndpoint'
+            - Name: REDIS_PORT
+              Value:
+                Fn::ImportValue: !Sub '${CacheStackName}-CachePort'
+            - Name: JWT_SECRET
+              Value: !Ref JWTSecret
+            - Name: JWT_REFRESH_SECRET
+              Value: !Ref JWTRefreshSecret
+            - Name: STRIPE_SECRET_KEY
+              Value: !Ref StripeSecretKey
+            - Name: STRIPE_WEBHOOK_SECRET
+              Value: !Ref StripeWebhookSecret
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Fn::ImportValue: !Sub '${ECSClusterStackName}-BackendLogGroup'
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - curl -f http://localhost:3000/api/v1/health/live || exit 1
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-backend-task-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Frontend Service
+  FrontendService:
+    Type: AWS::ECS::Service
+    DependsOn: FrontendTaskDefinition
+    Properties:
+      ServiceName: !Sub 'taska-frontend-${Environment}'
+      Cluster:
+        Fn::ImportValue: !Sub '${ECSClusterStackName}-ClusterName'
+      TaskDefinition: !Ref FrontendTaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet1'
+            - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet2'
+          SecurityGroups:
+            - Fn::ImportValue: !Sub '${NetworkStackName}-ECSSecurityGroup'
+      LoadBalancers:
+        - ContainerName: frontend
+          ContainerPort: 3000
+          TargetGroupArn:
+            Fn::ImportValue: !Sub '${LoadBalancerStackName}-FrontendTargetGroup'
+      HealthCheckGracePeriodSeconds: 60
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-frontend-service-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Backend Service
+  BackendService:
+    Type: AWS::ECS::Service
+    DependsOn: BackendTaskDefinition
+    Properties:
+      ServiceName: !Sub 'taska-backend-${Environment}'
+      Cluster:
+        Fn::ImportValue: !Sub '${ECSClusterStackName}-ClusterName'
+      TaskDefinition: !Ref BackendTaskDefinition
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet1'
+            - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet2'
+          SecurityGroups:
+            - Fn::ImportValue: !Sub '${NetworkStackName}-ECSSecurityGroup'
+      LoadBalancers:
+        - ContainerName: backend
+          ContainerPort: 3000
+          TargetGroupArn:
+            Fn::ImportValue: !Sub '${LoadBalancerStackName}-BackendTargetGroup'
+      HealthCheckGracePeriodSeconds: 60
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-backend-service-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  FrontendServiceName:
+    Description: Frontend Service Name
+    Value: !GetAtt FrontendService.Name
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendServiceName'
+
+  BackendServiceName:
+    Description: Backend Service Name
+    Value: !GetAtt BackendService.Name
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendServiceName'
+
+  FrontendTaskDefinitionArn:
+    Description: Frontend Task Definition ARN
+    Value: !Ref FrontendTaskDefinition
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendTaskDefinitionArn'
+
+  BackendTaskDefinitionArn:
+    Description: Backend Task Definition ARN
+    Value: !Ref BackendTaskDefinition
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendTaskDefinitionArn'

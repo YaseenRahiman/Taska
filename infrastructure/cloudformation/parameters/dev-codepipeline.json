@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "IAMStackName",
+    "ParameterValue": "taska-iam-dev"
+  },
+  {
+    "ParameterKey": "CodeBuildStackName",
+    "ParameterValue": "taska-codebuild-dev"
+  },
+  {
+    "ParameterKey": "ECSServicesStackName",
+    "ParameterValue": "taska-ecs-services-dev"
+  },
+  {
+    "ParameterKey": "ECSClusterStackName",
+    "ParameterValue": "taska-ecs-cluster-dev"
+  },
+  {
+    "ParameterKey": "GitHubOwner",
+    "ParameterValue": "YaseenRahiman"
+  },
+  {
+    "ParameterKey": "GitHubRepo",
+    "ParameterValue": "Taska"
+  },
+  {
+    "ParameterKey": "GitHubBranch",
+    "ParameterValue": "main"
+  },
+  {
+    "ParameterKey": "GitHubToken",
+    "ParameterValue": "REPLACE_WITH_GITHUB_PAT"
+  }
+]

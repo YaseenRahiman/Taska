@@ -11,8 +11,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install all dependencies (including devDeps needed for TypeScript compilation)
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -22,6 +22,9 @@ RUN npx prisma generate
 
 # Build application
 RUN npm run build
+
+# Remove devDependencies after build
+RUN npm prune --omit=dev
 
 # Production stage
 FROM node:20-alpine AS production
@@ -33,8 +36,8 @@ RUN adduser -S nestjs -u 1001
 # Set working directory
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init for proper signal handling and curl for health checks
+RUN apk add --no-cache dumb-init openssl curl
 
 # Copy built application from builder stage
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
@@ -45,6 +48,9 @@ COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
 # Copy health check script
 COPY --chown=nestjs:nodejs scripts/health-check.sh ./scripts/
 RUN chmod +x ./scripts/health-check.sh
+
+# Create writable directories needed at runtime
+RUN mkdir -p logs uploads storage && chown -R nestjs:nodejs logs uploads storage
 
 # Set environment variables
 ENV NODE_ENV=production

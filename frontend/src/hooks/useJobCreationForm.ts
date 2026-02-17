@@ -40,7 +40,10 @@ function createJobSchema(settings: JobValidationSettings) {
     addressLine2: z.string().max(255, 'Address too long').optional(),
     city: z.string().min(2, 'Please enter a city').max(100, 'City name too long'),
     province: z.string().min(2, 'Please select a province').max(100, 'Province name too long'),
-    postalCode: z.string().min(4, 'Please enter a postal code').max(10, 'Postal code too long'),
+    postalCode: z.string()
+      .min(4, 'Please enter a postal code')
+      .max(10, 'Postal code too long')
+      .regex(/^\d+$/, 'Postal code must contain only numbers'),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
     requirements: z.array(z.string().max(200)).max(10, 'Maximum 10 requirements').optional(),
@@ -90,6 +93,7 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
     resolver: zodResolver(jobSchema),
     mode: 'onChange',
     defaultValues: {
+      budget: validationSettings.minBudget, // Default to minimum budget to avoid NaN
       budgetType: 'FIXED',
       urgency: 'MEDIUM',
       requirements: [],
@@ -117,6 +121,11 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
         setLoadingSettings(true);
         const settings = await getCachedJobValidationSettings();
         setValidationSettings(settings);
+        // Update budget default if not already set by user
+        const currentBudget = form.getValues('budget');
+        if (!currentBudget || currentBudget < settings.minBudget) {
+          form.setValue('budget', settings.minBudget, { shouldValidate: false });
+        }
       } catch (error) {
         console.error('Failed to fetch validation settings:', error);
         // Continue with default settings
@@ -125,7 +134,7 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
       }
     }
     fetchSettings();
-  }, []);
+  }, [form]);
 
   // Fetch categories from API on mount
   useEffect(() => {

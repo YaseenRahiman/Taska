@@ -31,14 +31,21 @@ export class AdminService {
   ) {}
 
   // User Management Methods
-  async getAllUsers(filters: AdminUserFilters): Promise<AdminUserManagementDto> {
+  async getAllUsers(filters: AdminUserFilters): Promise<AdminUserManagementDto & { totalPages?: number }> {
     this.loggingService.info('Admin: Getting all users with filters', 'AdminService');
+
+    // Handle pagination - support both page/limit and skip/take
+    const page = filters.page !== undefined ? Number(filters.page) : 1;
+    const limit = filters.limit !== undefined ? Number(filters.limit) : (filters.take !== undefined ? Number(filters.take) : 20);
+    const skip = filters.skip !== undefined ? Number(filters.skip) : (page - 1) * limit;
 
     // Convert string query params to numbers for Prisma
     const normalizedFilters = {
       ...filters,
-      skip: filters.skip !== undefined ? Number(filters.skip) : 0,
-      take: filters.take !== undefined ? Number(filters.take) : 20,
+      skip,
+      take: limit,
+      sortBy: filters.sortBy || 'createdAt',
+      sortOrder: filters.sortOrder || 'desc',
     };
 
     const { users, total } = await this.adminRepository.getUsersWithFilters(normalizedFilters);
@@ -49,6 +56,7 @@ export class AdminService {
     return {
       users,
       total,
+      totalPages: Math.ceil(total / limit),
       activeUsers,
       newUsersToday,
       verificationQueue: verificationQueue.length,

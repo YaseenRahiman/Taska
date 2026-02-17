@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
+import { CommonModule } from '../../common/common.module';
 import { CreditService } from './services/credit.service';
 import { LoyaltyService } from './services/loyalty.service';
 import { LevelService } from './services/level.service';
@@ -12,7 +13,7 @@ import { BoostController } from './controllers/boost.controller';
 import { SubscriptionController } from './controllers/subscription.controller';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, CommonModule],
   controllers: [
     CreditController,
     LoyaltyController,

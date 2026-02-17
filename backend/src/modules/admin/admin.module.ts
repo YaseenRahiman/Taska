@@ -12,6 +12,7 @@ import { ActivityLogsController } from './controllers/activity-logs.controller';
 import { ReportsController } from './controllers/reports.controller';
 import { NotificationsController } from './controllers/notifications.controller';
 import { EscrowController } from './controllers/escrow.controller';
+import { ReviewModerationController } from './controllers/review-moderation.controller';
 import { AnalyticsService } from './services/analytics.service';
 import { BulkOperationsService } from './services/bulk-operations.service';
 import { AuditLogService } from './services/audit-log.service';
@@ -19,6 +20,7 @@ import { ReportBuilderService } from './services/report-builder.service';
 import { PdfGeneratorService } from './services/pdf-generator.service';
 import { NotificationService } from './services/notification.service';
 import { EscrowConfigService } from './services/escrow-config.service';
+import { ReviewModerationService } from './services/review-moderation.service';
 import { BulkOperationsProcessor } from './processors/bulk-operations.processor';
 import { AuditLogInterceptor } from './interceptors/audit-log.interceptor';
 import { AdminGateway } from './gateways/admin.gateway';
@@ -56,6 +58,7 @@ import { MessagesModule } from '../messages/messages.module';
     ReportsController,
     NotificationsController,
     EscrowController,
+    ReviewModerationController,
   ],
   providers: [
     AdminService,
@@ -67,6 +70,7 @@ import { MessagesModule } from '../messages/messages.module';
     PdfGeneratorService,
     NotificationService,
     EscrowConfigService,
+    ReviewModerationService,
     BulkOperationsProcessor,
     AdminGateway,
     {
@@ -82,6 +86,7 @@ import { MessagesModule } from '../messages/messages.module';
     ReportBuilderService,
     NotificationService,
     EscrowConfigService,
+    ReviewModerationService,
     AdminGateway,
   ],
 })

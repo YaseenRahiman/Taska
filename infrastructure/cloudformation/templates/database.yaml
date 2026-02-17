@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - RDS PostgreSQL Database'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  NetworkStackName:
+    Type: String
+    Default: taska-network-dev
+    Description: Name of the network stack to import values from
+
+  DBInstanceClass:
+    Type: String
+    Default: db.t3.micro
+    Description: Database instance class
+    AllowedValues:
+      - db.t3.micro
+      - db.t3.small
+      - db.t3.medium
+      - db.t3.large
+
+  DBAllocatedStorage:
+    Type: Number
+    Default: 20
+    MinValue: 20
+    MaxValue: 1000
+    Description: Database allocated storage in GB
+
+  DBName:
+    Type: String
+    Default: taska_dev
+    Description: Database name
+
+  DBUsername:
+    Type: String
+    Default: taska_user
+    Description: Database master username
+
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: Database master password (use Secrets Manager in production)
+    MinLength: 8
+
+  MultiAZ:
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Enable Multi-AZ deployment (recommended for production)
+
+  BackupRetentionPeriod:
+    Type: Number
+    Default: 7
+    MinValue: 0
+    MaxValue: 35
+    Description: Number of days to retain backups
+
+Resources:
+  # DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub 'taska-db-subnet-${Environment}'
+      DBSubnetGroupDescription: !Sub 'Subnet group for Taska ${Environment} database'
+      SubnetIds:
+        - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet1'
+        - Fn::ImportValue: !Sub '${NetworkStackName}-PrivateSubnet2'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-db-subnet-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # DB Parameter Group
+  DBParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: !Sub 'PostgreSQL parameters for Taska ${Environment}'
+      Family: postgres15
+      Parameters:
+        shared_preload_libraries: 'pg_stat_statements'
+        log_statement: 'all'
+        log_min_duration_statement: '1000'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-db-params-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # RDS Instance
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Sub 'taska-db-${Environment}'
+      DBName: !Ref DBName
+      Engine: postgres
+      EngineVersion: '15.16'
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref DBAllocatedStorage
+      StorageType: gp3
+      StorageEncrypted: true
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DBParameterGroupName: !Ref DBParameterGroup
+      VPCSecurityGroups:
+        - Fn::ImportValue: !Sub '${NetworkStackName}-RDSSecurityGroup'
+      MultiAZ: !Ref MultiAZ
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      PreferredBackupWindow: '03:00-04:00'
+      PreferredMaintenanceWindow: 'sun:04:00-sun:05:00'
+      EnableCloudwatchLogsExports:
+        - postgresql
+      DeletionProtection: !If
+        - IsProd
+        - true
+        - false
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-db-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+Conditions:
+  IsProd: !Equals [!Ref Environment, 'prod']
+
+Outputs:
+  DBInstanceEndpoint:
+    Description: Database endpoint address
+    Value: !GetAtt DBInstance.Endpoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-DBEndpoint'
+
+  DBInstancePort:
+    Description: Database port
+    Value: !GetAtt DBInstance.Endpoint.Port
+    Export:
+      Name: !Sub '${AWS::StackName}-DBPort'
+
+  DBName:
+    Description: Database name
+    Value: !Ref DBName
+    Export:
+      Name: !Sub '${AWS::StackName}-DBName'
+
+  DBUsername:
+    Description: Database username
+    Value: !Ref DBUsername
+    Export:
+      Name: !Sub '${AWS::StackName}-DBUsername'
+
+  ConnectionString:
+    Description: Database connection string (without password)
+    Value: !Sub 'postgresql://${DBUsername}:PASSWORD@${DBInstance.Endpoint.Address}:${DBInstance.Endpoint.Port}/${DBName}'

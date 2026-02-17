@@ -1,0 +1,60 @@
+version: 0.2
+
+# Taska Platform - CodeBuild Build Specification
+# This file defines the build process for Docker images
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Logged in to ECR
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo Image tag is $IMAGE_TAG
+
+  build:
+    commands:
+      - echo Build started on `date`
+
+      # Build Frontend
+      - echo Building frontend Docker image...
+      - cd frontend
+      - docker build -t $FRONTEND_REPO_URI:latest -t $FRONTEND_REPO_URI:$IMAGE_TAG .
+      - cd ..
+
+      # Build Backend
+      - echo Building backend Docker image...
+      - cd backend
+      - docker build -t $BACKEND_REPO_URI:latest -t $BACKEND_REPO_URI:$IMAGE_TAG .
+      - cd ..
+
+      - echo Build completed on `date`
+
+  post_build:
+    commands:
+      - echo Pushing Docker images to ECR...
+
+      # Push Frontend
+      - docker push $FRONTEND_REPO_URI:latest
+      - docker push $FRONTEND_REPO_URI:$IMAGE_TAG
+
+      # Push Backend
+      - docker push $BACKEND_REPO_URI:latest
+      - docker push $BACKEND_REPO_URI:$IMAGE_TAG
+
+      - echo Docker images pushed successfully
+
+      # Create image definitions for ECS deployment
+      - echo Writing image definitions files...
+      - printf '[{"name":"frontend","imageUri":"%s"}]' $FRONTEND_REPO_URI:$IMAGE_TAG > frontend-imagedefinitions.json
+      - printf '[{"name":"backend","imageUri":"%s"}]' $BACKEND_REPO_URI:$IMAGE_TAG > backend-imagedefinitions.json
+
+artifacts:
+  files:
+    - frontend-imagedefinitions.json
+    - backend-imagedefinitions.json
+
+cache:
+  paths:
+    - '/root/.docker/**/*'

@@ -6,6 +6,55 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seeding...');
 
+  // Create Subscription Plans (CRITICAL: Must be created first for job posting to work)
+  console.log('📋 Creating subscription plans...');
+  await prisma.subscriptionPlan.upsert({
+    where: { name: 'FREE' },
+    update: {},
+    create: {
+      name: 'FREE',
+      displayName: 'Free Plan',
+      description: 'Get started with basic features',
+      clientJobsPerMonth: 2,
+      artisanBidsPerMonth: 5,
+      pricePerMonthZar: 0,
+      pricePerYearZar: 0,
+      isDefault: true,
+      isActive: true,
+      sortOrder: 0,
+      features: {
+        basicSupport: true,
+        jobPosting: true,
+        bidding: true,
+      },
+    },
+  });
+
+  await prisma.subscriptionPlan.upsert({
+    where: { name: 'PREMIUM' },
+    update: {},
+    create: {
+      name: 'PREMIUM',
+      displayName: 'Premium Plan',
+      description: 'Unlock unlimited potential with premium features',
+      clientJobsPerMonth: 50,
+      artisanBidsPerMonth: 100,
+      pricePerMonthZar: 299,
+      pricePerYearZar: 2990,
+      isDefault: false,
+      isActive: true,
+      sortOrder: 1,
+      features: {
+        prioritySupport: true,
+        jobPosting: true,
+        bidding: true,
+        analytics: true,
+        featuredListing: true,
+        priorityMatching: true,
+      },
+    },
+  });
+
   // Create System Settings
   console.log('📋 Creating system settings...');
   await prisma.systemSetting.createMany({
@@ -314,6 +363,7 @@ async function main() {
 
   if (plumbingCategory && electricalCategory && carpentryCategory && webDevCategory) {
     await prisma.artisanSpecialization.createMany({
+      skipDuplicates: true,
       data: [
         {
           userId: artisans[0].id,
@@ -1011,6 +1061,7 @@ async function main() {
     - ${await prisma.systemSetting.count()} system settings
 
     💳 Monetization System:
+    - ${await prisma.subscriptionPlan.count()} subscription plans
     - ${await prisma.creditBundle.count()} credit bundles
     - ${await prisma.creditWallet.count()} credit wallets
     - ${await prisma.levelConfig.count()} level configurations

@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - ECR Repositories for Docker Images'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  ImageRetentionCount:
+    Type: Number
+    Default: 10
+    Description: Number of images to retain in ECR
+
+Resources:
+  # Frontend ECR Repository
+  FrontendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub 'taska-frontend-${Environment}'
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: !Sub |
+          {
+            "rules": [{
+              "rulePriority": 1,
+              "description": "Keep last ${ImageRetentionCount} images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": ${ImageRetentionCount}
+              },
+              "action": {
+                "type": "expire"
+              }
+            }]
+          }
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-frontend-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Component
+          Value: Frontend
+
+  # Backend ECR Repository
+  BackendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub 'taska-backend-${Environment}'
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: !Sub |
+          {
+            "rules": [{
+              "rulePriority": 1,
+              "description": "Keep last ${ImageRetentionCount} images",
+              "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": ${ImageRetentionCount}
+              },
+              "action": {
+                "type": "expire"
+              }
+            }]
+          }
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-backend-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Component
+          Value: Backend
+
+Outputs:
+  FrontendRepositoryUri:
+    Description: Frontend ECR Repository URI
+    Value: !GetAtt FrontendRepository.RepositoryUri
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendRepositoryUri'
+
+  FrontendRepositoryArn:
+    Description: Frontend ECR Repository ARN
+    Value: !GetAtt FrontendRepository.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendRepositoryArn'
+
+  BackendRepositoryUri:
+    Description: Backend ECR Repository URI
+    Value: !GetAtt BackendRepository.RepositoryUri
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendRepositoryUri'
+
+  BackendRepositoryArn:
+    Description: Backend ECR Repository ARN
+    Value: !GetAtt BackendRepository.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendRepositoryArn'

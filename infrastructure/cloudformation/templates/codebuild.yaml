@@ -1,0 +1,189 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - CodeBuild Projects'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+  IAMStackName:
+    Type: String
+    Default: taska-iam-dev
+    Description: IAM stack name
+
+  ECRStackName:
+    Type: String
+    Default: taska-ecr-dev
+    Description: ECR stack name
+
+  BuildComputeType:
+    Type: String
+    Default: BUILD_GENERAL1_SMALL
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+    Description: Build compute type
+
+Resources:
+  # Frontend Build Project
+  FrontendBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub 'taska-frontend-build-${Environment}'
+      Description: !Sub 'Build frontend Docker image for ${Environment}'
+      ServiceRole:
+        Fn::ImportValue: !Sub '${IAMStackName}-CodeBuildServiceRoleArn'
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: !Ref BuildComputeType
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Value: !Ref AWS::AccountId
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: IMAGE_REPO_NAME
+            Value: !Sub 'taska-frontend-${Environment}'
+          - Name: IMAGE_TAG
+            Value: latest
+          - Name: ECR_REPOSITORY_URI
+            Value:
+              Fn::ImportValue: !Sub '${ECRStackName}-FrontendRepositoryUri'
+          - Name: ENVIRONMENT
+            Value: !Ref Environment
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - echo Logging in to Amazon ECR...
+                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+                - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+                - IMAGE_TAG=${COMMIT_HASH:=latest}
+            build:
+              commands:
+                - echo Build started on `date`
+                - echo Building frontend Docker image...
+                - cd frontend
+                - docker build -t $ECR_REPOSITORY_URI:latest .
+                - docker tag $ECR_REPOSITORY_URI:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
+            post_build:
+              commands:
+                - echo Build completed on `date`
+                - echo Pushing Docker images...
+                - docker push $ECR_REPOSITORY_URI:latest
+                - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+                - echo Writing image definitions file...
+                - printf '[{"name":"frontend","imageUri":"%s"}]' $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+          artifacts:
+            files:
+              - imagedefinitions.json
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Sub '/aws/codebuild/taska-frontend-${Environment}'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-frontend-build-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Backend Build Project
+  BackendBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub 'taska-backend-build-${Environment}'
+      Description: !Sub 'Build backend Docker image for ${Environment}'
+      ServiceRole:
+        Fn::ImportValue: !Sub '${IAMStackName}-CodeBuildServiceRoleArn'
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: !Ref BuildComputeType
+        Image: aws/codebuild/standard:7.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Value: !Ref AWS::AccountId
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: IMAGE_REPO_NAME
+            Value: !Sub 'taska-backend-${Environment}'
+          - Name: IMAGE_TAG
+            Value: latest
+          - Name: ECR_REPOSITORY_URI
+            Value:
+              Fn::ImportValue: !Sub '${ECRStackName}-BackendRepositoryUri'
+          - Name: ENVIRONMENT
+            Value: !Ref Environment
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - echo Logging in to Amazon ECR...
+                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+                - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+                - IMAGE_TAG=${COMMIT_HASH:=latest}
+            build:
+              commands:
+                - echo Build started on `date`
+                - echo Building backend Docker image...
+                - cd backend
+                - docker build -t $ECR_REPOSITORY_URI:latest .
+                - docker tag $ECR_REPOSITORY_URI:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
+            post_build:
+              commands:
+                - echo Build completed on `date`
+                - echo Pushing Docker images...
+                - docker push $ECR_REPOSITORY_URI:latest
+                - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+                - echo Writing image definitions file...
+                - printf '[{"name":"backend","imageUri":"%s"}]' $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+          artifacts:
+            files:
+              - imagedefinitions.json
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Sub '/aws/codebuild/taska-backend-${Environment}'
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-backend-build-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  FrontendBuildProjectName:
+    Description: Frontend CodeBuild Project Name
+    Value: !Ref FrontendBuildProject
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendBuildProject'
+
+  BackendBuildProjectName:
+    Description: Backend CodeBuild Project Name
+    Value: !Ref BackendBuildProject
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendBuildProject'

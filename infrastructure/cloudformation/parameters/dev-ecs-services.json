@@ -1,0 +1,66 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "taska-network-dev"
+  },
+  {
+    "ParameterKey": "ECSClusterStackName",
+    "ParameterValue": "taska-ecs-cluster-dev"
+  },
+  {
+    "ParameterKey": "LoadBalancerStackName",
+    "ParameterValue": "taska-load-balancer-dev"
+  },
+  {
+    "ParameterKey": "IAMStackName",
+    "ParameterValue": "taska-iam-dev"
+  },
+  {
+    "ParameterKey": "ECRStackName",
+    "ParameterValue": "taska-ecr-dev"
+  },
+  {
+    "ParameterKey": "DatabaseStackName",
+    "ParameterValue": "taska-database-dev"
+  },
+  {
+    "ParameterKey": "CacheStackName",
+    "ParameterValue": "taska-cache-dev"
+  },
+  {
+    "ParameterKey": "DBPassword",
+    "ParameterValue": "CHANGE_THIS_PASSWORD_123!"
+  },
+  {
+    "ParameterKey": "JWTSecret",
+    "ParameterValue": "taska-dev-jwt-secret-key-2026-xk9m"
+  },
+  {
+    "ParameterKey": "JWTRefreshSecret",
+    "ParameterValue": "taska-dev-jwt-refresh-secret-key-2026-p7qn"
+  },
+  {
+    "ParameterKey": "FrontendCPU",
+    "ParameterValue": "256"
+  },
+  {
+    "ParameterKey": "FrontendMemory",
+    "ParameterValue": "512"
+  },
+  {
+    "ParameterKey": "BackendCPU",
+    "ParameterValue": "512"
+  },
+  {
+    "ParameterKey": "BackendMemory",
+    "ParameterValue": "1024"
+  },
+  {
+    "ParameterKey": "DesiredCount",
+    "ParameterValue": "1"
+  }
+]

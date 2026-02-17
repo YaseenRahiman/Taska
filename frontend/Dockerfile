@@ -1,29 +1,21 @@
 # Production Dockerfile for Taska Frontend (Next.js)
 # Multi-stage build for optimized production image
 
-# Dependencies stage
-FROM node:20-alpine AS deps
+# Builder stage - install all deps (including devDeps) and build
+FROM node:20-alpine AS builder
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install ALL dependencies (devDeps needed for Next.js build)
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
-
-# Builder stage
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .
 
 # Set environment variables for build
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build application
 RUN npm run build
@@ -37,7 +29,7 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Install dumb-init for proper signal handling
+# Install dumb-init for proper signal handling and curl for health checks
 RUN apk add --no-cache dumb-init curl
 
 # Copy public assets
@@ -47,7 +39,7 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Copy built application
+# Copy built application (standalone includes necessary node_modules)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
@@ -63,9 +55,10 @@ EXPOSE 3000
 USER nextjs
 
 # Add health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
 
 # Start application with dumb-init
+# Override HOSTNAME to 0.0.0.0 so Next.js binds to all interfaces (not just container IP)
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "HOSTNAME=0.0.0.0 node server.js"]

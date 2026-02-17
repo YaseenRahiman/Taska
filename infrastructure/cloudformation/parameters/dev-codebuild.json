@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "IAMStackName",
+    "ParameterValue": "taska-iam-dev"
+  },
+  {
+    "ParameterKey": "ECRStackName",
+    "ParameterValue": "taska-ecr-dev"
+  },
+  {
+    "ParameterKey": "BuildComputeType",
+    "ParameterValue": "BUILD_GENERAL1_SMALL"
+  }
+]

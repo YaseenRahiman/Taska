@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
   ArrowRight,
   CheckCircle,
   ChevronDown,
@@ -18,6 +17,7 @@ import {
   Coins,
   Percent
 } from 'lucide-react';
+import PublicNavbar from '@/components/layout/public-navbar';
 
 // Artisan levels data
 const artisanLevels = [
@@ -212,20 +212,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 export default function LevelsPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-cream-200 bg-white/95 backdrop-blur">
-        <div className="container-wide flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="h-5 w-5" />
-            <div className="h-8 w-8 rounded-lg bg-gradient-primary"></div>
-            <span className="text-xl font-bold text-gray-900">Taska</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href="/auth/login" className="nav-link">Sign In</Link>
-            <Link href="/auth/register" className="btn-primary">Get Started</Link>
-          </div>
-        </div>
-      </header>
+      <PublicNavbar />
 
       <main className="flex-1">
         {/* Hero Section */}

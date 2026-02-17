@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Taska Platform - ECS Fargate Cluster'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+    Description: Environment name
+
+Resources:
+  # ECS Cluster
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub 'taska-cluster-${Environment}'
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+          Base: 1
+      Configuration:
+        ExecuteCommandConfiguration:
+          Logging: DEFAULT
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-cluster-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  # CloudWatch Log Groups
+  FrontendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/taska-frontend-${Environment}'
+      RetentionInDays: !If
+        - IsProd
+        - 30
+        - 7
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-frontend-logs-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+  BackendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/taska-backend-${Environment}'
+      RetentionInDays: !If
+        - IsProd
+        - 30
+        - 7
+      Tags:
+        - Key: Name
+          Value: !Sub 'taska-backend-logs-${Environment}'
+        - Key: Environment
+          Value: !Ref Environment
+
+Conditions:
+  IsProd: !Equals [!Ref Environment, 'prod']
+
+Outputs:
+  ClusterName:
+    Description: ECS Cluster Name
+    Value: !Ref ECSCluster
+    Export:
+      Name: !Sub '${AWS::StackName}-ClusterName'
+
+  ClusterArn:
+    Description: ECS Cluster ARN
+    Value: !GetAtt ECSCluster.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ClusterArn'
+
+  FrontendLogGroup:
+    Description: Frontend CloudWatch Log Group
+    Value: !Ref FrontendLogGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendLogGroup'
+
+  BackendLogGroup:
+    Description: Backend CloudWatch Log Group
+    Value: !Ref BackendLogGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-BackendLogGroup'
