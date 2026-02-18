@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, CheckCircle, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 import { Notification } from '@/hooks/use-notifications';
 import { formatDistanceToNow } from 'date-fns';
@@ -12,12 +13,22 @@ interface NotificationItemProps {
   compact?: boolean;
 }
 
+function getNotificationUrl(notification: Notification): string | null {
+  const data = notification.data || {};
+  if (data.jobId) return `/admin/jobs/${data.jobId}`;
+  if (data.userId) return `/admin/users/${data.userId}`;
+  if (data.bidId) return `/admin/jobs`;
+  if (data.paymentId) return `/admin/payments`;
+  return null;
+}
+
 export function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
   compact = false,
 }: NotificationItemProps) {
+  const router = useRouter();
   const getIcon = () => {
     switch (notification.type) {
       case 'SUCCESS':
@@ -72,6 +83,10 @@ export function NotificationItem({
   const handleClick = () => {
     if (!notification.isRead && onMarkAsRead) {
       onMarkAsRead(notification.id);
+    }
+    const url = getNotificationUrl(notification);
+    if (url) {
+      router.push(url);
     }
   };
 

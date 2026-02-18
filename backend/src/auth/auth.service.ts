@@ -709,6 +709,87 @@ export class AuthService {
   }
 
   /**
+   * Validate or create a user from Google OAuth profile
+   */
+  async validateOrCreateGoogleUser(googleProfile: {
+    googleId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatar: string | null;
+  }): Promise<AuthTokens> {
+    const email = googleProfile.email.toLowerCase().trim();
+
+    // Find existing user by email
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { profile: true },
+    });
+
+    if (!user) {
+      // Create new user from Google profile (auto-verified)
+      user = await this.prisma.$transaction(async (tx) => {
+        const newUser = await tx.user.create({
+          data: {
+            email,
+            passwordHash: '', // No password for OAuth users
+            role: UserRole.CLIENT,
+            verifiedAt: new Date(), // Google accounts are pre-verified
+          },
+        });
+
+        await tx.profile.create({
+          data: {
+            userId: newUser.id,
+            firstName: googleProfile.firstName,
+            lastName: googleProfile.lastName,
+            profilePictureUrl: googleProfile.avatar,
+          },
+        });
+
+        await tx.activityLog.create({
+          data: {
+            userId: newUser.id,
+            action: 'USER_REGISTERED',
+            entityType: 'User',
+            entityId: newUser.id,
+            newData: { email, role: newUser.role, provider: 'google' },
+          },
+        });
+
+        return tx.user.findUnique({
+          where: { id: newUser.id },
+          include: { profile: true },
+        });
+      });
+    } else if (!user.verifiedAt) {
+      // Auto-verify existing unverified users who log in via Google
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { verifiedAt: new Date() },
+      });
+      user.verifiedAt = new Date();
+    }
+
+    const tokens = await this.generateTokens(user!);
+
+    await this.prisma.activityLog.create({
+      data: {
+        userId: user!.id,
+        action: 'USER_LOGIN',
+        entityType: 'User',
+        entityId: user!.id,
+        newData: { provider: 'google' },
+      },
+    });
+
+    this.logger.log(`Google OAuth login: ${email}`, 'AuthService');
+
+    const { passwordHash, ...sanitizedUser } = user!;
+    return { ...tokens, user: sanitizedUser };
+  }
+
+  /**
    * Email Service Methods (to be implemented)
    */
   private async sendVerificationEmail(email: string, userId: string): Promise<void> {

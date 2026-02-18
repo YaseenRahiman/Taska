@@ -25,9 +25,13 @@ export const userRegisterSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   phoneNumber: phoneSchema,
   password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions',
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
 });
 
 // Artisan registration schema (ARTISAN role)
@@ -37,6 +41,7 @@ export const artisanRegisterSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   phoneNumber: phoneSchema,
   password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
   trade: z.string().min(1, 'Please select your primary trade'),
   experience: z.coerce
     .number()
@@ -47,6 +52,9 @@ export const artisanRegisterSchema = z.object({
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions',
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
 });
 
 // Type exports

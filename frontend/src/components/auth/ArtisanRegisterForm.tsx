@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/components/providers/auth-provider';
 import {
@@ -15,6 +15,8 @@ import {
 export default function ArtisanRegisterForm() {
   const { register: registerUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -211,13 +213,49 @@ export default function ArtisanRegisterForm() {
           data-testid="artisan-trade-select"
         >
           <option value="">Select your trade</option>
-          <option value="plumbing">Plumbing</option>
-          <option value="electrical">Electrical</option>
-          <option value="carpentry">Carpentry</option>
-          <option value="painting">Painting</option>
-          <option value="tiling">Tiling</option>
-          <option value="roofing">Roofing</option>
-          <option value="other">Other</option>
+          <optgroup label="Structural & Civil">
+            <option value="masonry">Masonry (Bricklaying & Block Work)</option>
+            <option value="plastering">Plastering & Rendering</option>
+            <option value="concreting">Concreting & Foundation Work</option>
+            <option value="steel_fixing">Steel Fixing & Reinforcing</option>
+            <option value="scaffolding">Scaffolding</option>
+          </optgroup>
+          <optgroup label="Metal & Fabrication">
+            <option value="metalworking">Metalworking & Fabrication</option>
+            <option value="welding">Welding</option>
+            <option value="steel_doors_gates">Steel Doors, Gates & Burglar Bars</option>
+            <option value="aluminium_glazing">Aluminium & Glazing</option>
+          </optgroup>
+          <optgroup label="Roofing & Waterproofing">
+            <option value="roofing">Roofing (Tiles, IBR, Thatching)</option>
+            <option value="waterproofing">Waterproofing & Dampproofing</option>
+            <option value="gutters">Gutters & Fascia Boards</option>
+          </optgroup>
+          <optgroup label="Plumbing & Wet Works">
+            <option value="plumbing">Plumbing</option>
+            <option value="tiling">Tiling (Floor & Wall)</option>
+            <option value="waterproofing_wet">Wet Area Waterproofing (Bathrooms)</option>
+          </optgroup>
+          <optgroup label="Electrical & Mechanical">
+            <option value="electrical">Electrical</option>
+            <option value="solar">Solar & Renewable Energy</option>
+            <option value="hvac">Air Conditioning & HVAC</option>
+            <option value="gas_fitting">Gas Fitting</option>
+          </optgroup>
+          <optgroup label="Finishing & Décor">
+            <option value="painting">Painting (Interior & Exterior)</option>
+            <option value="carpentry">Carpentry & Joinery</option>
+            <option value="flooring">Flooring (Timber, Laminate, Vinyl)</option>
+            <option value="drywall">Drywall & Ceiling</option>
+            <option value="coving_cornices">Coving & Cornices</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="pool_construction">Pool Construction & Maintenance</option>
+            <option value="paving">Paving & Landscaping Hard Works</option>
+            <option value="demolition">Demolition & Excavation</option>
+            <option value="handyman">General Handyman</option>
+            <option value="other">Other</option>
+          </optgroup>
         </select>
         {errors.trade && (
           <p id="trade-error" className="mt-1 text-xs text-red-600" role="alert">
@@ -312,22 +350,33 @@ export default function ArtisanRegisterForm() {
         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
           Password *
         </label>
-        <input
-          {...register('password')}
-          type="password"
-          id="password"
-          name="password"
-          autoComplete="new-password"
-          aria-invalid={errors.password ? 'true' : 'false'}
-          aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
-          className={`block w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-1 ${
-            errors.password
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
-          }`}
-          disabled={isLoading}
-          data-testid="artisan-password-input"
-        />
+        <div className="relative">
+          <input
+            {...register('password')}
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            name="password"
+            autoComplete="new-password"
+            aria-invalid={errors.password ? 'true' : 'false'}
+            aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
+            className={`block w-full rounded-lg border px-3 py-2 pr-10 focus:outline-none focus:ring-1 ${
+              errors.password
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
+            }`}
+            disabled={isLoading}
+            data-testid="artisan-password-input"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
         {errors.password && (
           <p id="password-error" className="mt-1 text-xs text-red-600" role="alert">
             {errors.password.message}
@@ -336,6 +385,44 @@ export default function ArtisanRegisterForm() {
         <p id="password-hint" className="mt-1 text-xs text-gray-500">
           Must be at least 8 characters with uppercase, lowercase, numbers, and special characters
         </p>
+      </div>
+
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+          Confirm Password *
+        </label>
+        <div className="relative">
+          <input
+            {...register('confirmPassword')}
+            type={showConfirmPassword ? 'text' : 'password'}
+            id="confirmPassword"
+            name="confirmPassword"
+            autoComplete="new-password"
+            aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+            aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+            className={`block w-full rounded-lg border px-3 py-2 pr-10 focus:outline-none focus:ring-1 ${
+              errors.confirmPassword
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
+            }`}
+            disabled={isLoading}
+            data-testid="artisan-confirmPassword-input"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+          >
+            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p id="confirmPassword-error" className="mt-1 text-xs text-red-600" role="alert">
+            {errors.confirmPassword.message}
+          </p>
+        )}
       </div>
 
       <div className="flex items-start">

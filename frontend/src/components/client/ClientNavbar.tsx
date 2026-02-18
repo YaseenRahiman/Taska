@@ -47,7 +47,7 @@ export function ClientNavbar() {
               href="/client/dashboard"
               className="flex items-center gap-2 group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-turquoise-500 to-turquoise-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
                 <span className="text-white font-bold text-xl">T</span>
               </div>
               <span className="text-xl font-bold text-gray-900 hidden sm:block">Taska</span>
@@ -62,7 +62,7 @@ export function ClientNavbar() {
                 <Link key={link.href} href={link.href}>
                   <Button
                     variant="ghost"
-                    className="text-gray-700 hover:text-turquoise-600 hover:bg-turquoise-50"
+                    className="text-gray-700 hover:text-primary-600 hover:bg-primary-50"
                     asChild
                   >
                     <span>
@@ -79,7 +79,7 @@ export function ClientNavbar() {
           <div className="flex items-center gap-3">
             {/* Post Job Button */}
             <Link href="/client/jobs/create">
-              <Button className="bg-turquoise-600 hover:bg-turquoise-700 text-white hidden sm:flex">
+              <Button className="bg-primary-600 hover:bg-primary-700 text-white hidden sm:flex">
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Post Job
               </Button>
@@ -89,7 +89,7 @@ export function ClientNavbar() {
             <Link href="/client/jobs/create">
               <Button
                 size="icon"
-                className="bg-turquoise-600 hover:bg-turquoise-700 text-white sm:hidden"
+                className="bg-primary-600 hover:bg-primary-700 text-white sm:hidden"
               >
                 <PlusCircle className="w-5 h-5" />
               </Button>
@@ -100,7 +100,7 @@ export function ClientNavbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative text-gray-700 hover:text-turquoise-600 hover:bg-turquoise-50"
+                className="relative text-gray-700 hover:text-primary-600 hover:bg-primary-50"
               >
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -113,8 +113,8 @@ export function ClientNavbar() {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <div className="w-8 h-8 bg-turquoise-100 rounded-full flex items-center justify-center">
-                  <span className="text-turquoise-600 font-medium text-sm">
+                <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                  <span className="text-primary-600 font-medium text-sm">
                     {user?.profile?.firstName?.charAt(0) || 'U'}
                   </span>
                 </div>

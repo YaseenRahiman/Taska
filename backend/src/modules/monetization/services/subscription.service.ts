@@ -127,24 +127,31 @@ export class SubscriptionService {
   }
 
   /**
-   * Get the default (free) plan
+   * Get the default (free) plan, auto-initializing plans if they don't exist
    */
   async getDefaultPlan(): Promise<SubscriptionPlan> {
-    const plan = await this.prisma.subscriptionPlan.findFirst({
+    let plan = await this.prisma.subscriptionPlan.findFirst({
       where: { isDefault: true, isActive: true },
     });
 
     if (!plan) {
       // Fallback to free plan by name
-      const freePlan = await this.prisma.subscriptionPlan.findUnique({
+      plan = await this.prisma.subscriptionPlan.findUnique({
         where: { name: this.FREE_PLAN_NAME },
       });
+    }
 
-      if (!freePlan) {
-        throw new NotFoundException('Default subscription plan not found');
-      }
+    if (!plan) {
+      // Auto-initialize default plans if none exist yet
+      this.logger.log('No subscription plans found – auto-initializing defaults');
+      await this.initializeDefaultPlans();
+      plan = await this.prisma.subscriptionPlan.findFirst({
+        where: { isDefault: true, isActive: true },
+      });
+    }
 
-      return freePlan;
+    if (!plan) {
+      throw new NotFoundException('Default subscription plan not found');
     }
 
     return plan;

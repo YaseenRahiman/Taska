@@ -48,6 +48,7 @@ function createJobSchema(settings: JobValidationSettings) {
     longitude: z.number().min(-180).max(180),
     requirements: z.array(z.string().max(200)).max(10, 'Maximum 10 requirements').optional(),
     timeline: z.string().optional(),
+    toolsRequired: z.boolean().optional(),
   });
 }
 
@@ -99,6 +100,7 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
       requirements: [],
       latitude: 0,
       longitude: 0,
+      toolsRequired: false,
     }
   });
 
@@ -154,6 +156,8 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
   }, []);
 
   // Geocode address to get latitude/longitude
+  // Uses Google Maps Geocoding API if NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set,
+  // otherwise falls back to Nominatim (OpenStreetMap).
   const geocodeAddress = async () => {
     const address = watchedValues.addressLine1;
     const city = watchedValues.city;
@@ -164,27 +168,43 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
     }
 
     setGeocoding(true);
-    try {
-      const fullAddress = `${address}, ${city}, ${province}, South Africa`;
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
-      );
-      const data = await response.json();
+    const fullAddress = `${address}, ${city}, ${province}, South Africa`;
 
-      if (data && data.length > 0) {
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-        setValue('latitude', lat);
-        setValue('longitude', lon);
-        console.log(`Geocoded address to: ${lat}, ${lon}`);
+    try {
+      const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      const isGoogleKeyConfigured =
+        googleApiKey && googleApiKey !== 'your_google_maps_api_key_here';
+
+      if (isGoogleKeyConfigured) {
+        // Google Maps Geocoding API
+        const res = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(fullAddress)}&key=${googleApiKey}`
+        );
+        const data = await res.json();
+        if (data.status === 'OK' && data.results.length > 0) {
+          const { lat, lng } = data.results[0].geometry.location;
+          setValue('latitude', lat);
+          setValue('longitude', lng);
+        } else {
+          setValue('latitude', -26.2041);
+          setValue('longitude', 28.0473);
+        }
       } else {
-        console.warn('Could not geocode address, using default coordinates');
-        setValue('latitude', -26.2041); // Johannesburg default
-        setValue('longitude', 28.0473);
+        // Fallback: Nominatim (OpenStreetMap) – no API key needed
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
+        );
+        const data = await res.json();
+        if (data && data.length > 0) {
+          setValue('latitude', parseFloat(data[0].lat));
+          setValue('longitude', parseFloat(data[0].lon));
+        } else {
+          setValue('latitude', -26.2041);
+          setValue('longitude', 28.0473);
+        }
       }
     } catch (error) {
       console.error('Geocoding error:', error);
-      // Use default coordinates for South Africa
       setValue('latitude', -26.2041);
       setValue('longitude', 28.0473);
     } finally {
@@ -338,6 +358,7 @@ export function useJobCreationForm(options: UseJobCreationFormOptions = {}) {
         images: imageUrls,
         requirements: data.requirements || undefined,
         timeline: data.timeline || undefined,
+        toolsRequired: data.toolsRequired || false,
         isDraft: false,
       };
 

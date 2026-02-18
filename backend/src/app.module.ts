@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bull';
@@ -18,6 +19,8 @@ import { MonetizationModule } from './modules/monetization/monetization.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
 import { validationSchema } from './config/env.validation';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { LoggingService } from './common/logging/logging.service';
 
 @Module({
   imports: [
@@ -63,6 +66,12 @@ import { validationSchema } from './config/env.validation';
     CalendarModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    LoggingService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,19 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import {
   Zap,
   Crown,
   TrendingUp,
   ArrowRight,
-  Briefcase,
-  MessageSquare,
   AlertCircle,
   Check,
   Loader2,
+  X,
 } from 'lucide-react';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
 
 interface UsageLimits {
   jobsPerMonth: number;
@@ -55,6 +54,9 @@ export default function SubscriptionWidget({ userRole }: SubscriptionWidgetProps
   const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [premiumPlanId, setPremiumPlanId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSubscriptionInfo();
@@ -72,6 +74,42 @@ export default function SubscriptionWidget({ userRole }: SubscriptionWidgetProps
       setError('Failed to load subscription information');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpgradeClick = async () => {
+    // Fetch premium plan ID if we don't have it yet
+    if (!premiumPlanId) {
+      try {
+        const plansRes = await api.get('/subscriptions/plans');
+        const plans: SubscriptionPlan[] = plansRes.data.data || [];
+        const premium = plans.find((p) => p.name === 'PREMIUM');
+        if (!premium) {
+          toast.error('Premium plan not available. Please contact support.');
+          return;
+        }
+        setPremiumPlanId(premium.id);
+      } catch {
+        toast.error('Could not load plans. Please try again.');
+        return;
+      }
+    }
+    setShowUpgradeModal(true);
+  };
+
+  const handleConfirmUpgrade = async () => {
+    if (!premiumPlanId) return;
+    setUpgrading(true);
+    try {
+      await api.post('/subscriptions/subscribe', { planId: premiumPlanId });
+      toast.success('Successfully upgraded to Premium!');
+      setShowUpgradeModal(false);
+      await fetchSubscriptionInfo();
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Upgrade failed. Please try again.';
+      toast.error(msg);
+    } finally {
+      setUpgrading(false);
     }
   };
 
@@ -121,12 +159,12 @@ export default function SubscriptionWidget({ userRole }: SubscriptionWidgetProps
             <span className="font-semibold">{plan.displayName}</span>
           </div>
           {!isSubscribed && canUpgrade && (
-            <Link
-              href="/pricing"
+            <button
+              onClick={handleUpgradeClick}
               className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition-colors"
             >
               Upgrade
-            </Link>
+            </button>
           )}
         </div>
       </div>
@@ -212,19 +250,89 @@ export default function SubscriptionWidget({ userRole }: SubscriptionWidgetProps
                       Featured listings
                     </li>
                   </ul>
-                  <Link
-                    href="/pricing"
-                    className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700"
+                  <button
+                    onClick={handleUpgradeClick}
+                    className="inline-flex items-center text-sm font-semibold bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
                   >
-                    View Plans
+                    Upgrade Now – R299/month
                     <ArrowRight className="h-4 w-4 ml-1" />
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Upgrade confirmation modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Upgrade to Premium</h3>
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-primary-50 rounded-lg p-4 mb-4">
+              <div className="text-center mb-3">
+                <span className="text-3xl font-bold text-primary-600">R299</span>
+                <span className="text-gray-500">/month</span>
+              </div>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                  {isClient ? '50 job postings per month' : '100 bids per month'}
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                  Priority customer support
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                  Featured listings & priority matching
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                  Advanced analytics
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-xs text-gray-500 mb-4 text-center">
+              Billing handled by our payment partner. Cancel anytime.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                disabled={upgrading}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmUpgrade}
+                disabled={upgrading}
+                className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-semibold hover:bg-primary-700 disabled:opacity-50 flex items-center justify-center"
+              >
+                {upgrading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Processing...
+                  </>
+                ) : (
+                  'Confirm Upgrade'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

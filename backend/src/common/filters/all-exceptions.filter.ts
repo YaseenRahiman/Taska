@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LoggingService } from '../logging/logging.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationType } from '@prisma/client';
 
 interface ErrorResponse {
   statusCode: number;
@@ -21,7 +23,54 @@ interface ErrorResponse {
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(private readonly logger: LoggingService) {}
+  constructor(
+    private readonly logger: LoggingService,
+    private readonly prisma: PrismaService,
+  ) {}
+
+  private async notifyAdmin(
+    statusCode: number,
+    method: string,
+    url: string,
+    message: string,
+    userId?: string,
+  ): Promise<void> {
+    try {
+      // Only notify for 5xx server errors or significant 4xx errors (400, 401, 403 are routine; 422, 429, etc. may warrant notification)
+      if (statusCode < 500) return;
+
+      // Find admin users to notify
+      const admins = await this.prisma.user.findMany({
+        where: { role: 'ADMIN' },
+        select: { id: true },
+      });
+
+      if (admins.length === 0) return;
+
+      const shortPath = url.length > 80 ? url.substring(0, 77) + '...' : url;
+
+      await this.prisma.notification.createMany({
+        data: admins.map((admin) => ({
+          userId: admin.id,
+          type: NotificationType.SYSTEM_ANNOUNCEMENT,
+          title: `Server Error ${statusCode}`,
+          message: `${method} ${shortPath}: ${message}`,
+          isRead: false,
+          data: {
+            statusCode,
+            method,
+            path: url,
+            errorMessage: message,
+            affectedUserId: userId || null,
+            timestamp: new Date().toISOString(),
+          },
+        })),
+        skipDuplicates: false,
+      });
+    } catch {
+      // Don't let notification failures cascade into more errors
+    }
+  }
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
@@ -109,6 +158,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
         request.headers['user-agent'] || 'Unknown',
         (request as any).user?.id,
         requestId
+      );
+    }
+
+    // Create admin notification for server errors (5xx)
+    if (status >= 500) {
+      void this.notifyAdmin(
+        status,
+        request.method,
+        request.url,
+        message,
+        (request as any).user?.id,
       );
     }
 

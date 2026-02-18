@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/components/providers/auth-provider';
+import { getApiBaseUrl } from '@/lib/api-url';
 import {
   userRegisterSchema,
   type UserRegisterInput,
@@ -16,6 +17,8 @@ export default function UserRegisterForm() {
   const { register: registerUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'CLIENT' | 'ARTISAN'>('CLIENT');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -241,16 +244,16 @@ export default function UserRegisterForm() {
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
           Password
         </label>
-        <div className="mt-1">
+        <div className="mt-1 relative">
           <input
             {...register('password')}
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
             aria-invalid={errors.password ? 'true' : 'false'}
             aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
-            className={`block w-full appearance-none rounded-lg border px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-1 sm:text-sm ${
+            className={`block w-full appearance-none rounded-lg border px-3 py-2 pr-10 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-1 sm:text-sm ${
               errors.password
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
@@ -259,6 +262,15 @@ export default function UserRegisterForm() {
             disabled={isLoading}
             data-testid="register-password-input"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
           {errors.password && (
             <p id="password-error" className="mt-1 text-xs text-red-600" role="alert">
               {errors.password.message}
@@ -267,6 +279,45 @@ export default function UserRegisterForm() {
           <p id="password-hint" className="mt-1 text-xs text-gray-500">
             Must be at least 8 characters with uppercase, lowercase, numbers, and special characters
           </p>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          Confirm Password
+        </label>
+        <div className="mt-1 relative">
+          <input
+            {...register('confirmPassword')}
+            id="confirmPassword"
+            name="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+            aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+            className={`block w-full appearance-none rounded-lg border px-3 py-2 pr-10 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-1 sm:text-sm ${
+              errors.confirmPassword
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
+            }`}
+            placeholder="••••••••"
+            disabled={isLoading}
+            data-testid="register-confirmPassword-input"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+          >
+            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          {errors.confirmPassword && (
+            <p id="confirmPassword-error" className="mt-1 text-xs text-red-600" role="alert">
+              {errors.confirmPassword.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -327,10 +378,9 @@ export default function UserRegisterForm() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          className="btn-outline justify-center"
-          disabled={isLoading}
+        <a
+          href={`${getApiBaseUrl()}/auth/google`}
+          className="btn-outline justify-center flex items-center"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path
@@ -351,7 +401,7 @@ export default function UserRegisterForm() {
             />
           </svg>
           <span className="ml-2">Google</span>
-        </button>
+        </a>
 
         <button
           type="button"

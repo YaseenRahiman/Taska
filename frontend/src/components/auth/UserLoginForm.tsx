@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { getApiBaseUrl } from '@/lib/api-url';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/components/providers/auth-provider';
 import { z } from 'zod';
@@ -205,10 +206,9 @@ export default function UserLoginForm() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          className="btn-outline justify-center"
-          disabled={isLoading}
+        <a
+          href={`${getApiBaseUrl()}/auth/google`}
+          className="btn-outline justify-center flex items-center"
           data-testid="google-login-button"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -230,7 +230,7 @@ export default function UserLoginForm() {
             />
           </svg>
           <span className="ml-2">Google</span>
-        </button>
+        </a>
 
         <button
           type="button"

@@ -66,15 +66,6 @@ class ApiClient {
           }
         }
 
-        // Handle 403 Forbidden - also treat as auth failure for job endpoints
-        if (error.response?.status === 403) {
-          const url = error.config?.url || '';
-          // If it's a protected resource, treat as auth failure
-          if (url.includes('/jobs') || url.includes('/bids') || url.includes('/payments')) {
-            this.handleAuthFailure();
-          }
-        }
-
         return Promise.reject(error);
       }
     );

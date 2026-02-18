@@ -388,6 +388,24 @@ export function JobCreationWizard({
               </div>
             </div>
 
+            {/* Tools Required */}
+            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <input
+                type="checkbox"
+                id="toolsRequired"
+                {...register('toolsRequired')}
+                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 mt-0.5"
+              />
+              <div>
+                <label htmlFor="toolsRequired" className="block text-sm font-medium text-gray-800 cursor-pointer">
+                  Artisan must bring their own tools
+                </label>
+                <p className="text-xs text-gray-600 mt-0.5">
+                  Check this if you expect the artisan to arrive with all required tools and equipment
+                </p>
+              </div>
+            </div>
+
             {/* Timeline */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -617,6 +635,14 @@ export function JobCreationWizard({
                     </p>
                   </div>
                 </div>
+
+                {watchedValues.toolsRequired && (
+                  <div className="pt-2 border-t border-gray-200">
+                    <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs">
+                      Artisan must bring own tools
+                    </Badge>
+                  </div>
+                )}
 
                 {watchedValues.requirements && watchedValues.requirements.length > 0 && (
                   <div className="pt-2 border-t border-gray-200">

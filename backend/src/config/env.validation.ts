@@ -50,4 +50,10 @@ export const validationSchema = Joi.object({
   // Optional Services
   SENTRY_DSN: Joi.string().optional(),
   GOOGLE_MAPS_API_KEY: Joi.string().optional(),
+
+  // Google OAuth
+  GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
+  GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),
+  GOOGLE_CALLBACK_URL: Joi.string().optional(),
+  FRONTEND_URL: Joi.string().default('http://localhost:3001'),
 });

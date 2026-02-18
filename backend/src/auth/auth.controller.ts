@@ -1,18 +1,21 @@
-import { 
-  Controller, 
-  Post, 
-  Body, 
-  UseGuards, 
-  Request, 
-  Get, 
-  HttpCode, 
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  Get,
+  HttpCode,
   HttpStatus,
   Ip,
-  Headers 
+  Headers,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { AuthService, AuthTokens } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -24,7 +27,10 @@ import { User } from '@prisma/client';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -258,6 +264,27 @@ export class AuthController {
     @Body('deviceId') deviceId?: string,
   ): Promise<{ message: string }> {
     return this.authService.logout(user.id, deviceId);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Initiate Google OAuth login' })
+  googleAuth() {
+    // Guard redirects to Google automatically
+  }
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  async googleAuthCallback(@Request() req: any, @Res() res: Response) {
+    const tokens = await this.authService.validateOrCreateGoogleUser(req.user);
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3001');
+    const params = new URLSearchParams({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: String(tokens.expiresIn),
+    });
+    res.redirect(`${frontendUrl}/auth/google/callback?${params.toString()}`);
   }
 
   @Get('profile')
