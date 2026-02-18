@@ -61,7 +61,7 @@ export class NotificationsController {
     @Request() req,
     @Query() query: NotificationQueryDto,
   ): Promise<PaginatedNotificationsDto> {
-    return this.notificationService.getUserNotifications(req.user.userId, query);
+    return this.notificationService.getUserNotifications(req.user.id, query);
   }
 
   /**
@@ -90,7 +90,7 @@ export class NotificationsController {
     @Request() req,
     @Param('id') id: string,
   ): Promise<NotificationResponseDto> {
-    return this.notificationService.getNotificationById(id, req.user.userId);
+    return this.notificationService.getNotificationById(id, req.user.id);
   }
 
   /**
@@ -107,7 +107,7 @@ export class NotificationsController {
     type: NotificationCountDto,
   })
   async getUnreadCount(@Request() req): Promise<NotificationCountDto> {
-    return this.notificationService.getNotificationCounts(req.user.userId);
+    return this.notificationService.getNotificationCounts(req.user.id);
   }
 
   /**
@@ -138,7 +138,7 @@ export class NotificationsController {
     @Request() req,
     @Param('id') id: string,
   ): Promise<{ count: number }> {
-    return this.notificationService.markAsRead(req.user.userId, [id]);
+    return this.notificationService.markAsRead(req.user.id, [id]);
   }
 
   /**
@@ -161,7 +161,7 @@ export class NotificationsController {
     },
   })
   async markAllAsRead(@Request() req): Promise<{ count: number }> {
-    return this.notificationService.markAllAsRead(req.user.userId);
+    return this.notificationService.markAllAsRead(req.user.id);
   }
 
   /**
@@ -190,7 +190,7 @@ export class NotificationsController {
     @Request() req,
     @Param('id') id: string,
   ): Promise<void> {
-    return this.notificationService.deleteNotification(id, req.user.userId);
+    return this.notificationService.deleteNotification(id, req.user.id);
   }
 
   /**
@@ -213,6 +213,6 @@ export class NotificationsController {
     },
   })
   async clearAllNotifications(@Request() req): Promise<{ count: number }> {
-    return this.notificationService.clearAllNotifications(req.user.userId);
+    return this.notificationService.clearAllNotifications(req.user.id);
   }
 }

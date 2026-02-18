@@ -282,10 +282,12 @@ export class JobsService {
 
     try {
       const oldData = { ...job };
+      // Strip isDraft (not a DB field) before passing to Prisma
+      const { isDraft: _isDraft, ...updateData } = updateJobDto as UpdateJobDto & { isDraft?: boolean };
       const updatedJob = await this.prisma.job.update({
         where: { id },
         data: {
-          ...updateJobDto,
+          ...updateData,
           updatedAt: new Date(),
         },
         include: this.jobsRepository['getJobIncludes'](),

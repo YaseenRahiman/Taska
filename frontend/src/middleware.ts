@@ -163,9 +163,11 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, favicon.svg (favicon files)
+     * - manifest.json, sw.js (PWA files must be publicly accessible)
+     * - icons (PWA icon assets)
      * - public folder
      * - api routes (handled separately)
      */
-    '/((?!_next/static|_next/image|favicon.ico|favicon.svg|public|api).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|manifest\\.json|sw\\.js|icons|public|api).*)',
   ],
 };

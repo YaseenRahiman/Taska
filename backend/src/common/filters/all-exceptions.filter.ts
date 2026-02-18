@@ -97,22 +97,36 @@ export class AllExceptionsFilter implements ExceptionFilter {
         details = response.details;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
       error = exception.name;
-      
-      // Handle specific error types
-      if (exception.name === 'ValidationError') {
-        status = HttpStatus.BAD_REQUEST;
-        error = 'Validation Error';
-      } else if (exception.name === 'UnauthorizedError') {
-        status = HttpStatus.UNAUTHORIZED;
-        error = 'Unauthorized';
-      } else if (exception.name === 'ForbiddenError') {
-        status = HttpStatus.FORBIDDEN;
-        error = 'Forbidden';
-      } else if (exception.name === 'NotFoundError') {
-        status = HttpStatus.NOT_FOUND;
-        error = 'Not Found';
+
+      // Sanitize Prisma errors - never expose schema internals to clients
+      if (
+        exception.name === 'PrismaClientValidationError' ||
+        exception.name === 'PrismaClientKnownRequestError' ||
+        exception.name === 'PrismaClientUnknownRequestError' ||
+        exception.name === 'PrismaClientRustPanicError' ||
+        exception.name === 'PrismaClientInitializationError'
+      ) {
+        status = HttpStatus.INTERNAL_SERVER_ERROR;
+        message = 'A database error occurred. Please try again later.';
+        error = 'Internal Server Error';
+      } else {
+        message = exception.message;
+
+        // Handle specific error types
+        if (exception.name === 'ValidationError') {
+          status = HttpStatus.BAD_REQUEST;
+          error = 'Validation Error';
+        } else if (exception.name === 'UnauthorizedError') {
+          status = HttpStatus.UNAUTHORIZED;
+          error = 'Unauthorized';
+        } else if (exception.name === 'ForbiddenError') {
+          status = HttpStatus.FORBIDDEN;
+          error = 'Forbidden';
+        } else if (exception.name === 'NotFoundError') {
+          status = HttpStatus.NOT_FOUND;
+          error = 'Not Found';
+        }
       }
     }
 

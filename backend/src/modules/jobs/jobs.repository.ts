@@ -7,19 +7,24 @@ import { UpdateJobDto } from './dto/update-job.dto';
 import { JobQueryDto } from './dto/job-query.dto';
 import { ConfirmJobCompletionDto } from './dto/confirm-completion.dto';
 
+const safeUserSelect = {
+  id: true,
+  email: true,
+  role: true,
+  status: true,
+  createdAt: true,
+  profile: true,
+} as const;
+
 const jobIncludeConfig = {
   client: {
-    include: {
-      profile: true,
-    },
+    select: safeUserSelect,
   },
   category: true,
   bids: {
     include: {
       artisan: {
-        include: {
-          profile: true,
-        },
+        select: safeUserSelect,
       },
     },
     orderBy: {
