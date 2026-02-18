@@ -308,6 +308,22 @@ export class BidsService {
 
     const acceptedBid = await this.bidsRepository.updateBidStatus(id, BidStatus.ACCEPTED);
 
+    // Update job status to IN_PROGRESS and reject all other pending bids
+    await this.prisma.$transaction([
+      this.prisma.job.update({
+        where: { id: bid.jobId },
+        data: { status: JobStatus.IN_PROGRESS },
+      }),
+      this.prisma.bid.updateMany({
+        where: {
+          jobId: bid.jobId,
+          id: { not: id },
+          status: BidStatus.PENDING,
+        },
+        data: { status: BidStatus.REJECTED },
+      }),
+    ]);
+
     // Schedule job reminders if the job has a startDate
     if (bid.job.startDate) {
       try {
