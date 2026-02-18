@@ -122,17 +122,18 @@ export default function ArtisanDashboard() {
       const jobsResponse = await api.get('/jobs', {
         params: { status: 'OPEN', limit: 6 }
       })
-      setAvailableJobs(jobsResponse.data.jobs || [])
+      // GET /jobs returns { data: [], meta: {} }
+      setAvailableJobs(jobsResponse.data.data || jobsResponse.data.jobs || [])
 
       // Fetch active projects
       const projectsResponse = await api.get('/jobs/artisan/active')
-      setActiveProjects(projectsResponse.data || [])
+      setActiveProjects(Array.isArray(projectsResponse.data) ? projectsResponse.data : (projectsResponse.data?.data || []))
 
-      // Fetch recent bids
+      // Fetch recent bids - /bids/my-bids returns raw array
       const bidsResponse = await api.get('/bids/my-bids', {
         params: { limit: 5 }
       })
-      setRecentBids(bidsResponse.data.bids || [])
+      setRecentBids(Array.isArray(bidsResponse.data) ? bidsResponse.data : (bidsResponse.data.bids || []))
 
       // Fetch wallet statistics for earnings data
       try {

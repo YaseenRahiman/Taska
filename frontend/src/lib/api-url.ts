@@ -21,8 +21,10 @@ export function getApiBaseUrl(): string {
     return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
   }
 
-  // For any other hostname (IP address or DNS name), use the same host with backend port
-  return `${protocol}//${hostname}:3000/api/v1`;
+  // For any other hostname (IP address or DNS name), API is served from the same host.
+  // In AWS ALB deployments, /api/* routes are forwarded to the backend container,
+  // so no port is needed - the ALB exposes everything on port 80.
+  return `${protocol}//${hostname}/api/v1`;
 }
 
 /**
@@ -39,5 +41,6 @@ export function getWsBaseUrl(): string {
     return 'http://localhost:3000';
   }
 
-  return `${protocol}//${hostname}:3000`;
+  // Same as above - ALB exposes port 80, no explicit port needed.
+  return `${protocol}//${hostname}`;
 }

@@ -134,7 +134,7 @@ Resources:
               Value: !Ref Environment
             - Name: NEXT_PUBLIC_API_URL
               Value: !Sub
-                - 'http://${LoadBalancerDNS}'
+                - 'http://${LoadBalancerDNS}/api/v1'
                 - LoadBalancerDNS:
                     Fn::ImportValue: !Sub '${LoadBalancerStackName}-LoadBalancerDNS'
           LogConfiguration:
@@ -213,6 +213,11 @@ Resources:
               Value: !Ref StripeSecretKey
             - Name: STRIPE_WEBHOOK_SECRET
               Value: !Ref StripeWebhookSecret
+            - Name: CORS_ORIGIN
+              Value: !Sub
+                - 'http://${LoadBalancerDNS}'
+                - LoadBalancerDNS:
+                    Fn::ImportValue: !Sub '${LoadBalancerStackName}-LoadBalancerDNS'
           LogConfiguration:
             LogDriver: awslogs
             Options:

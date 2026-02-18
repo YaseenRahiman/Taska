@@ -518,7 +518,7 @@ export default function JobDetailPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => router.push(`/messages?artisan=${bid.artisan.id}&job=${job.id}`)}
+                              onClick={() => router.push(`/client/messages?artisan=${bid.artisan.id}&job=${job.id}`)}
                               className="text-turquoise-600 border-turquoise-600 hover:bg-turquoise-50"
                             >
                               <MessageCircle className="w-4 h-4 mr-1" />
@@ -764,7 +764,7 @@ export default function JobDetailPage() {
               <CardContent className="space-y-3">
                 <Button
                   className="w-full"
-                  onClick={() => router.push(`/jobs/${job.id}/edit`)}
+                  onClick={() => router.push(`/client/jobs/${job.id}/edit`)}
                   disabled={job.status !== 'OPEN'}
                 >
                   Edit Job
@@ -772,7 +772,7 @@ export default function JobDetailPage() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => router.push(`/messages?job=${job.id}`)}
+                  onClick={() => router.push(`/client/messages?job=${job.id}`)}
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   View Messages

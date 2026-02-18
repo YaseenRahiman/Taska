@@ -106,12 +106,13 @@ export default function ClientDashboardPage() {
         api.get('/jobs/my-jobs').catch(() => ({ data: { jobs: [] } })) // Get all jobs for stats
       ]);
 
-      const jobsList = jobsRes.data.jobs || [];
-      const allJobs = allJobsRes.data.jobs || [];
+      // API returns raw array for my-jobs; handle both raw array and {jobs:[]} format
+      const jobsList = Array.isArray(jobsRes.data) ? jobsRes.data : (jobsRes.data.jobs || []);
+      const allJobs = Array.isArray(allJobsRes.data) ? allJobsRes.data : (allJobsRes.data.jobs || []);
 
       setJobs(jobsList);
-      setRecentBids(bidsRes.data.bids || []);
-      setPendingPayments(paymentsRes.data.payments || []);
+      setRecentBids(bidsRes.data.bids || bidsRes.data || []);
+      setPendingPayments(paymentsRes.data.payments || paymentsRes.data || []);
 
       // Calculate stats from jobs data
       const calculatedStats = {

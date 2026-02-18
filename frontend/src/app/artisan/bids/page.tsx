@@ -93,81 +93,46 @@ export default function BidManagement() {
     try {
       setLoading(true)
       const response = await api.get('/bids/my-bids')
-      
-      // Mock bid data
-      const mockBids: Bid[] = [
-        {
-          id: '1',
-          jobId: 'job-1',
-          amount: 1200,
-          estimatedDays: 3,
-          message: 'I have 5+ years of plumbing experience and can complete this emergency repair within 2 hours. I carry all necessary tools and parts.',
-          status: 'PENDING',
-          submittedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(),
+
+      // API returns a raw array of bids with job/artisan relations
+      const rawBids = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.bids || [])
+
+      const mappedBids: Bid[] = rawBids.map((b: any) => {
+        const profile = b.job?.client?.profile
+        const clientName = profile
+          ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+          : (b.job?.client?.email || 'Unknown Client')
+        const location = b.job
+          ? [b.job.city, b.job.province].filter(Boolean).join(', ') || b.job.addressLine1 || ''
+          : ''
+        return {
+          id: b.id,
+          jobId: b.jobId,
+          amount: typeof b.amount === 'string' ? parseFloat(b.amount) : (b.amount || 0),
+          estimatedDays: b.estimatedDays,
+          message: b.message,
+          status: b.status,
+          submittedAt: b.createdAt || b.submittedAt,
+          expiresAt: b.expiresAt,
           job: {
-            id: 'job-1',
-            title: 'Kitchen Sink Repair - Urgent',
-            category: 'Plumbing',
-            budget: 1500,
-            location: 'Sandton, Johannesburg',
-            urgency: 'URGENT',
+            id: b.job?.id || b.jobId,
+            title: b.job?.title || 'Unknown Job',
+            category: b.job?.category?.name || b.job?.category || 'Unknown',
+            budget: typeof b.job?.budget === 'string' ? parseFloat(b.job.budget) : (b.job?.budget || 0),
+            location,
+            urgency: b.job?.urgency || 'MEDIUM',
             client: {
-              name: 'Sarah Miller',
-              rating: 4.8,
-              isVerified: true
-            }
-          }
-        },
-        {
-          id: '2',
-          jobId: 'job-2',
-          amount: 2800,
-          estimatedDays: 5,
-          message: 'Professional electrical installation with COC certificate provided. 10 years experience with residential wiring.',
-          status: 'ACCEPTED',
-          submittedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-          expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          job: {
-            id: 'job-2',
-            title: 'Bedroom Electrical Installation',
-            category: 'Electrical',
-            budget: 3000,
-            location: 'Rosebank, Johannesburg',
-            urgency: 'MEDIUM',
-            client: {
-              name: 'John Davidson',
-              rating: 4.5,
-              isVerified: true
-            }
-          }
-        },
-        {
-          id: '3',
-          jobId: 'job-3',
-          amount: 4200,
-          estimatedDays: 10,
-          message: 'Experienced in custom carpentry with portfolio available. Can start immediately.',
-          status: 'REJECTED',
-          submittedAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-          expiresAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-          job: {
-            id: 'job-3',
-            title: 'Custom Kitchen Cabinets',
-            category: 'Carpentry',
-            budget: 5000,
-            location: 'Parktown, Johannesburg',
-            urgency: 'LOW',
-            client: {
-              name: 'Mike Chen',
-              rating: 4.9,
-              isVerified: true
-            }
-          }
+              name: clientName,
+              rating: b.job?.client?.averageRating || 4.5,
+              isVerified: b.job?.client?.isVerified || false,
+            },
+          },
         }
-      ]
-      
-      setBids(response.data?.bids || mockBids)
+      })
+
+      setBids(mappedBids)
     } catch (error) {
       console.error('Error fetching bids:', error)
       setBids([])

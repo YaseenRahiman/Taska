@@ -37,7 +37,13 @@ async function bootstrap() {
       if (isAllowedOrigin || isLocalNetwork) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        // Return false (no CORS headers) instead of throwing an error.
+        // Throwing an error causes Express to respond with 500, which breaks
+        // same-origin POST requests because browsers send Origin even for
+        // same-origin fetch calls. With false, same-origin requests still work
+        // (browser doesn't need CORS headers), and cross-origin requests are
+        // silently rejected by the browser (no CORS headers in response).
+        callback(null, false);
       }
     },
     credentials: true,
