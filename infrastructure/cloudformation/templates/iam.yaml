@@ -143,6 +143,7 @@ Resources:
                   - s3:PutObject
                 Resource:
                   - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}/*'
+                  - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}-${AWS::AccountId}/*'
       Tags:
         - Key: Name
           Value: !Sub 'taska-codebuild-${Environment}'
@@ -176,6 +177,8 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}'
                   - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}/*'
+                  - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}-${AWS::AccountId}'
+                  - !Sub 'arn:aws:s3:::taska-pipeline-artifacts-${Environment}-${AWS::AccountId}/*'
               - Effect: Allow
                 Action:
                   - codebuild:BatchGetBuilds
