@@ -44,6 +44,14 @@
     "ParameterValue": "taska-dev-jwt-refresh-secret-key-2026-p7qn"
   },
   {
+    "ParameterKey": "GoogleClientId",
+    "ParameterValue": "GOOGLE_CLIENT_ID_OVERRIDE_AT_DEPLOY"
+  },
+  {
+    "ParameterKey": "GoogleClientSecret",
+    "ParameterValue": "GOOGLE_CLIENT_SECRET_OVERRIDE_AT_DEPLOY"
+  },
+  {
     "ParameterKey": "FrontendCPU",
     "ParameterValue": "256"
   },

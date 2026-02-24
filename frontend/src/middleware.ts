@@ -94,6 +94,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Only protect known role-specific route prefixes
+  const isProtectedRoute = Object.values(ROLE_ROUTES).flat().some(route => pathname.startsWith(route));
+
+  // For unknown routes (not public, not role-specific), let Next.js handle them (404, etc.)
+  if (!isProtectedRoute) {
+    return NextResponse.next();
+  }
+
   // For protected routes, verify authentication
   const token = request.cookies.get('accessToken')?.value ||
                 request.headers.get('authorization')?.replace('Bearer ', '');

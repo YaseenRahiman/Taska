@@ -61,6 +61,18 @@ Parameters:
     NoEcho: true
     Description: JWT refresh token signing secret
 
+  GoogleClientId:
+    Type: String
+    NoEcho: false
+    Default: ''
+    Description: Google OAuth client ID
+
+  GoogleClientSecret:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Google OAuth client secret
+
   StripeSecretKey:
     Type: String
     NoEcho: true
@@ -213,6 +225,20 @@ Resources:
               Value: !Ref StripeSecretKey
             - Name: STRIPE_WEBHOOK_SECRET
               Value: !Ref StripeWebhookSecret
+            - Name: GOOGLE_CLIENT_ID
+              Value: !Ref GoogleClientId
+            - Name: GOOGLE_CLIENT_SECRET
+              Value: !Ref GoogleClientSecret
+            - Name: GOOGLE_CALLBACK_URL
+              Value: !Sub
+                - 'http://${LoadBalancerDNS}/api/v1/auth/google/callback'
+                - LoadBalancerDNS:
+                    Fn::ImportValue: !Sub '${LoadBalancerStackName}-LoadBalancerDNS'
+            - Name: FRONTEND_URL
+              Value: !Sub
+                - 'http://${LoadBalancerDNS}'
+                - LoadBalancerDNS:
+                    Fn::ImportValue: !Sub '${LoadBalancerStackName}-LoadBalancerDNS'
             - Name: CORS_ORIGIN
               Value: !Sub
                 - 'http://${LoadBalancerDNS}'
